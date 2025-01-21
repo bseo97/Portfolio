@@ -1,15 +1,25 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from 'next/font/local' // we do not use @next after next.js13.2+
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// setting up the fonts to be usdd
+const poppins = localFont({
+  src: [
+  {
+  path: "../../public/fonts/Recoleta-Black.ttf",
+  weight: "400",
+  },
+  {
+  path: "../../public/fonts/Recoleta-Medium.ttf",
+  weight: "300",
+  },
+  {
+  path: "../../public/fonts/Recoleta-Light.ttf",
+  weight: "200",
+  },
+  ],
+  variable: "--font-Recoleta-Black",
+  });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "Create Next App",
@@ -20,7 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={poppins.className}
       >
         {children}
       </body>
