@@ -103,58 +103,55 @@ export default function HomeComponent() {
     id="home"
     style={{
       backgroundImage: "url(code_background.png)",
-      backgroundSize: "cover", // Ensures the background covers the entire container
-      backgroundRepeat: "no-repeat", // Prevents the image from repeating
-      backgroundPosition: "center", // Centers the image both vertically and horizontally
-      height: "130vh", // Ensures the height fills the viewport
-      width: "100%",
-//      padding: "320px 50px 50px 30px",
-      fontFamily: "'Times New Roman', Times, serif",
-     }}
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+      height: "100vh", // Full viewport height
+      width: "100%", // Full width
+      fontFamily: "DejaVu Sans Mono, monospace",
+    }}
   >
-    
-    <div className="container m-auto">
-      <div className="grid grid-cols-12">
-        {/* Information Section */}
-        <div className="bg-transparent flex flex-col justify-center col-span-12 md:col-span-5 md:bg-transparent">
-          <div className="container m-auto">
-          {/* <div className="pl-0 sm:pl-8 md:pl-16 lg:pl-24 py-20 sm:py-32 md:py-40 text-center md:text-start"> */}
-              <div className="xl:pt-[600px] xl:pl-[300px] text-center ">
-              <p
-                className={`text-[#52c991] text-3xl font-bold md:text-base lg:text-2xl`}
-              >
-                Welcome
-              </p>
-              <h1
-                className={
-                  "text-[#ffffff] font-recoletaBlack text-5xl md:text-5xl lg:text-7xl xl:text-7xl mt-5 md:mt-1"
-                }
-              >
-                I'm Brian
-              </h1>
-              <h2 className={`text-[#ffffff] py-1 font-bold md:text-xl`}>
-                University of California, Irvine Student
-              </h2>
-              <a
-                href="/#portfolio"
-                className={`cursor-pointer inline-block bg-[#52c991] transition-all duration-300 ease-in-out rounded-lg text-white py-2 px-5 font-bold mt-8 uppercase md:py-2 lg:py-3 lg:px-8 md:text-xd ls:text-base md:mt-2 xl:mt-10 hover:bg-[#20614b] hover:show-lg treansform hover:translate-y-1`}
-              >
-                Projects
-              </a>
-              <a
-                href="resume.pdf"
-                download="Resume(Brian Seo).pdf"
-                className={`ml-10 cursor-pointer inline-block bg-[#52c991] transition-all duration-300 ease-in-out rounded-lg text-white py-2 px-5 font-bold mt-8 uppercase md:py-2 lg:py-3 lg:px-8 md:text-xd ls:text-base md:mt-2 xl:mt-10 hover:bg-[#20614b] hover:show-lg treansform hover:translate-y-1`}
-              >
-                Resume
-              </a>
-            </div>
+    <div className="flex items-center justify-center h-full pt-56">
+      <div className="text-center mt-16">
+        <p className="text-[#53c9c9] text-3xl font-bold md:text-5xl">
+          Welcome
+        </p>
+        <h1 className="text-[#53c9c9] font-recoletaBlack text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2">
+          I'm Brian
+        </h1>
+        <h2 className="mt-3 text-[#53c9c9] py-1 font-bold md:text-xl">
+          University of California, <br></br>Irvine Student
+        </h2>
+
+        <div className="mt-16 text-[#53c9c9] font-bold font-serif">
+            <span>
+              Discover
+            </span>
+            <span className="ml-44">
+              Learn More
+            </span>
           </div>
+        {/*margin between header text and buttons */}
+        <div className="mt-3 text-xl font-serif">
+          <a
+            href="/#portfolio"
+            className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-8 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
+          >
+            Projects
+          </a>
+          <a
+            href="resume.pdf"
+            download="Resume(Brian Seo).pdf"
+            className="ml-20 cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-10 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
+          >
+            Resume
+          </a>
         </div>
       </div>
     </div>
   </div>
 </React.Fragment>
+
 
   );
 }
