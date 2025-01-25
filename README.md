@@ -14,6 +14,22 @@ pnpm dev
 bun dev
 ```
 
+In case anyone is struggling to run, .next and node_modules directories have to be rebuild.
+those two files are commonly excluded through .gitignore file (rebuildable)
+
+to verity:
+```bash
+Check .gitignore file to ensure followings exist.
+
+.next/
+node_modules/
+
+generate using:
+npm run build
+# or
+next build
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
