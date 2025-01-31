@@ -53,7 +53,7 @@ export default function Header() {
       <header
         className={`fixed top-0 z-50 w-full transition-all duration-500`}
         style={{
-          backgroundColor: isScrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
+          backgroundColor: isScrolled ? "rgba(0, 40, 50, 0.6)" : "rgba(0, 40, 0, 0.4)",
         }}
       >
         <div className="relative flex justify-between items-center p-4">
@@ -92,8 +92,8 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 0 ? "text-blue" : ""
-                } text-[#ffffff] hover:text-emerald-500`}
+                  selectedIndex1 === 0 ? "text-emerald-200" : ""
+                } text-[#ffffff] hover:text-[#53c9c9]`}
                 href="/#home"
                 onClick={() => setSelectedIndex1(0)}
               >
@@ -103,8 +103,8 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 1 ? "text-emerald-500" : ""
-                } text-[#ffffff] hover:text-emerald-500`}
+                  selectedIndex1 === 1 ? "text-emerald-200" : ""
+                } text-[#ffffff] hover:text-[#53c9c9]`}
                 href="/#aboutme"
                 onClick={() => setSelectedIndex1(1)}
               >
@@ -114,8 +114,8 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 2 ? "text-emerald-500" : ""
-                } text-[#ffffff] hover:text-emerald-500`}
+                  selectedIndex1 === 2 ? "text-emerald-200" : ""
+                } text-[#ffffff] hover:text-[#53c9c9]`}
                 href="/#projects"
                 onClick={() => setSelectedIndex1(2)}
               >
@@ -125,8 +125,8 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 3 ? "text-emerald-500" : ""
-                } text-[#ffffff] hover:text-emerald-500`}
+                  selectedIndex1 === 3 ? "text-emerald-200" : ""
+                } text-[#ffffff] hover:text-[#53c9c9]`}
                 href="/#contactme"
                 onClick={() => setSelectedIndex1(3)}
               >
