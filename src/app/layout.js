@@ -1,6 +1,5 @@
 import "./globals.css";
 import localFont from 'next/font/local' // we do not use @next after next.js13.2+
-import Header from "./components/Header/Header";
 import Scrollbar from "./components/ScrollBar";
 
 // setting up the fonts to be usdd
@@ -35,7 +34,6 @@ export default function RootLayout({ children }) {
       <body
         className={poppins.className}
       >
-        <Header/>
         <Scrollbar/>
         {children}
       </body>

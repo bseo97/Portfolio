@@ -4,48 +4,59 @@ import React from 'react'
 // maps through the data array, and pass in the item to data array
 export default function SliderCard({ item, index }) {
   return (
-    <React.Fragment>
-      <div className='h-[200px] lg:h-[450px] md:h-[400px] sm-[200px] lg:w-[450px] sm:w-[300px] w-[300px] relative m-auto'>
-        <div className='h-full w-full group cursor-all-scroll z-50 relative'>
-          <img src={item.images[0]}
-            alt='item thumbnail'
-            className='w-full h-[200px] lg:h-[350px] md:h[300px] max-w-[100px] rounded-lg'
+    <div className="p-4">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm mx-auto">
+        {/* Image Container */}
+        <div className="relative h-64 overflow-hidden">
+          <img 
+            src={item.images[0]}
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
           />
-          <div className="absolute bottom-[270px] lg:bottom-44 md:bottom-32 sm:botom-[270px] left-6 rounded-lg transition duration-300 opacity-0 group-hover:opacity-100 bg-[#47626D] cursor-ponter flex-items-center justify-center shadow-accent-color hover:shadow-xl hover:bg-[#47626D] w-10 h-10 md:w-12 md:h-12 lg:w-20 lg:h-20">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-              aria-hidden="true"
-              class="w-6 h-6 lg:w-10 lg:h-10 text-white"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              ></path>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              ></path>
-            </svg>
+          {/* Overlay for hover effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute bottom-4 left-4 right-4">
+              <button className="w-full bg-[#53c9c9] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#244e4e] transition-colors duration-200">
+                View Project
+              </button>
+            </div>
           </div>
         </div>
-        <div
-          className="absolute top-14 ms:left-12 rounded-lg bg-while h-[200px] lg:h-[350px] md:h-[300px] w-full"
-          style={{
-            boxShadow: "#48AFDE -10px 10px 20px 10px"
-          }}
-        >
-          <div className="relative h-[200px] lg:h-[350px] md:h-[300px] w-[100%]">
-            <p className="absolute bottom-3 left-4 text-;g font-[300]">{item.name}</p>
+        
+        {/* Content */}
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+            {item.name}
+          </h3>
+          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+            {item.des}
+          </p>
+          
+          {/* Tags/Tech Stack */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span className="px-3 py-1 bg-[#53c9c9]/10 text-[#53c9c9] text-xs rounded-full font-medium">
+              React.js
+            </span>
+            <span className="px-3 py-1 bg-[#53c9c9]/10 text-[#53c9c9] text-xs rounded-full font-medium">
+              Next.js
+            </span>
+            <span className="px-3 py-1 bg-[#53c9c9]/10 text-[#53c9c9] text-xs rounded-full font-medium">
+              Tailwind
+            </span>
           </div>
-
+          
+          {/* Footer */}
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400 text-xs">
+              Project #{index + 1}
+            </span>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-green-500 text-xs font-medium">Completed</span>
+            </div>
+          </div>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   )
 }

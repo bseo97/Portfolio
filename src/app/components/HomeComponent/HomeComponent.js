@@ -1,157 +1,527 @@
-import React from "react";
-// import {Hind} from 'next/font/google'
+'use client'
+import React, { useEffect } from 'react';
 
-//importing skewbox
-import Slider from 'react-slick'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
-
-// for automatic formatting proper indentation, right click->format with -> 'prettier'
-// Home layout setup
-// Have to render within the parent page.
-// const hind = Hind({
-//   subsets: ["latin"],
-//   weight: ["300", "400", "500", "600", "700"],
-// });
 export default function HomeComponent() {
-  var settings = {
-    infinite: true,
-    slidesToShow: 6,
-    slidesToScroll: 1,
-    speed: 2000, //2s
-    arrows: false,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    loop: true,
-    cssEase: "linear",
-    responsive: [
-      {
-        breakpoint: 1760,
-        settings: {
-          slidesToShow: 6,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 1460,
-        settings: {
-          slidesToShow: 6,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 1290,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 1100,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: false,
-        },
-      },
+  useEffect(() => {
+    // Shooting Stars Canvas Implementation
+    class ShootingStar {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.reset();
+      }
+      
+      reset() {
+        // Start from random position along top and left edges
+        if (Math.random() > 0.5) {
+          this.x = Math.random() * this.canvas.width;
+          this.y = -10;
+        } else {
+          this.x = -10;
+          this.y = Math.random() * this.canvas.height * 0.3;
+        }
+        
+        // Velocity for diagonal movement
+        this.vx = Math.random() * 3 + 2;
+        this.vy = Math.random() * 3 + 2;
+        
+        // Trail properties
+        this.trail = [];
+        this.trailLength = Math.random() * 20 + 15;
+        this.size = Math.random() * 1.5 + 1;
+        this.brightness = Math.random() * 0.5 + 0.5;
+        this.life = 1.0;
+        this.decay = Math.random() * 0.015 + 0.005;
+        
+        // Color variation - keep all white/blue tones
+        this.hue = Math.random() * 30 + 200; // Blue to white range
+      }
+      
+      update() {
+        // Store current position in trail
+        this.trail.push({ x: this.x, y: this.y, life: this.life });
+        
+        // Remove old trail points
+        if (this.trail.length > this.trailLength) {
+          this.trail.shift();
+        }
+        
+        // Update position
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Fade out over time
+        this.life -= this.decay;
+        
+        // Check if off screen or faded
+        return this.life > 0 && 
+               this.x < this.canvas.width + 50 && 
+               this.y < this.canvas.height + 50;
+      }
+      
+      draw() {
+        this.ctx.save();
+        
+        // Draw trail
+        for (let i = 0; i < this.trail.length; i++) {
+          const point = this.trail[i];
+          const trailOpacity = (i / this.trail.length) * point.life * this.brightness;
+          const trailSize = (i / this.trail.length) * this.size;
+          
+          this.ctx.beginPath();
+          this.ctx.arc(point.x, point.y, trailSize, 0, Math.PI * 2);
+          this.ctx.fillStyle = `hsla(${this.hue}, 100%, 90%, ${trailOpacity})`;
+          this.ctx.fill();
+          
+          // Add glow effect
+          this.ctx.shadowBlur = 8;
+          this.ctx.shadowColor = `hsla(${this.hue}, 100%, 90%, ${trailOpacity * 0.5})`;
+          this.ctx.fill();
+        }
+        
+        // Draw main star (brightest point)
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+        this.ctx.fillStyle = `hsla(${this.hue}, 100%, 95%, ${this.life * this.brightness})`;
+        this.ctx.shadowBlur = 15;
+        this.ctx.shadowColor = `hsla(${this.hue}, 100%, 90%, ${this.life * 0.8})`;
+        this.ctx.fill();
+        
+        this.ctx.restore();
+      }
+    }
+    
+    class ShootingStarSystem {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.stars = [];
+        this.maxStars = 5;
+        
+        this.resizeCanvas();
+        this.animate();
+        
+        // Create new stars more frequently
+        this.starInterval = setInterval(() => {
+          if (this.stars.length < this.maxStars && Math.random() > 0.6) {
+            this.stars.push(new ShootingStar(this.canvas));
+            
+            // 50% chance to spawn a second star shortly after
+            if (Math.random() > 0.5) {
+              setTimeout(() => {
+                if (this.stars.length < this.maxStars) {
+                  this.stars.push(new ShootingStar(this.canvas));
+                }
+              }, Math.random() * 500 + 200);
+            }
+          }
+        }, 1500);
+        
+        // Handle resize
+        this.resizeHandler = () => this.resizeCanvas();
+        window.addEventListener('resize', this.resizeHandler);
+      }
+      
+      resizeCanvas() {
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+      }
+      
+      animate() {
+        // Completely clear canvas to prevent lingering marks
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Update and draw stars
+        this.stars = this.stars.filter(star => {
+          const alive = star.update();
+          if (alive) {
+            star.draw();
+          }
+          return alive;
+        });
+        
+        this.animationFrame = requestAnimationFrame(() => this.animate());
+      }
+      
+      destroy() {
+        if (this.starInterval) clearInterval(this.starInterval);
+        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+        if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
+      }
+    }
 
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          initialSlide: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+    // Create neural network
+    function createNeuralNetwork() {
+      const container = document.getElementById('neural-network');
+      if (!container) return;
+      
+      const nodes = [];
+      const nodeCount = Math.min(10, Math.floor(window.innerWidth / 100));
+      
+      // Create nodes only in top 60% of screen
+      for (let i = 0; i < nodeCount; i++) {
+        const node = document.createElement('div');
+        node.className = 'neural-node';
+        
+        const x = Math.random() * (window.innerWidth - 50) + 25;
+        const y = Math.random() * (window.innerHeight * 0.6) + 25;
+        
+        Object.assign(node.style, {
+          position: 'absolute',
+          width: '12px',
+          height: '12px',
+          background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4))',
+          borderRadius: '50%',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          boxShadow: '0 0 10px rgba(255, 255, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)',
+          left: x + 'px',
+          top: y + 'px',
+          animation: 'advancedPulse 4s ease-in-out infinite'
+        });
+        
+        if (i % 2 === 1) node.style.animationDelay = '0.8s';
+        if (i % 3 === 0) node.style.animationDelay = '1.6s';
+        
+        container.appendChild(node);
+        nodes.push({ element: node, x, y });
+      }
+      
+      // Create connections
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const distance = Math.sqrt(
+            Math.pow(nodes[i].x - nodes[j].x, 2) + 
+            Math.pow(nodes[i].y - nodes[j].y, 2)
+          );
+          
+          if (distance < Math.min(200, window.innerWidth * 0.25)) {
+            const connection = document.createElement('div');
+            connection.className = 'neural-connection';
+            
+            const angle = Math.atan2(
+              nodes[j].y - nodes[i].y,
+              nodes[j].x - nodes[i].x
+            ) * 180 / Math.PI;
+            
+            Object.assign(connection.style, {
+              position: 'absolute',
+              height: '0.5px',
+              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+              opacity: '0',
+              left: nodes[i].x + 'px',
+              top: nodes[i].y + 'px',
+              width: distance + 'px',
+              transform: `rotate(${angle}deg)`,
+              transformOrigin: '0 50%',
+              animation: 'flow 4s ease-in-out infinite',
+              animationDelay: Math.random() * 4 + 's'
+            });
+            
+            container.appendChild(connection);
+          }
+        }
+      }
+    }
+    
+    // Create star network
+    function createStarNetwork() {
+      const container = document.getElementById('star-network');
+      if (!container) return;
+      
+      const stars = [];
+      const starCount = Math.min(6, Math.floor(window.innerWidth / 200));
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-node';
+        
+        const x = Math.random() * (window.innerWidth - 50) + 25;
+        const y = Math.random() * (window.innerHeight * 0.6) + 25;
+        
+        Object.assign(star.style, {
+          position: 'absolute',
+          width: '8px',
+          height: '8px',
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%)',
+          borderRadius: '50%',
+          left: x + 'px',
+          top: y + 'px',
+          animation: 'advancedStarTwinkle 6s ease-in-out infinite'
+        });
+        
+        if (i % 2 === 1) star.style.animationDelay = '1s';
+        if (i % 3 === 0) star.style.animationDelay = '2s';
+        
+        // Add star cross effect
+        const before = document.createElement('div');
+        Object.assign(before.style, {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '16px',
+          height: '1.5px',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
+          transform: 'translate(-50%, -50%)',
+          borderRadius: '2px'
+        });
+        
+        const after = document.createElement('div');
+        Object.assign(after.style, {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '1.5px',
+          height: '16px',
+          background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
+          transform: 'translate(-50%, -50%)',
+          borderRadius: '2px'
+        });
+        
+        star.appendChild(before);
+        star.appendChild(after);
+        
+        container.appendChild(star);
+        stars.push({ element: star, x, y });
+      }
+    }
+    
+    // Create particles
+    function createParticles() {
+      const container = document.getElementById('hero-section');
+      if (!container) return;
+      
+      const particleCount = Math.min(12, Math.floor(window.innerWidth / 120));
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'floating-particle';
+        
+        const initialSize = Math.random() * 2 + 2;
+        Object.assign(particle.style, {
+          position: 'absolute',
+          background: '#ffffff',
+          borderRadius: '50%',
+          opacity: '0.7',
+          width: initialSize + 'px',
+          height: initialSize + 'px',
+          left: Math.random() * window.innerWidth + 'px',
+          top: Math.random() * (window.innerHeight * 0.6) + 'px',
+          animation: 'particleFloat 6s ease-in-out infinite',
+          animationDelay: Math.random() * 6 + 's',
+          animationDuration: (Math.random() * 4 + 4) + 's'
+        });
+        
+        container.appendChild(particle);
+      }
+    }
+    
+    // Initialize everything
+    createNeuralNetwork();
+    createStarNetwork();
+    createParticles();
+    
+    // Initialize shooting star system
+    const shootingStarSystem = new ShootingStarSystem('shootingCanvas');
+    
+    // Cleanup function
+    return () => {
+      if (shootingStarSystem) {
+        shootingStarSystem.destroy();
+      }
+      
+      // Clean up created elements
+      const containers = ['neural-network', 'star-network', 'hero-section'];
+      containers.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+          const elements = container.querySelectorAll('.neural-node, .neural-connection, .star-node, .floating-particle');
+          elements.forEach(el => el.remove());
+        }
+      });
+    };
+  }, []);
+
   return (
-<React.Fragment>
-  <div
-    id="home"
-    style={{
-      backgroundImage: "url(code_background.png)",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-      height: "100vh", // Full viewport height
-      width: "100%", // Full width
-      fontFamily: "DejaVu Sans Mono, monospace",
-    }}
-  >
-    <div className="flex items-center justify-center h-full pt-56">
-      <div className="text-center mt-16">
-        <p className="text-[#53c9c9] text-3xl font-bold md:text-5xl">
-          Welcome
-        </p>
-        <h1 className="text-[#53c9c9] font-recoletaBlack text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2">
-          I'm Brian
-        </h1>
-        <h2 className="mt-3 text-[#53c9c9] py-1 font-bold md:text-xl">
-          University of California, <br></br>Irvine Student
-        </h2>
+    <React.Fragment>
+      {/* CSS Styles */}
+      <style jsx>{`
+        .hero-section {
+          min-height: 100vh;
+          position: relative;
+          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          overflow: hidden;
+        }
 
-        <div className="mt-16 text-[#53c9c9] font-bold font-serif">
-            <span>
-              Discover
-            </span>
-            <span className="ml-44">
-              Learn More
-            </span>
+        .neural-network, .star-network {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0.4;
+          pointer-events: none;
+        }
+
+        .star-network {
+          opacity: 0.6;
+        }
+
+        .shooting-stars-canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 3;
+        }
+
+                 .hero-content {
+           position: relative;
+           z-index: 10;
+           height: 100vh;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           text-align: center;
+           padding: 2rem;
+         }
+
+         .hero-text {
+           color: #53c9c9;
+           text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
+         }
+
+         .bottom-fade {
+           position: absolute;
+           bottom: 0;
+           left: 0;
+           width: 100%;
+           height: 25vh;
+           background: linear-gradient(
+             to bottom, 
+             transparent 0%, 
+             rgba(71, 85, 105, 0.05) 15%,
+             rgba(71, 85, 105, 0.1) 25%,
+             rgba(71, 85, 105, 0.2) 35%,
+             rgba(71, 85, 105, 0.35) 50%,
+             rgba(71, 85, 105, 0.5) 65%,
+             rgba(71, 85, 105, 0.7) 80%,
+             rgba(71, 85, 105, 0.85) 90%,
+             #475569 100%
+           );
+           z-index: 5;
+           pointer-events: none;
+         }
+
+        @keyframes advancedPulse {
+          0%, 100% { 
+            transform: scale(1); 
+            opacity: 0.8;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.3);
+          }
+          50% { 
+            transform: scale(1.15); 
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.9), inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        @keyframes advancedStarTwinkle {
+          0%, 100% { 
+            transform: scale(1) rotate(0deg); 
+            opacity: 0.7;
+          }
+          25% { 
+            transform: scale(1.3) rotate(45deg); 
+            opacity: 1;
+          }
+          50% { 
+            transform: scale(0.8) rotate(90deg); 
+            opacity: 0.9;
+          }
+          75% { 
+            transform: scale(1.1) rotate(135deg); 
+            opacity: 1;
+          }
+        }
+
+        @keyframes flow {
+          0% { opacity: 0; }
+          30% { opacity: 0.6; }
+          70% { opacity: 0.6; }
+          100% { opacity: 0; }
+        }
+
+        @keyframes particleFloat {
+          0%, 100% { 
+            transform: translateY(0px) translateX(0px) scale(1); 
+            opacity: 0.7; 
+          }
+          25% { 
+            transform: translateY(-15px) translateX(5px) scale(0.8); 
+            opacity: 1; 
+          }
+          50% { 
+            transform: translateY(-10px) translateX(-5px) scale(0.6); 
+            opacity: 0.8; 
+          }
+          75% { 
+            transform: translateY(-20px) translateX(3px) scale(0.4); 
+            opacity: 1; 
+          }
+        }
+
+        @media (max-width: 768px) {
+          .hero-content {
+            padding: 1rem;
+          }
+        }
+      `}</style>
+
+             <div id="home" className="hero-section">
+         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
+         <div className="neural-network" id="neural-network"></div>
+         <div className="star-network" id="star-network"></div>
+         <div className="bottom-fade"></div>
+         
+         <div className="hero-content">
+          <div className="hero-text">
+            <p className="text-3xl font-bold md:text-5xl mb-4">
+              Welcome
+            </p>
+            <h1 className="font-recoletaBlack text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-4">
+              I'm Brian
+            </h1>
+            <h2 className="mt-3 py-1 font-bold md:text-xl mb-8">
+              University of California, <br />Irvine Student
+            </h2>
+
+            <div className="mt-16 font-bold font-serif flex justify-between max-w-sm mx-auto mb-4">
+              <span>Discover</span>
+              <span>Learn More</span>
+            </div>
+
+            <div className="mt-3 text-xl font-serif space-x-4">
+              <a
+                href="/#projects"
+                className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-8 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
+              >
+                Projects
+              </a>
+              <a
+                href="/Resume.pdf"
+                download="Resume(Brian Seo).pdf"
+                className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-10 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
+              >
+                Resume
+              </a>
+            </div>
           </div>
-        {/*margin between header text and buttons */}
-        <div className="mt-3 text-xl font-serif">
-          <a
-            href="/#portfolio"
-            className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-8 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
-          >
-            Projects
-          </a>
-          <a
-            href="resume.pdf"
-            download="Resume(Brian Seo).pdf"
-            className="ml-20 cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-10 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
-          >
-            Resume
-          </a>
         </div>
       </div>
-    </div>
-  </div>
-</React.Fragment>
-
-
+    </React.Fragment>
   );
 }
