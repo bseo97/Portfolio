@@ -5,9 +5,15 @@ import Image from "next/image";
 
 import HomeComponent from './components/HomeComponent/HomeComponent'
 import MySlider from "./components/SliderCard/MySlider";
+import { useScrollAnimation } from './hooks/useScrollAnimation';
 
 // import { transform } from "next/dist/build/swc/generated-native";
 export default function Home() {
+  // Scroll animation hooks for different elements
+  const [titleRef, titleVisible] = useScrollAnimation({ threshold: 0.2 })
+  const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
+  const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
+  const [sliderRef, sliderVisible] = useScrollAnimation({ threshold: 0.1 })
   return (
     // minimum height = 100vh
     <main className="min-h-screen relative">
@@ -37,7 +43,7 @@ export default function Home() {
         .projects-title {
           font-size: clamp(4rem, 8vw, 6rem);
           color: #F7FBFD;
-          font-family: "DejaVu Sans Mono, monospace";
+          font-family: 'Inter', Arial, sans-serif;
           font-weight: bold;
           margin: 0;
           padding: 0;
@@ -45,7 +51,6 @@ export default function Home() {
           max-width: 750px;
           width: 100%;
           overflow: hidden;
-          transform: translate(0px, -20px);
         }
 
         .recent-works-subtitle {
@@ -53,7 +58,6 @@ export default function Home() {
           font-size: 3rem;
           font-weight: 800;
           margin-top: 1rem;
-          transform: translate(0px, -20px);
         }
 
         .projects-description {
@@ -62,30 +66,18 @@ export default function Home() {
           color: #ffffff;
           line-height: 2;
           margin-top: 1.25rem;
-          transform: translate(0px, -20px);
         }
 
         .projects-container {
           background: linear-gradient(180deg, #475569 0%, #64748b 20%, #94a3b8 50%, #cbd5e1 80%, #e2e8f0 100%);
           width: 100%;
-          font-family: "DejaVu Sans Mono, monospace";
+          font-family: 'Inter', Arial, sans-serif;
           padding-top: 1.25rem;
           padding-bottom: 6rem;
           margin-top: 0;
-          opacity: 0;
-          animation: fadeInUp 1s ease-in-out 0.5s forwards;
         }
 
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+
 
         @media (max-width: 768px) {
           .projects-title {
@@ -128,19 +120,31 @@ export default function Home() {
         className="projects-container"
       >
         <div className="container m-auto">
-          <p className="projects-title">
+          {/* <p 
+            ref={titleRef}
+            className={`projects-title ${titleVisible ? 'visible' : ''}`}
+          >
             projects
-          </p>
+          </p> */}
           <div>
-            <p className="recent-works-subtitle">
+            <p 
+              ref={subtitleRef}
+              className={`recent-works-subtitle ${subtitleVisible ? 'visible' : ''}`}
+            >
               Recent Works
             </p>
-            <p className="projects-description">
-              Developed a responsive portfolio website using Next.js 14, React.js, and Tailwind CSS, implementing dynamic routing, smooth scrolling, fade-in animations, and a "Get Resume" PDF download button. Integrated Nodemailer for email functionality and deployed the site to Vercel, ensuring cross-device compatibility and modern web development best practices.
+            <p 
+              ref={descriptionRef}
+              className={`projects-description ${descriptionVisible ? 'visible' : ''}`}
+            >
+            Take a look at some of my recent work, highlighting what I’ve been building and learning — from full-stack web applications to AI-powered tools, each project reflects my growth as a developer and my passion for solving real-world problems!
             </p>
           </div>
         </div>
-        <div className="">
+        <div 
+          ref={sliderRef}
+          className={`scroll-animate-delayed-3 ${sliderVisible ? 'visible' : ''}`}
+        >
           <MySlider/>
         </div>
       </div>

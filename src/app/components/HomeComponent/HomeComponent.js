@@ -3,6 +3,17 @@ import React, { useEffect } from 'react';
 
 export default function HomeComponent() {
   useEffect(() => {
+    // Check if this is a page refresh
+    const isPageRefresh = performance.navigation?.type === 1 || 
+                         performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    
+    // Only show loading screen on refresh
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      if (!isPageRefresh) {
+        loadingScreen.style.display = 'none';
+      }
+    }
     // Shooting Stars Canvas Implementation
     class ShootingStar {
       constructor(canvas) {
@@ -324,6 +335,26 @@ export default function HomeComponent() {
     
     // Initialize shooting star system
     const shootingStarSystem = new ShootingStarSystem('shootingCanvas');
+
+    // Activate animations and hide loading screen if shown
+    setTimeout(() => {
+      const canvas = document.getElementById('shootingCanvas');
+      const neuralNetwork = document.getElementById('neural-network');
+      const starNetwork = document.getElementById('star-network');
+      const loadingScreen = document.getElementById('loading-screen');
+      
+      if (canvas) canvas.classList.add('active');
+      if (neuralNetwork) neuralNetwork.classList.add('active');
+      if (starNetwork) starNetwork.classList.add('active');
+      
+      // Hide loading screen only if it was shown (on refresh)
+      if (loadingScreen && isPageRefresh && loadingScreen.style.display !== 'none') {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+      }
+    }, 300);
     
     // Cleanup function
     return () => {
@@ -360,11 +391,16 @@ export default function HomeComponent() {
           left: 0;
           width: 100%;
           height: 100%;
-          opacity: 0.4;
+          opacity: 0;
           pointer-events: none;
+          transition: opacity 0.5s ease-in-out;
         }
 
-        .star-network {
+        .neural-network.active {
+          opacity: 0.4;
+        }
+
+        .star-network.active {
           opacity: 0.6;
         }
 
@@ -376,6 +412,47 @@ export default function HomeComponent() {
           height: 100%;
           pointer-events: none;
           z-index: 3;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
+        }
+
+        .shooting-stars-canvas.active {
+          opacity: 1;
+        }
+
+        .loading-screen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          opacity: 1;
+          transition: opacity 0.5s ease-in-out;
+        }
+
+        .loading-text {
+          color: #53c9c9;
+          font-size: 2rem;
+          font-weight: bold;
+          font-family: 'Inter', Arial, sans-serif;
+          text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
+          animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+          0%, 100% { 
+            opacity: 0.6;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 1;
+            transform: scale(1.05);
+          }
         }
 
                  .hero-content {
@@ -482,6 +559,11 @@ export default function HomeComponent() {
       `}</style>
 
              <div id="home" className="hero-section">
+         {/* Loading Screen */}
+         <div id="loading-screen" className="loading-screen">
+           <div className="loading-text">Loading...</div>
+         </div>
+         
          <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
          <div className="neural-network" id="neural-network"></div>
          <div className="star-network" id="star-network"></div>
@@ -489,10 +571,10 @@ export default function HomeComponent() {
          
          <div className="hero-content">
           <div className="hero-text">
-            <p className="text-3xl font-bold md:text-5xl mb-4">
+            {/* <p className="text-3xl font-bold md:text-5xl mb-4">
               Welcome
-            </p>
-            <h1 className="font-recoletaBlack text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-4">
+            </p> */}
+            <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-4">
               I'm Brian
             </h1>
             <h2 className="mt-3 py-1 font-bold md:text-xl mb-8">

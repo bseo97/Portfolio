@@ -92,41 +92,62 @@ export const AboutData = [
 export const DataArray = [
   {
     title: "Personal Portfolio Website Using Reactjs",
-    name: "Ultimate ReactJs portfolio",
-    des: "I have made this project in 2022  to show thousands of students all over the world  how to make Reactjs portfolio.",
+    name: "Portfolio Website",
+    des: "A portfolio website to showcase my projects and skills.",
     des1: "This project was made using, Ractjs, Nextjs, Expressjs, Nodejs, Rxjs Bootsrap and many more!",
-    images: ["/reactportfolio.png", "/2.webp", "/3.webp", "/4.webp"],
+    images: ["/website.png"],
+    techStack: ["React.js", "Node.js", "Javascript", "Tailwind CSS", "HTML"],
+    status: {
+      text: "Completed",
+      color: "green"
+    },
+    year: "2025",
+    demoLink: null,
+    repositoryLink: "https://github.com/bseo97/Portfolio"
   },
   {
-    title: "Management Consulting Company Web Design",
-    name: "edubaba Management Consultants",
-    des: "We buit this project for edubaba  Management Consultants.",
+    title: "Hackathon Project: Rent-spiracy",
+    name: "Rent-spiracy",
+    des: "Built a website for a 3-mean team hackathon project that allows users search for potential scams.",
     des1: "",
-
-    images: ["/hotel01.png", ],
+    images: ["/Rentspiracy.png"],
+    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "MongoDB", "Python", "Gemini API"],
+    status: {
+      text: "Live",
+      color: "blue"
+    },
+    year: "2025",
+    demoLink: "https://www.youtube.com/watch?v=CsMjk4ld_aA&t=10s",
+    repositoryLink: "https://github.com/bseo97/Rent-Spiracy"
   },
   {
-    title: "Food Delivery Company WebSite",
-    name: "Yum Food Company",
-    des: "We did  this project for Yum Foods Located in USA.",
-    des1: "This website's graphic design is fantastic. Animated sliders are painstakingly built and created in WordPress with Revolution Slider. All of the product photos are photo manipulations created in Adobe Photoshop.",
-
-    images: ["/yumfood.jpg", "/yumfood2.png"],
+    title: "Fabflix full-stack project",
+    name: "Fabflix (renamed to Decurb – Academic Project)",
+    des: "A full-stack movie eCommerce platform with secure login, dynamic search, chatbot integration, and full AWS deployment.",
+    des1: "Fabflix is a full-stack movie eCommerce web application that allows users to search, browse, and purchase movies through a secure and interactive interface. Built using Java Servlets, MySQL, and AJAX-powered front-end technologies, the platform supports advanced features such as fuzzy search, dynamic shopping cart, and an AI-powered chatbot integrated via the OpenAI API. I implemented secure login with JWT, optimized SQL performance, automated XML data import, and successfully deployed the application on AWS using Docker and Kubernetes, demonstrating a scalable microservices architecture before shutting down the server due to cost constraints. You can test the full project locally by visiting my GitHub repository, Fabflix!",
+    images: ["/Decurb_main.png", "/Decurb_login.png"],
+    techStack: ["Java", "MySQL", "JavaScript (AJAX)", "HTML/CSS", "Servlet", "JDBC", "Docker", "Kubernetes", "AWS", "Microservices"],
+    status: {
+      text: "Completed",
+      color: "green"
+    },
+    year: "2025",
+    demoLink: "https://youtu.be/R7KXw658VMg",
+    repositoryLink: "https://github.com/bseo97/Fabflix"
   },
   {
-    title: "Real Estate and Property Management Project",
-    name: "Inans Property Management ",
-    des: "We built this project for inans group LTD",
-    des1: "Aside from its gorgeous design, this website is backed by an outstanding plugin that allows owners and agencies to simply display different properties in the neighbourhood and create an online showcase in an appealing manner for home buyers and tenants..",
-
-    images: ["/property1.png"],
-  },
-  {
-    title: "Crypto Trading Website",
-    name: "Crypto Trading project",
-    des: "We buit this website for BigMoney group",
-    des1: "This project was built to enable clients all over the world to buy and sell their crypto.",
-
-    images: ["/crypto5.png", "/crypto3.png", "/crypto1.png"],
+    title: "Decurb",
+    name: "Decurb – AI Token Forecasting & Optimization Platform",
+    des: "An AI infrastructure platform designed to minimize token usage and prevent hallucinations across LLM workflows.",
+    des1: "Decurb is an AI platform I’m currently leading as part of a collaborative team project, aimed at helping users better understand and optimize how much “token space” their prompts and completions consume when interacting with large language models like GPT. The platform analyzes token usage in real-time, forecasts when prompts are likely to exceed model limits or produce incomplete responses, and proactively manages those cases by breaking complex prompts into smaller subproblems. It also caches reusable outputs and recombines them intelligently to reduce cost while preserving accuracy and performance. Decurb was born out of both technical curiosity and a practical need for scalable, efficient AI workflows—especially in applications that involve long or dynamic user interactions. Stay Tuned!",
+    images: ["/Decurb.png"],
+    techStack: ["Python", "FastAPI", "PostgreSQL", "OpenAI API", "Regex", "Prompt Pattern Matching", "Token Forecasting Heuristics", "Modular Inference Planning", "Caching (LRU/Memoization)", "Docker", "Kubernetes", "AWS EC2", "JWT", "React", "marked.js"],
+    status: {
+      text: "In Progress",
+      color: "yellow"
+    },
+    year: "2025",
+    demoLink: null,
+    repositoryLink: null
   },
 ];

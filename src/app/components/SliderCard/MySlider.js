@@ -41,18 +41,18 @@ export default function MySlider() {
         }
         
         .slick-dots li button:before {
-          color: #53c9c9;
+          color: #05d9e8;
           font-size: 12px;
         }
         
         .slick-dots li.slick-active button:before {
-          color: #53c9c9;
+          color: #05d9e8;
           opacity: 1;
         }
         
         .slick-prev:before,
         .slick-next:before {
-          color: #53c9c9;
+          color: #05d9e8;
           font-size: 24px;
         }
         

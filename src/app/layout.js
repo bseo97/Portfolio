@@ -1,25 +1,7 @@
 import "./globals.css";
-import localFont from 'next/font/local' // we do not use @next after next.js13.2+
-import Scrollbar from "./components/ScrollBar";
+import { Inter } from 'next/font/google'
 
-// setting up the fonts to be usdd
-const poppins = localFont({
-  src: [
-  {
-  path: "../../public/fonts/Recoleta-Black.ttf",
-  weight: "400",
-  },
-  {
-  path: "../../public/fonts/Recoleta-Medium.ttf",
-  weight: "300",
-  },
-  {
-  path: "../../public/fonts/Recoleta-Light.ttf",
-  weight: "200",
-  },
-  ],
-  variable: "--font-Recoleta-Black",
-  });
+const inter = Inter({ subsets: ['latin'] })
 
 
 export const metadata = {
@@ -32,9 +14,8 @@ export default function RootLayout({ children }) {
     
     <html lang="en">
       <body
-        className={poppins.className}
+        className={inter.className}
       >
-        <Scrollbar/>
         {children}
       </body>
     </html>
