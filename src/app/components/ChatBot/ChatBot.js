@@ -1,35 +1,47 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 
-export default function ChatBot() {
+export default function ChatBot({ onExpand, typingReady }) {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
   const [placeholder, setPlaceholder] = useState('')
   const [isTyping, setIsTyping] = useState(true)
-  const [isExpanded, setIsExpanded] = useState(false)
   const messagesEndRef = useRef(null)
   const fullText = "Ask anything about Brian!"
 
   useEffect(() => {
+    if (!typingReady) {
+      setPlaceholder('')
+      setIsTyping(true)
+      return
+    }
     let currentIndex = 0
+    setPlaceholder('')
+    setIsTyping(true)
     const typeText = () => {
       if (currentIndex <= fullText.length) {
         setPlaceholder(fullText.slice(0, currentIndex))
         currentIndex++
-        setTimeout(typeText, 100)
+        setTimeout(typeText, 30)
       } else {
         setIsTyping(false)
       }
     }
     typeText()
-  }, [])
+  }, [typingReady])
 
   useEffect(() => {
     scrollToBottom()
+    if (onExpand) onExpand(messages.length > 0)
   }, [messages])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messagesEndRef.current) {
+      const chatMessages = messagesEndRef.current.closest('.chat-messages');
+      if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
   }
 
   const handleSubmit = (e) => {
@@ -41,11 +53,8 @@ export default function ChatBot() {
         isUser: true,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
-      
       setMessages(prev => [...prev, userMessage])
       setMessage('')
-      setIsExpanded(true)
-      
       // Simulate bot response
       setTimeout(() => {
         const botMessage = {
@@ -73,7 +82,7 @@ export default function ChatBot() {
 
   const clearChat = () => {
     setMessages([])
-    setIsExpanded(false)
+    if (onExpand) onExpand(false)
   }
 
   return (
@@ -81,16 +90,18 @@ export default function ChatBot() {
       <style jsx>{`
         .chatbot-container {
           width: 100%;
-          max-width: 600px;
-          margin: 3rem auto 0 auto;
+          max-width: 750px;
+          margin: 2rem auto 0 auto;
           padding: 0 1.5rem;
           position: relative;
-          height: 500px; /* Fixed height container */
+          min-height: 420px;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
+          align-items: center;
+          max-height: 50vh;
+          overflow-y: auto;
         }
-
         .chatbot-wrapper {
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(15px);
@@ -101,11 +112,24 @@ export default function ChatBot() {
           transition: all 0.3s ease;
           position: relative;
           width: 100%;
-          height: ${isExpanded ? '480px' : '70px'};
+          min-height: 420px;
+          max-height: 80vh;
           display: flex;
           flex-direction: column;
         }
-
+        .chatbot-wrapper.empty {
+          min-height: 180px;
+        }
+        @media (max-width: 900px) {
+          .chatbot-wrapper.empty {
+            min-height: 140px;
+          }
+        }
+        @media (max-width: 600px) {
+          .chatbot-wrapper.empty {
+            min-height: 100px;
+          }
+        }
         .chat-header {
           display: flex;
           justify-content: space-between;
@@ -115,14 +139,12 @@ export default function ChatBot() {
           background: rgba(255, 255, 255, 0.05);
           flex-shrink: 0;
         }
-
         .chat-title {
           color: #05d9e8;
           font-size: 1rem;
           font-weight: 600;
           margin: 0;
         }
-
         .clear-button {
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -133,12 +155,10 @@ export default function ChatBot() {
           font-size: 0.85rem;
           transition: all 0.2s ease;
         }
-
         .clear-button:hover {
           background: rgba(255, 255, 255, 0.2);
           color: #ffffff;
         }
-
         .chat-messages {
           flex: 1;
           overflow-y: auto;
@@ -147,42 +167,36 @@ export default function ChatBot() {
           flex-direction: column;
           gap: 1rem;
           min-height: 0;
+          justify-content: center;
+          align-items: center;
         }
-
         .chat-messages::-webkit-scrollbar {
           width: 6px;
         }
-
         .chat-messages::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.1);
           border-radius: 3px;
         }
-
         .chat-messages::-webkit-scrollbar-thumb {
           background: rgba(83, 201, 201, 0.5);
           border-radius: 3px;
         }
-
         .chat-messages::-webkit-scrollbar-thumb:hover {
           background: rgba(83, 201, 201, 0.7);
         }
-
         .message {
           display: flex;
           align-items: flex-start;
           gap: 0.75rem;
           max-width: 80%;
         }
-
         .message.user {
           flex-direction: row-reverse;
           align-self: flex-end;
         }
-
         .message.bot {
           align-self: flex-start;
         }
-
         .message-avatar {
           width: 32px;
           height: 32px;
@@ -194,21 +208,17 @@ export default function ChatBot() {
           font-weight: 600;
           flex-shrink: 0;
         }
-
         .message.user .message-avatar {
           background: linear-gradient(135deg, #05d9e8, #53c9c9);
           color: #ffffff;
         }
-
         .message.bot .message-avatar {
           background: rgba(255, 255, 255, 0.2);
           color: #05d9e8;
         }
-
         .message-content {
           flex: 1;
         }
-
         .message-bubble {
           padding: 0.75rem 1rem;
           border-radius: 16px;
@@ -216,30 +226,25 @@ export default function ChatBot() {
           line-height: 1.4;
           word-wrap: break-word;
         }
-
         .message.user .message-bubble {
           background: linear-gradient(135deg, #05d9e8, #53c9c9);
           color: #ffffff;
           border-bottom-right-radius: 6px;
         }
-
         .message.bot .message-bubble {
           background: rgba(255, 255, 255, 0.15);
           color: #ffffff;
           border-bottom-left-radius: 6px;
         }
-
         .message-time {
           font-size: 0.75rem;
           color: rgba(255, 255, 255, 0.5);
           margin-top: 0.25rem;
           text-align: right;
         }
-
         .message.bot .message-time {
           text-align: left;
         }
-
         .empty-state {
           display: flex;
           flex-direction: column;
@@ -249,33 +254,30 @@ export default function ChatBot() {
           color: rgba(255, 255, 255, 0.6);
           text-align: center;
         }
-
         .empty-state-icon {
           font-size: 3rem;
           margin-bottom: 1rem;
           color: #05d9e8;
         }
-
         .empty-state-text {
           font-size: 1.1rem;
           margin-bottom: 0.5rem;
+          text-align: center;
         }
-
         .empty-state-subtext {
           font-size: 0.9rem;
           color: rgba(255, 255, 255, 0.4);
+          text-align: center;
         }
-
         .chatbot-form {
           display: flex;
           align-items: center;
           padding: 1rem 1.5rem;
-          border-top: ${isExpanded ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
           background: rgba(255, 255, 255, 0.05);
           position: relative;
           flex-shrink: 0;
         }
-
         .chatbot-input {
           flex: 1;
           background: rgba(255, 255, 255, 0.1);
@@ -289,18 +291,15 @@ export default function ChatBot() {
           transition: all 0.3s ease;
           margin-right: 0.75rem;
         }
-
         .chatbot-input:focus {
           border-color: #05d9e8;
           box-shadow: 0 0 0 2px rgba(5, 217, 232, 0.1);
           background: rgba(255, 255, 255, 0.15);
         }
-
         .chatbot-input::placeholder {
           color: rgba(255, 255, 255, 0.6);
           font-style: italic;
         }
-
         .submit-button {
           background: linear-gradient(135deg, #05d9e8, #53c9c9);
           border: none;
@@ -315,167 +314,160 @@ export default function ChatBot() {
           box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
           flex-shrink: 0;
         }
-
         .submit-button:hover {
           transform: scale(1.1);
           box-shadow: 0 6px 20px rgba(5, 217, 232, 0.5);
         }
-
         .submit-button:active {
           transform: scale(0.95);
         }
-
         .submit-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
           transform: none;
         }
-
         .submit-button svg {
           width: 18px;
           height: 18px;
           color: #ffffff;
           transition: transform 0.3s ease;
         }
-
         .submit-button:hover svg {
           transform: translateX(2px);
         }
-
         .typing-cursor {
           animation: blink 1s infinite;
         }
-
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }
         }
-
         /* Mobile Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .chatbot-container {
-            max-width: 100%;
-            padding: 0 1rem;
-            height: 400px;
+            max-width: 98vw;
+            padding: 0 0.5rem;
+            min-height: 340px;
           }
-
           .chatbot-wrapper {
-            height: ${isExpanded ? '380px' : '60px'};
+            min-height: 340px;
+            max-height: 600px;
           }
-
           .message {
             max-width: 90%;
           }
-
           .chatbot-input {
             font-size: 0.95rem;
             padding: 0.65rem 2.5rem 0.65rem 0.9rem;
           }
-
           .submit-button {
             width: 36px;
             height: 36px;
           }
-
           .submit-button svg {
             width: 16px;
             height: 16px;
           }
         }
-
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
           .chatbot-container {
-            padding: 0 0.75rem;
-            height: 320px;
+            max-width: 100vw;
+            width: 98vw;
+            padding: 0 0.25rem;
+            min-height: 240px;
           }
-
           .chatbot-wrapper {
-            height: ${isExpanded ? '300px' : '55px'};
+            min-height: 240px;
+            max-height: 420px;
           }
-
           .chat-header {
             padding: 0.75rem 1rem;
           }
-
           .chatbot-form {
             padding: 0.75rem 1rem;
           }
-
           .message-bubble {
             padding: 0.65rem 0.85rem;
             font-size: 0.9rem;
           }
-
           .submit-button {
             width: 34px;
             height: 34px;
           }
-
           .submit-button svg {
             width: 14px;
             height: 14px;
           }
         }
       `}</style>
-
-      <div className={`chatbot-wrapper ${isExpanded ? 'expanded' : ''}`}>
-        {isExpanded && (
-          <>
-            <div className="chat-header">
-              <h3 className="chat-title">Chat with Brian</h3>
-              <button onClick={clearChat} className="clear-button">
-                Clear Chat
-              </button>
-            </div>
-            <div className="chat-messages">
-              {messages.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-state-icon">💬</div>
-                  <div className="empty-state-text">Start a conversation!</div>
-                  <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-                </div>
-              ) : (
-                messages.map((msg) => (
-                  <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                    <div className="message-avatar">
-                      {msg.isUser ? 'U' : 'B'}
-                    </div>
-                    <div className="message-content">
-                      <div className="message-bubble">{msg.text}</div>
-                      <div className="message-time">{msg.timestamp}</div>
-                    </div>
+      <div className="chatbot-container">
+        <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
+          {messages.length > 0 && (
+            <>
+              <div className="chat-header">
+                <h3 className="chat-title">Chat with Brian</h3>
+                <button onClick={clearChat} className="clear-button">
+                  Clear Chat
+                </button>
+              </div>
+              <div className="chat-messages">
+                {messages.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-state-icon">💬</div>
+                    <div className="empty-state-text">Start a conversation!</div>
+                    <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
                   </div>
-                ))
-              )}
+                ) : (
+                  messages.map((msg) => (
+                    <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
+                      <div className="message-avatar">
+                        {msg.isUser ? 'U' : 'B'}
+                      </div>
+                      <div className="message-content">
+                        <div className="message-bubble">{msg.text}</div>
+                        <div className="message-time">{msg.timestamp}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </>
+          )}
+          {messages.length === 0 && (
+            <div className="chat-messages">
+              <div className="empty-state">
+                <div className="empty-state-text">Start a conversation!</div>
+                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
+              </div>
               <div ref={messagesEndRef} />
             </div>
-          </>
-        )}
-        
-        <form onSubmit={handleSubmit} className="chatbot-form">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder={placeholder + (isTyping ? '|' : '')}
-            className="chatbot-input"
-          />
-          <button type="submit" className="submit-button" disabled={!message.trim()}>
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
-          </button>
-        </form>
+          )}
+          <form onSubmit={handleSubmit} className="chatbot-form">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={placeholder + (isTyping ? '|' : '')}
+              className="chatbot-input"
+            />
+            <button type="submit" className="submit-button" disabled={!message.trim()}>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )

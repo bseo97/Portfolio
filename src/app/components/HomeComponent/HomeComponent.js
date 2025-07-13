@@ -1,8 +1,11 @@
 'use client'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
 
 export default function HomeComponent() {
+  const [chatExpanded, setChatExpanded] = useState(false);
+  const [headingAnimationDone, setHeadingAnimationDone] = useState(false);
+
   useEffect(() => {
     // Check if this is a page refresh
     const isPageRefresh = performance.navigation?.type === 1 || 
@@ -375,8 +378,13 @@ export default function HomeComponent() {
     };
   }, []);
 
+  // Handler for subtitle animation end
+  const handleSubtitleAnimationEnd = () => {
+    setHeadingAnimationDone(true);
+  };
+
   return (
-<React.Fragment>
+    <React.Fragment>
       {/* CSS Styles */}
       <style jsx>{`
         .hero-section {
@@ -457,19 +465,34 @@ export default function HomeComponent() {
         }
 
                  .hero-content {
-           position: relative;
-           z-index: 10;
-           height: 100vh;
+           min-height: 100vh;
            display: flex;
+           flex-direction: column;
            align-items: center;
            justify-content: center;
            text-align: center;
-           padding: 2rem;
+           transition: padding 0.5s cubic-bezier(0.4,0,0.2,1);
+           padding-top: 0;
+           padding-bottom: 0;
          }
 
          .hero-text {
            color: #53c9c9;
            text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
+           margin-bottom: 1.5rem;
+           transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
+         }
+         .hero-text.chat-expanded {
+           margin-bottom: 0.5rem;
+           margin-top: -2.5rem;
+         }
+         .chatbot-hero-wrapper {
+           width: 100%;
+           max-width: 750px;
+           margin: 0 auto;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
          }
 
          .bottom-fade {
@@ -552,56 +575,76 @@ export default function HomeComponent() {
           }
         }
 
-        @media (max-width: 768px) {
-          .hero-content {
-            padding: 1rem;
+        .fade-in-up {
+          opacity: 0;
+          transform: translateY(30px);
+          animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        .fade-in-up.delay-1 {
+          animation-delay: 0.2s;
+        }
+        .fade-in-up.delay-2 {
+          animation-delay: 1s;
+        }
+        @keyframes fadeInUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (max-width: 900px) {
+          .chatbot-hero-wrapper {
+            max-width: 98vw;
+          }
+        }
+        @media (max-width: 600px) {
+          .chatbot-hero-wrapper {
+            max-width: 100vw;
           }
         }
       `}</style>
-
-             <div id="home" className="hero-section">
-         {/* Loading Screen */}
-         <div id="loading-screen" className="loading-screen">
-           <div className="loading-text">Loading...</div>
-         </div>
-         
-         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
-         <div className="neural-network" id="neural-network"></div>
-         <div className="star-network" id="star-network"></div>
-         <div className="bottom-fade"></div>
-         
-         <div className="hero-content">
-          <div className="hero-text">
-            {/* <p className="text-3xl font-bold md:text-5xl mb-4">
-          Welcome
-            </p> */}
-            <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-4">
-          I'm Brian
-        </h1>
-            <h2 className="mt-3 py-1 font-bold md:text-xl mb-8">
+      <div id="home" className="hero-section">
+        {/* Loading Screen */}
+        <div id="loading-screen" className="loading-screen">
+          <div className="loading-text">Loading...</div>
+        </div>
+        <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
+        <div className="neural-network" id="neural-network"></div>
+        <div className="star-network" id="star-network"></div>
+        <div className="bottom-fade"></div>
+        <div className="hero-content">
+          <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
+            <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-2 fade-in-up delay-1">
+              I'm Brian
+            </h1>
+            <h2
+              className="mt-2 py-1 font-bold md:text-xl mb-4 fade-in-up delay-2"
+              onAnimationEnd={handleSubtitleAnimationEnd}
+            >
               University of California, <br />Irvine Student
-        </h2>
-
-            {/* AI Chatbot */}
-            <ChatBot />
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <div className="flex flex-col items-center">
-                <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span>
-                <svg 
-                  className="w-6 h-6 text-white opacity-60" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </div>
+            </h2>
+          </div>
+          {/* AI Chatbot */}
+          <div className="chatbot-hero-wrapper">
+            <ChatBot onExpand={setChatExpanded} typingReady={headingAnimationDone} />
+          </div>
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="flex flex-col items-center">
+              <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span>
+              <svg 
+                className="w-6 h-6 text-white opacity-60" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</React.Fragment>
+    </React.Fragment>
   );
 }
