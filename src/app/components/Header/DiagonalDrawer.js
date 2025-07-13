@@ -56,7 +56,7 @@ export default function DiagonalDrawer({
             </li>
             <li className="px-6 py-2">
               <a
-                href="/#aboutme"
+                href="/#about"
                 className={`text-gray-700 font-semibold ${
                   selectedIndex1 === 1 ? "text-black" : ""
                 }`}
@@ -65,7 +65,7 @@ export default function DiagonalDrawer({
                   setIsOpen(false);
                 }}
               >
-                AboutMe
+                About
               </a>
             </li>
             <li className="px-6 py-2">
@@ -84,7 +84,8 @@ export default function DiagonalDrawer({
             </li>
             <li className="px-6 py-2">
               <a
-                href="/#contactme"
+                href="/Resume.pdf"
+                download="Resume(Brian Seo).pdf"
                 className={`text-gray-700 font-semibold ${
                   selectedIndex1 === 3 ? "text-black" : ""
                 }`}
@@ -93,7 +94,7 @@ export default function DiagonalDrawer({
                   setIsOpen(false);
                 }}
               >
-                ContactMe
+                Resume
               </a>
             </li>
           </ul>

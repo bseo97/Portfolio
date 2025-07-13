@@ -51,9 +51,10 @@ export default function Header() {
 
       {/* Header */}
       <header
-        className={`fixed top-0 z-50 w-full transition-all duration-500`}
+        className={`fixed top-0 z-50 w-full transition-all duration-500 backdrop-blur-md`}
         style={{
-          backgroundColor: isScrolled ? "rgba(0, 40, 50, 0.6)" : "rgba(0, 40, 0, 0.4)",
+          backgroundColor: isScrolled ? "rgba(15, 23, 42, 0.8)" : "rgba(15, 23, 42, 0.6)",
+          borderBottom: isScrolled ? "1px solid rgba(83, 201, 201, 0.2)" : "1px solid transparent",
         }}
       >
         <div className="relative flex justify-between items-center p-4">
@@ -88,12 +89,12 @@ export default function Header() {
 
         {/* Navigation Links */}
         <nav className="hidden xl:block mt-4">
-          <ul className="flex justify-center space-x-8">
+          <ul className="flex justify-center space-x-12">
             <li>
               <a
                 className={`menu-item ${
                   selectedIndex1 === 0 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9]`}
+                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
                 href="/#home"
                 onClick={() => setSelectedIndex1(0)}
               >
@@ -104,18 +105,18 @@ export default function Header() {
               <a
                 className={`menu-item ${
                   selectedIndex1 === 1 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9]`}
-                href="/#aboutme"
+                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
+                href="/#about"
                 onClick={() => setSelectedIndex1(1)}
               >
-                AboutMe
+                About
               </a>
             </li>
             <li>
               <a
                 className={`menu-item ${
                   selectedIndex1 === 2 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9]`}
+                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
                 href="/#projects"
                 onClick={() => setSelectedIndex1(2)}
               >
@@ -126,11 +127,12 @@ export default function Header() {
               <a
                 className={`menu-item ${
                   selectedIndex1 === 3 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9]`}
-                href="/#contactme"
+                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
+                href="/Resume.pdf"
+                download="Resume(Brian Seo).pdf"
                 onClick={() => setSelectedIndex1(3)}
               >
-                ContactMe
+                Resume
               </a>
             </li>
           </ul>

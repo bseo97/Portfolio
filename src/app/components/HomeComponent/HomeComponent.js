@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect } from 'react';
+import ChatBot from '../ChatBot/ChatBot';
 
 export default function HomeComponent() {
   useEffect(() => {
@@ -375,7 +376,7 @@ export default function HomeComponent() {
   }, []);
 
   return (
-    <React.Fragment>
+<React.Fragment>
       {/* CSS Styles */}
       <style jsx>{`
         .hero-section {
@@ -572,38 +573,35 @@ export default function HomeComponent() {
          <div className="hero-content">
           <div className="hero-text">
             {/* <p className="text-3xl font-bold md:text-5xl mb-4">
-              Welcome
+          Welcome
             </p> */}
             <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-4">
-              I'm Brian
-            </h1>
+          I'm Brian
+        </h1>
             <h2 className="mt-3 py-1 font-bold md:text-xl mb-8">
               University of California, <br />Irvine Student
-            </h2>
+        </h2>
 
-            <div className="mt-16 font-bold font-serif flex justify-between max-w-sm mx-auto mb-4">
-              <span>Discover</span>
-              <span>Learn More</span>
-            </div>
+            {/* AI Chatbot */}
+            <ChatBot />
 
-            <div className="mt-3 text-xl font-serif space-x-4">
-              <a
-                href="/#projects"
-                className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-8 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
-              >
-                Projects
-              </a>
-              <a
-                href="/Resume.pdf"
-                download="Resume(Brian Seo).pdf"
-                className="cursor-pointer inline-block bg-[#53c9c9] transition-all duration-300 ease-in-out rounded-3xl text-black py-2 px-10 font-bold uppercase hover:bg-[#244e4e] hover:translate-y-1"
-              >
-                Resume
-              </a>
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <div className="flex flex-col items-center">
+                <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span>
+                <svg 
+                  className="w-6 h-6 text-white opacity-60" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
             </div>
-          </div>
-        </div>
       </div>
-    </React.Fragment>
+    </div>
+  </div>
+</React.Fragment>
   );
 }

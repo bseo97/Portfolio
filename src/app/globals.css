@@ -162,4 +162,49 @@
       transform: scale(1.05);
     }
   }
+
+  /* About Me section animation states */
+  .about-title {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .about-title.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .photo-section {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+  }
+
+  .photo-section.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .info-section {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+  }
+
+  .info-section.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .hobbies {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+  }
+
+  .hobbies.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
   

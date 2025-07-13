@@ -4,6 +4,7 @@
 import Image from "next/image";
 
 import HomeComponent from './components/HomeComponent/HomeComponent'
+import AboutMe from './components/AboutMe/AboutMe'
 import MySlider from "./components/SliderCard/MySlider";
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 
@@ -113,6 +114,9 @@ export default function Home() {
 
       {/*Home component self is a closing tag; therefore, we do not need closing tag.*/}
       <HomeComponent />
+      
+      {/* About Me Section */}
+      <AboutMe />
       
       {/* Recent Works Section */}
       <div
