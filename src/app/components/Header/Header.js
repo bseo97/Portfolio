@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Drawer from "./DiagonalDrawer";
+import { useActiveSection } from "../../hooks/useActiveSection";
 
 export default function Header() {
-  const [selectedIndex1, setSelectedIndex1] = useState(0);
+  const activeSection = useActiveSection();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -44,8 +45,7 @@ export default function Header() {
         <Drawer
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          selectedIndex1={selectedIndex1}
-          setSelectedIndex1={setSelectedIndex1}
+          activeSection={activeSection}
         />
       </div>
 
@@ -57,7 +57,7 @@ export default function Header() {
           borderBottom: isScrolled ? "1px solid rgba(83, 201, 201, 0.2)" : "1px solid transparent",
         }}
       >
-        <div className="relative flex justify-between items-center p-4">
+        <div className="relative flex justify-between items-center p-3">
           {/* Hamburger Button */}
           <button
             className={`text-white text-3xl xl:hidden transition-opacity duration-300 ${
@@ -77,7 +77,6 @@ export default function Header() {
             <a
               href="/#home"
               className="text-white text-2xl font-bold"
-              onClick={() => setSelectedIndex1(0)}
             >
               Home
             </a>
@@ -88,15 +87,14 @@ export default function Header() {
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden xl:block mt-4">
+        <nav className="hidden xl:block mt-2">
           <ul className="flex justify-center space-x-12">
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 0 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
+                  activeSection === 'home' ? "text-[#53c9c9]" : "text-[#ffffff]"
+                } hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
                 href="/#home"
-                onClick={() => setSelectedIndex1(0)}
               >
                 Home
               </a>
@@ -104,10 +102,9 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 1 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
+                  activeSection === 'about' ? "text-[#53c9c9]" : "text-[#ffffff]"
+                } hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
                 href="/#about"
-                onClick={() => setSelectedIndex1(1)}
               >
                 About
               </a>
@@ -115,24 +112,11 @@ export default function Header() {
             <li>
               <a
                 className={`menu-item ${
-                  selectedIndex1 === 2 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
+                  activeSection === 'projects' ? "text-[#53c9c9]" : "text-[#ffffff]"
+                } hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
                 href="/#projects"
-                onClick={() => setSelectedIndex1(2)}
               >
                 Projects
-              </a>
-            </li>
-            <li>
-              <a
-                className={`menu-item ${
-                  selectedIndex1 === 3 ? "text-emerald-200" : ""
-                } text-[#ffffff] hover:text-[#53c9c9] font-semibold text-lg transition-colors duration-300`}
-                href="/Resume.pdf"
-                download="Resume(Brian Seo).pdf"
-                onClick={() => setSelectedIndex1(3)}
-              >
-                Resume
               </a>
             </li>
           </ul>

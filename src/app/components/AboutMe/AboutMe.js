@@ -127,6 +127,45 @@ export default function AboutMe() {
           margin: 0;
         }
 
+        .resume-button-section {
+          margin-top: 2rem;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .resume-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
+          background: linear-gradient(135deg, #05d9e8, #53c9c9);
+          color: #ffffff;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+          font-family: 'Inter', Arial, sans-serif;
+        }
+
+        .resume-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(5, 217, 232, 0.5);
+          background: linear-gradient(135deg, #53c9c9, #05d9e8);
+        }
+
+        .resume-button:active {
+          transform: translateY(0);
+        }
+
+        .resume-icon {
+          width: 20px;
+          height: 20px;
+        }
+
         .involvement-item {
           margin-bottom: 0.5rem;
         }
@@ -156,7 +195,7 @@ export default function AboutMe() {
 
         .hobbies h3 {
           color: #05d9e8;
-          font-size: 1.5rem;
+          font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
           font-family: 'Inter', Arial, sans-serif;
@@ -196,8 +235,8 @@ export default function AboutMe() {
 
         .hobby-description {
           color: #ffffff;
-          font-size: 1rem;
-          line-height: 1.6;
+          font-size: 1.2rem;
+          line-height: 1.8;
           margin-bottom: 1rem;
         }
 
@@ -246,6 +285,14 @@ export default function AboutMe() {
             font-size: 1.1rem;
           }
 
+          .hobbies h3 {
+            font-size: 1.5rem;
+          }
+
+          .hobby-description {
+            font-size: 1.1rem;
+          }
+
           .hobbies {
             padding: 2rem;
           }
@@ -253,6 +300,21 @@ export default function AboutMe() {
           .hobbies-grid {
             grid-template-columns: repeat(3, 1fr);
             gap: 0.8rem;
+          }
+
+          .resume-button-section {
+            justify-content: center;
+            margin-top: 1.5rem;
+          }
+
+          .resume-button {
+            font-size: 1rem;
+            padding: 0.875rem 1.5rem;
+          }
+
+          .resume-icon {
+            width: 18px;
+            height: 18px;
           }
         }
 
@@ -276,6 +338,16 @@ export default function AboutMe() {
 
           .hobbies-grid {
             gap: 0.6rem;
+          }
+
+          .resume-button {
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+          }
+
+          .resume-icon {
+            width: 16px;
+            height: 16px;
           }
         }
       `}</style>
@@ -323,6 +395,20 @@ export default function AboutMe() {
               <div className="interests">
                 <h3>Interests</h3>
                 <p>AI Infrastructure, ML Systems Engineer, Prompt Optimization</p>
+              </div>
+
+              <div className="resume-button-section">
+                <a 
+                  href="/Resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="resume-button"
+                >
+                  <svg className="resume-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                  </svg>
+                  Download Resume
+                </a>
               </div>
             </div>
           </div>

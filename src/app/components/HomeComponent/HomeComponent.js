@@ -384,7 +384,7 @@ export default function HomeComponent() {
   };
 
   return (
-    <React.Fragment>
+<React.Fragment>
       {/* CSS Styles */}
       <style jsx>{`
         .hero-section {
@@ -616,14 +616,14 @@ export default function HomeComponent() {
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
             <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-2 fade-in-up delay-1">
-              I'm Brian
-            </h1>
+          I'm Brian
+        </h1>
             <h2
               className="mt-2 py-1 font-bold md:text-xl mb-4 fade-in-up delay-2"
               onAnimationEnd={handleSubtitleAnimationEnd}
             >
               University of California, <br />Irvine Student
-            </h2>
+        </h2>
           </div>
           {/* AI Chatbot */}
           <div className="chatbot-hero-wrapper">
@@ -641,10 +641,10 @@ export default function HomeComponent() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-            </div>
-          </div>
         </div>
       </div>
-    </React.Fragment>
+    </div>
+  </div>
+</React.Fragment>
   );
 }

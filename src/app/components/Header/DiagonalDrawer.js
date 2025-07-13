@@ -4,8 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 export default function DiagonalDrawer({
   isOpen,
   setIsOpen,
-  selectedIndex1,
-  setSelectedIndex1,
+  activeSection,
 }) {
   const route = useRouter();
   const pathname = usePathname();
@@ -43,11 +42,10 @@ export default function DiagonalDrawer({
             <li className="px-6 py-2">
               <a
                 href="/#home"
-                className={`text-gray-700 font-semibold ${
-                  selectedIndex1 === 0 ? "text-black" : ""
+                className={`font-semibold ${
+                  activeSection === 'home' ? "text-[#53c9c9]" : "text-gray-700"
                 }`}
                 onClick={() => {
-                  setSelectedIndex1(0);
                   setIsOpen(false); // Close the drawer after clicking
                 }}
               >
@@ -57,11 +55,10 @@ export default function DiagonalDrawer({
             <li className="px-6 py-2">
               <a
                 href="/#about"
-                className={`text-gray-700 font-semibold ${
-                  selectedIndex1 === 1 ? "text-black" : ""
+                className={`font-semibold ${
+                  activeSection === 'about' ? "text-[#53c9c9]" : "text-gray-700"
                 }`}
                 onClick={() => {
-                  setSelectedIndex1(1);
                   setIsOpen(false);
                 }}
               >
@@ -71,30 +68,14 @@ export default function DiagonalDrawer({
             <li className="px-6 py-2">
               <a
                 href="/#projects"
-                className={`text-gray-700 font-semibold ${
-                  selectedIndex1 === 2 ? "text-black" : ""
+                className={`font-semibold ${
+                  activeSection === 'projects' ? "text-[#53c9c9]" : "text-gray-700"
                 }`}
                 onClick={() => {
-                  setSelectedIndex1(2);
                   setIsOpen(false);
                 }}
               >
                 Projects
-              </a>
-            </li>
-            <li className="px-6 py-2">
-              <a
-                href="/Resume.pdf"
-                download="Resume(Brian Seo).pdf"
-                className={`text-gray-700 font-semibold ${
-                  selectedIndex1 === 3 ? "text-black" : ""
-                }`}
-                onClick={() => {
-                  setSelectedIndex1(3);
-                  setIsOpen(false);
-                }}
-              >
-                Resume
               </a>
             </li>
           </ul>

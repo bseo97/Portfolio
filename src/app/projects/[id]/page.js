@@ -49,7 +49,23 @@ export default function ProjectDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <>
+      <style jsx>{`
+        @keyframes pulse-glow {
+          0%, 100% {
+            box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2);
+          }
+          50% {
+            box-shadow: 0 4px 15px rgba(5, 217, 232, 0.4), 0 0 25px rgba(5, 217, 232, 0.3);
+          }
+        }
+        
+        .animate-pulse-glow {
+          animation: pulse-glow 2s ease-in-out infinite;
+        }
+      `}</style>
+      
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -133,7 +149,16 @@ export default function ProjectDetail() {
                   href={project.demoLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#244e4e] transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+                  className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2 hover:shadow-[#05d9e8]/50 animate-pulse-glow"
+                  style={{
+                    boxShadow: '0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.boxShadow = '0 8px 25px rgba(5, 217, 232, 0.5), 0 0 30px rgba(5, 217, 232, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.boxShadow = '0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2)';
+                  }}
                 >
                   <span>View Live Demo</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,9 +166,19 @@ export default function ProjectDetail() {
                   </svg>
                 </a>
               ) : (
-                <button className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50">
-                  Demo Coming Soon
-                </button>
+                // Special case for Portfolio Website (projectId 0)
+                projectId === 0 ? (
+                  <button className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2">
+                    <span>You are exploring demo!</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                ) : (
+                  <button className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50">
+                    Demo Coming Soon
+                  </button>
+                )
               )}
               
               {project.repositoryLink ? (
@@ -254,5 +289,6 @@ export default function ProjectDetail() {
         </div>
       </div>
     </div>
+    </>
   )
 } 

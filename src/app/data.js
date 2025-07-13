@@ -94,9 +94,9 @@ export const DataArray = [
     title: "Personal Portfolio Website Using Reactjs",
     name: "Portfolio Website",
     des: "A portfolio website to showcase my projects and skills.",
-    des1: "This project was made using, Ractjs, Nextjs, Expressjs, Nodejs, Rxjs Bootsrap and many more!",
+    des1: "Built a modern, responsive portfolio website built with Next.js 15 and React 19, featuring animated neural network backgrounds, interactive project carousel, AI chatbot integration, and glassmorphism design. Includes dynamic routing for project details, smooth scroll animations, custom scrollbars, and comprehensive responsive design. Showcases advanced CSS techniques, React hooks, and modern web development practices with full mobile optimization.",
     images: ["/website.png"],
-    techStack: ["React.js", "Node.js", "Javascript", "Tailwind CSS", "HTML"],
+    techStack: ["Next.js", "React.js", "JavaScript", "Tailwind CSS", "CSS"],
     status: {
       text: "Completed",
       color: "green"
@@ -109,7 +109,7 @@ export const DataArray = [
     title: "Hackathon Project: Rent-spiracy",
     name: "Rent-spiracy",
     des: "Built a website for a 3-mean team hackathon project that allows users search for potential scams.",
-    des1: "",
+    des1: "Rent-spiracy is a hackathon project developed by a 3-person team to help users identify and avoid potential rental scams. The platform allows users to search for properties and cross-reference them against known scam databases, providing real-time alerts and risk assessments. Built with Next.js and TypeScript for a robust frontend experience, the application integrates with MongoDB for data storage and utilizes Python backend services for advanced data processing. The Gemini API powers intelligent scam detection algorithms, analyzing listing patterns, pricing anomalies, and user reports to provide comprehensive fraud prevention. This project demonstrates rapid prototyping skills, API integration, and collaborative development in a time-constrained hackathon environment.",
     images: ["/Rentspiracy.png"],
     techStack: ["Next.js", "TypeScript", "Tailwind CSS", "MongoDB", "Python", "Gemini API"],
     status: {
