@@ -6,6 +6,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [messages, setMessages] = useState([])
   const [placeholder, setPlaceholder] = useState('')
   const [isTyping, setIsTyping] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false) // New state for toggle
   const messagesEndRef = useRef(null)
   const fullText = "Ask anything about Brian!"
 
@@ -32,8 +33,8 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   useEffect(() => {
     scrollToBottom()
-    if (onExpand) onExpand(messages.length > 0)
-  }, [messages])
+    if (onExpand) onExpand(isExpanded && messages.length > 0)
+  }, [messages, isExpanded])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -42,6 +43,11 @@ export default function ChatBot({ onExpand, typingReady }) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }
     }
+  }
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded)
+    if (onExpand) onExpand(!isExpanded)
   }
 
   const handleSubmit = (e) => {
@@ -82,7 +88,6 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   const clearChat = () => {
     setMessages([])
-    if (onExpand) onExpand(false)
   }
 
   return (
@@ -102,6 +107,30 @@ export default function ChatBot({ onExpand, typingReady }) {
           max-height: 50vh;
           overflow-y: auto;
         }
+        
+        .chat-toggle-button {
+          background: linear-gradient(135deg, #05d9e8, #53c9c9);
+          color: #ffffff;
+          border: none;
+          padding: 1rem 2rem;
+          border-radius: 50px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
+          transition: all 0.3s ease;
+          font-size: 1.1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin: 0 auto;
+          font-family: 'Inter', Arial, sans-serif;
+        }
+        
+        .chat-toggle-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(5, 217, 232, 0.4);
+        }
+        
         .chatbot-wrapper {
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(15px);
@@ -116,6 +145,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           max-height: 80vh;
           display: flex;
           flex-direction: column;
+          margin-top: 1rem;
         }
         .chatbot-wrapper.empty {
           min-height: 180px;
@@ -145,7 +175,11 @@ export default function ChatBot({ onExpand, typingReady }) {
           font-weight: 600;
           margin: 0;
         }
-        .clear-button {
+        .header-buttons {
+          display: flex;
+          gap: 0.5rem;
+        }
+        .clear-button, .close-button {
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
           color: rgba(255, 255, 255, 0.8);
@@ -154,9 +188,19 @@ export default function ChatBot({ onExpand, typingReady }) {
           cursor: pointer;
           font-size: 0.85rem;
           transition: all 0.2s ease;
+          font-family: 'Inter', Arial, sans-serif;
         }
-        .clear-button:hover {
+        .clear-button:hover, .close-button:hover {
           background: rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+        }
+        .close-button {
+          background: rgba(239, 68, 68, 0.2);
+          border-color: rgba(239, 68, 68, 0.3);
+          color: rgba(239, 68, 68, 0.9);
+        }
+        .close-button:hover {
+          background: rgba(239, 68, 68, 0.3);
           color: #ffffff;
         }
         .chat-messages {
@@ -368,6 +412,10 @@ export default function ChatBot({ onExpand, typingReady }) {
             width: 16px;
             height: 16px;
           }
+          .chat-toggle-button {
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+          }
         }
         @media (max-width: 600px) {
           .chatbot-container {
@@ -398,77 +446,89 @@ export default function ChatBot({ onExpand, typingReady }) {
             width: 14px;
             height: 14px;
           }
+          .header-buttons {
+            flex-direction: column;
+            gap: 0.25rem;
+          }
+          .clear-button, .close-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+          }
         }
       `}</style>
+      
       <div className="chatbot-container">
-        <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
-          {messages.length > 0 && (
-            <>
-              <div className="chat-header">
-                <h3 className="chat-title">Chat with Brian</h3>
-                <button onClick={clearChat} className="clear-button">
-                  Clear Chat
+        {!isExpanded ? (
+          <button className="chat-toggle-button" onClick={handleToggle}>
+            <span>💬</span>
+            Ask me anything!
+          </button>
+        ) : (
+          <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
+            <div className="chat-header">
+              <h3 className="chat-title">Chat with Brian</h3>
+              <div className="header-buttons">
+                {messages.length > 0 && (
+                  <button onClick={clearChat} className="clear-button">
+                    Clear Chat
+                  </button>
+                )}
+                <button onClick={handleToggle} className="close-button">
+                  Close Chat
                 </button>
               </div>
-              <div className="chat-messages">
-                {messages.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-state-icon">💬</div>
-                    <div className="empty-state-text">Start a conversation!</div>
-                    <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-                  </div>
-                ) : (
-                  messages.map((msg) => (
-                    <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                      <div className="message-avatar">
-                        {msg.isUser ? 'U' : 'B'}
-                      </div>
-                      <div className="message-content">
-                        <div className="message-bubble">{msg.text}</div>
-                        <div className="message-time">{msg.timestamp}</div>
-                      </div>
-                    </div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            </>
-          )}
-          {messages.length === 0 && (
+            </div>
+            
             <div className="chat-messages">
-              <div className="empty-state">
-                <div className="empty-state-text">Start a conversation!</div>
-                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-              </div>
+              {messages.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-state-text">Start a conversation!</div>
+                  <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
+                </div>
+              ) : (
+                messages.map((msg) => (
+                  <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
+                    <div className="message-avatar">
+                      {msg.isUser ? 'U' : 'B'}
+                    </div>
+                    <div className="message-content">
+                      <div className="message-bubble">{msg.text}</div>
+                      <div className="message-time">{msg.timestamp}</div>
+                    </div>
+                  </div>
+                ))
+              )}
               <div ref={messagesEndRef} />
             </div>
-          )}
-          <form onSubmit={handleSubmit} className="chatbot-form">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={placeholder + (isTyping ? '|' : '')}
-              className="chatbot-input"
-            />
-            <button type="submit" className="submit-button" disabled={!message.trim()}>
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </button>
-          </form>
-        </div>
+            
+            <div className="chatbot-form">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+                placeholder={placeholder + (isTyping ? '|' : '')}
+                className="chatbot-input"
+              />
+              <button onClick={handleSubmit} className="submit-button" disabled={!message.trim()}>
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
-} 
+}

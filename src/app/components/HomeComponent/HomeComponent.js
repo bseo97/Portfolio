@@ -479,12 +479,12 @@ export default function HomeComponent() {
          .hero-text {
            color: #53c9c9;
            text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
-           margin-bottom: 1.5rem;
+           margin-bottom: 0.5rem;
            transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
          }
          .hero-text.chat-expanded {
-           margin-bottom: 0.5rem;
-           margin-top: -2.5rem;
+           margin-bottom: 0.25rem;
+           margin-top: 0;
          }
          .chatbot-hero-wrapper {
            width: 100%;
@@ -619,7 +619,7 @@ export default function HomeComponent() {
           I'm Brian
         </h1>
             <h2
-              className="mt-2 py-1 font-bold md:text-xl mb-4 fade-in-up delay-2"
+              className="mt-2 py-1 font-bold md:text-xl mb-1 fade-in-up delay-2"
               onAnimationEnd={handleSubtitleAnimationEnd}
             >
               University of California, <br />Irvine Student
