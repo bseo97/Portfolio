@@ -6,9 +6,23 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [messages, setMessages] = useState([])
   const [placeholder, setPlaceholder] = useState('')
   const [isTyping, setIsTyping] = useState(true)
-  const [isExpanded, setIsExpanded] = useState(false) // New state for toggle
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const messagesEndRef = useRef(null)
+  const chatMessagesRef = useRef(null)
   const fullText = "Ask anything about Brian!"
+
+  // Simple markdown parser for basic formatting
+  const parseMessage = (text) => {
+    if (!text) return text;
+    
+    // Convert **text** to bold
+    let parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Replace --- with a proper visual separator
+    parsed = parsed.replace(/^---$/gm, '<div class="message-separator"></div>');
+    
+    return parsed;
+  }
 
   useEffect(() => {
     if (!typingReady) {
@@ -40,14 +54,26 @@ export default function ChatBot({ onExpand, typingReady }) {
     if (messagesEndRef.current) {
       const chatMessages = messagesEndRef.current.closest('.chat-messages');
       if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        // Small delay to ensure DOM is updated
+        setTimeout(() => {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 50);
       }
     }
   }
 
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded)
-    if (onExpand) onExpand(!isExpanded)
+  const scrollToTop = () => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = 0;
+    }
+  }
+
+  const handleScroll = () => {
+    if (chatMessagesRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatMessagesRef.current;
+      // Show scroll to top button if user has scrolled up and there are enough messages
+      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 100 && messages.length > 3);
+    }
   }
 
   const handleSubmit = (e) => {
@@ -61,29 +87,54 @@ export default function ChatBot({ onExpand, typingReady }) {
       }
       setMessages(prev => [...prev, userMessage])
       setMessage('')
-      // Simulate bot response
-      setTimeout(() => {
-        const botMessage = {
-          id: Date.now() + 1,
-          text: getBotResponse(message),
-          isUser: false,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      
+      // Get bot response from API
+      const userInput = message;
+      setTimeout(async () => {
+        try {
+          const botResponseText = await getBotResponse(userInput);
+          const botMessage = {
+            id: Date.now() + 1,
+            text: botResponseText,
+            isUser: false,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+          setMessages(prev => [...prev, botMessage])
+        } catch (error) {
+          console.error('Error getting bot response:', error);
+          const errorMessage = {
+            id: Date.now() + 1,
+            text: "Sorry, I'm having trouble responding right now. Please try again!",
+            isUser: false,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+          setMessages(prev => [...prev, errorMessage])
         }
-        setMessages(prev => [...prev, botMessage])
-      }, 1000)
+      }, 800)
     }
   }
 
-  const getBotResponse = (userMessage) => {
-    // Simple response logic - you can replace this with actual AI integration
-    const responses = [
-      "Hi! I'm Brian, a Software Engineering student at UC Irvine. I'm passionate about AI infrastructure and ML systems. What would you like to know about my projects or experience?",
-      "I've worked on several exciting projects including Rent-spiracy (a rental platform), Fabflix (a movie database), and Decurb (an AI-powered recommendation system). Which one interests you most?",
-      "I'm currently involved with the Associate of Computing Academy at UCI and recently joined Hacks at UCI. I love hackathons and building innovative solutions!",
-      "My technical skills include React.js, Next.js, Python, Java, and various AI/ML frameworks. I'm particularly interested in prompt optimization and scalable systems.",
-      "Thanks for your interest! Feel free to check out my projects or connect with me through the links on this portfolio."
-    ]
-    return responses[Math.floor(Math.random() * responses.length)]
+  const getBotResponse = async (userMessage) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const data = await response.json();
+      return data.reply || "Sorry, I couldn't process your request right now.";
+    } catch (error) {
+      console.error('Chat API error:', error);
+      // Fallback response when API fails
+      return "I'm having trouble connecting right now, but I'd love to tell you about my projects, skills, and experience as a Software Engineering student at UC Irvine!";
+    }
   }
 
   const clearChat = () => {
@@ -211,6 +262,9 @@ export default function ChatBot({ onExpand, typingReady }) {
           flex-direction: column;
           gap: 1rem;
           min-height: 0;
+          max-height: 100%;
+        }
+        .chat-messages.empty {
           justify-content: center;
           align-items: center;
         }
@@ -269,6 +323,14 @@ export default function ChatBot({ onExpand, typingReady }) {
           font-size: 0.95rem;
           line-height: 1.4;
           word-wrap: break-word;
+          white-space: pre-line;
+        }
+        .message-bubble strong {
+          font-weight: 700;
+          color: inherit;
+        }
+        .message.bot .message-bubble strong {
+          color: #05d9e8;
         }
         .message.user .message-bubble {
           background: linear-gradient(135deg, #05d9e8, #53c9c9);
@@ -379,6 +441,39 @@ export default function ChatBot({ onExpand, typingReady }) {
         .submit-button:hover svg {
           transform: translateX(2px);
         }
+        .scroll-top-button {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          background: rgba(5, 217, 232, 0.9);
+          border: none;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          z-index: 10;
+          box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
+        }
+        .scroll-top-button:hover {
+          background: rgba(5, 217, 232, 1);
+          transform: scale(1.1);
+        }
+        .scroll-top-button svg {
+          width: 16px;
+          height: 16px;
+          color: #ffffff;
+        }
+        .message-separator {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          margin: 0.75rem 0;
+          border: none;
+        }
         .typing-cursor {
           animation: blink 1s infinite;
         }
@@ -437,6 +532,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           .message-bubble {
             padding: 0.65rem 0.85rem;
             font-size: 0.9rem;
+            line-height: 1.5;
           }
           .submit-button {
             width: 34px;
@@ -477,57 +573,80 @@ export default function ChatBot({ onExpand, typingReady }) {
                   Close Chat
                 </button>
               </div>
-            </div>
-            
-            <div className="chat-messages">
-              {messages.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-state-text">Start a conversation!</div>
-                  <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-                </div>
-              ) : (
-                messages.map((msg) => (
-                  <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                    <div className="message-avatar">
-                      {msg.isUser ? 'U' : 'B'}
-                    </div>
-                    <div className="message-content">
-                      <div className="message-bubble">{msg.text}</div>
-                      <div className="message-time">{msg.timestamp}</div>
-                    </div>
+              <div 
+                ref={chatMessagesRef}
+                className={`chat-messages ${messages.length === 0 ? 'empty' : ''}`}
+                onScroll={handleScroll}
+              >
+                {messages.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-state-icon">💬</div>
+                    <div className="empty-state-text">Start a conversation!</div>
+                    <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
                   </div>
-                ))
-              )}
+                ) : (
+                  <>
+                    {messages.map((msg) => (
+                      <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
+                        <div className="message-avatar">
+                          {msg.isUser ? 'U' : 'B'}
+                        </div>
+                        <div className="message-content">
+                          <div 
+                            className="message-bubble" 
+                            dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
+                          />
+                          <div className="message-time">{msg.timestamp}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </>
+                )}
+                {showScrollTop && (
+                  <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+          {messages.length === 0 && (
+            <div className="chat-messages empty">
+              <div className="empty-state">
+                <div className="empty-state-text">Start a conversation!</div>
+                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
+              </div>
               <div ref={messagesEndRef} />
             </div>
-            
-            <div className="chatbot-form">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
-                placeholder={placeholder + (isTyping ? '|' : '')}
-                className="chatbot-input"
-              />
-              <button onClick={handleSubmit} className="submit-button" disabled={!message.trim()}>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+          <form onSubmit={handleSubmit} className="chatbot-form">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={placeholder + (isTyping ? '|' : '')}
+              className="chatbot-input"
+            />
+            <button type="submit" className="submit-button" disabled={!message.trim()}>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
