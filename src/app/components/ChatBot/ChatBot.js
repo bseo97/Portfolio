@@ -7,6 +7,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [placeholder, setPlaceholder] = useState('')
   const [isTyping, setIsTyping] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const fullText = "Ask anything about Brian!"
@@ -47,8 +48,8 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   useEffect(() => {
     scrollToBottom()
-    if (onExpand) onExpand(isExpanded && messages.length > 0)
-  }, [messages, isExpanded])
+    if (onExpand && isExpanded) onExpand(messages.length > 0)
+  }, [messages, isExpanded, onExpand])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -139,6 +140,11 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   const clearChat = () => {
     setMessages([])
+  }
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded)
+    if (onExpand) onExpand(!isExpanded)
   }
 
   return (
@@ -573,80 +579,71 @@ export default function ChatBot({ onExpand, typingReady }) {
                   Close Chat
                 </button>
               </div>
-              <div 
-                ref={chatMessagesRef}
-                className={`chat-messages ${messages.length === 0 ? 'empty' : ''}`}
-                onScroll={handleScroll}
-              >
-                {messages.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-state-icon">💬</div>
-                    <div className="empty-state-text">Start a conversation!</div>
-                    <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-                  </div>
-                ) : (
-                  <>
-                    {messages.map((msg) => (
-                      <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                        <div className="message-avatar">
-                          {msg.isUser ? 'U' : 'B'}
-                        </div>
-                        <div className="message-content">
-                          <div 
-                            className="message-bubble" 
-                            dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
-                          />
-                          <div className="message-time">{msg.timestamp}</div>
-                        </div>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </>
-                )}
-                {showScrollTop && (
-                  <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-          {messages.length === 0 && (
-            <div className="chat-messages empty">
-              <div className="empty-state">
-                <div className="empty-state-text">Start a conversation!</div>
-                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
-              </div>
-              <div ref={messagesEndRef} />
             </div>
-          )}
-          <form onSubmit={handleSubmit} className="chatbot-form">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={placeholder + (isTyping ? '|' : '')}
-              className="chatbot-input"
-            />
-            <button type="submit" className="submit-button" disabled={!message.trim()}>
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </button>
-          </form>
-        </div>
+            <div 
+              ref={chatMessagesRef}
+              className={`chat-messages ${messages.length === 0 ? 'empty' : ''}`}
+              onScroll={handleScroll}
+            >
+              {messages.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-state-icon">💬</div>
+                  <div className="empty-state-text">Start a conversation!</div>
+                  <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
+                </div>
+              ) : (
+                <>
+                  {messages.map((msg) => (
+                    <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
+                      <div className="message-avatar">
+                        {msg.isUser ? 'U' : 'B'}
+                      </div>
+                      <div className="message-content">
+                        <div 
+                          className="message-bubble" 
+                          dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
+                        />
+                        <div className="message-time">{msg.timestamp}</div>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+              {showScrollTop && (
+                <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <form onSubmit={handleSubmit} className="chatbot-form">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={placeholder + (isTyping ? '|' : '')}
+                className="chatbot-input"
+              />
+              <button type="submit" className="submit-button" disabled={!message.trim()}>
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   )
