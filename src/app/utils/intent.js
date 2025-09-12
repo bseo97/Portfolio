@@ -15,44 +15,50 @@ export const INTENT_TYPES = {
 };
 
 /**
- * Routes user input to appropriate intent category
+ * Routes user input to appropriate intent category with context awareness
  * @param {string} query - User's input message
  * @returns {string} Intent type
  */
 export function routeIntent(query) {
   const s = query.toLowerCase();
   
-  // About/Bio intent
-  if (/\b(who|about|introduce|bio|background|tell me about|yourself)\b/.test(s)) {
+  // About/Bio intent - who are you, tell me about yourself
+  if (/\b(who\s+(are\s+)?you|about\s+(you|yourself)|introduce\s+yourself|bio|background.*you)\b/.test(s)) {
     return INTENT_TYPES.ABOUT;
   }
   
-  // Projects intent
-  if (/\b(project|built|made|portfolio|work|developed|created|app|website|rentspiracy|fabflix|decurb)\b/.test(s)) {
+  // Experience/Education intent - prioritize hackathon, education, experience contexts
+  if (/\b(experience|internship|roles|education|university|uci|irvine|student|academic)\b/.test(s) ||
+      /\b(have\s+you\s+(ever\s+)?(done|participated|been\s+to|attended).*hackathon)\b/.test(s) ||
+      /\bhackathon\b/.test(s)) {
+    return INTENT_TYPES.EXPERIENCE;
+  }
+  
+  // Projects intent - specific project questions, what you built
+  if (/\b(projects?\s+(you\s+)?(built|made|developed|created|worked\s+on))\b/.test(s) ||
+      /\b(what.*projects|show.*projects|portfolio.*projects)\b/.test(s) ||
+      /\b(rentspiracy|fabflix|decurb)\b/.test(s) ||
+      /\b(built.*app|made.*website|developed.*platform)\b/.test(s)) {
     return INTENT_TYPES.PROJECTS;
   }
   
   // Skills/Tech stack intent
-  if (/\b(skill|stack|tech|tools|languages|programming|framework|library|react|next|python|java|javascript|html|css|mongodb|mysql)\b/.test(s)) {
+  if (/\b(skills?|tech\s+stack|technologies|tools|languages|programming|frameworks?|what.*know)\b/.test(s) ||
+      /\b(react|next|python|java|javascript|html|css|mongodb|mysql)\b/.test(s)) {
     return INTENT_TYPES.SKILLS;
   }
   
-  // Experience/Education intent  
-  if (/\b(experience|internship|roles|resume|education|university|uci|irvine|student|academic|hackathon)\b/.test(s)) {
-    return INTENT_TYPES.EXPERIENCE;
-  }
-  
   // Contact intent
-  if (/\b(contact|email|reach|resume|hire|connect|linkedin|github|social)\b/.test(s)) {
+  if (/\b(contact|email|reach|hire|connect|linkedin|github|resume)\b/.test(s)) {
     return INTENT_TYPES.CONTACT;
   }
   
   // Fun/Personal intent
-  if (/\b(hobby|fun|interests|personal|like|enjoy|free time|outside)\b/.test(s)) {
+  if (/\b(hobby|hobbies|fun|interests|personal|like|enjoy|free\s+time|outside\s+work)\b/.test(s)) {
     return INTENT_TYPES.FUN;
   }
   
-  // Off-topic guard (expand as needed based on real traffic)
+  // Off-topic guard
   if (/\b(weather|capital|stocks|math|recipe|define|news|politics|sports|cooking|music|movie|book)\b/.test(s)) {
     return INTENT_TYPES.OFF_TOPIC;
   }

@@ -9,14 +9,13 @@ import { DataArray } from '../data.js';
  * Brian's core information extracted from portfolio data (written in first person)
  */
 const brianInfo = {
-  bio: "I'm Brian Seo, a Software Engineering student at UC Irvine passionate about AI infrastructure, ML systems, and full-stack development. I'm involved with the Associate of Computing Academy at UCI and Hacks at UCI, with a focus on hackathons and building innovative solutions.",
+  bio: "I'm Brian Seo, a Software Engineering student at UC Irvine passionate about backend infrastructure, scalable systems, and full-stack development. I'm involved with Association for Computing Machinery at UCI and Hacks at UCI, with a focus on building innovative solutions that support real-world businesses.",
   
   highlights: [
     "I'm a Software Engineering student at UC Irvine",
-    "I'm passionate about AI infrastructure and ML systems", 
-    "I'm a full-stack developer with React.js, Next.js, Python, Java expertise",
-    "I'm active in hackathons and computing communities at UCI",
-    "I have experience with AI/ML frameworks and prompt optimization"
+    "I love building real-world software that empowers small businesses to cut costs and improve efficiency",
+    "I'm a full-stack developer experienced with React.js, Next.js, Golang, Python, and PostgreSQL",
+    "I'm active in hackathons and Association for Computing Machinery at UCI"
   ],
   
   contact: {
@@ -27,10 +26,9 @@ const brianInfo = {
   },
   
   fun: [
-    "I enjoy hackathons and competitive programming",
-    "I love building innovative AI solutions",
-    "I'm an active member of computing communities at UCI",
-    "I'm interested in scalable systems and optimization"
+    "I enjoy Weight-lifting and Swimming",
+    "I occasionally go hiking and traveling",
+    "I like going to the places that I have never been",
   ]
 };
 
@@ -89,13 +87,9 @@ export function getSkillsByCategory() {
       if (!skillsMap["AI & APIs"].skills.includes(skill)) {
         skillsMap["AI & APIs"].skills.push(skill);
       }
-    } else if (lowerSkill.includes('mysql') || lowerSkill.includes('mongodb') || lowerSkill.includes('postgresql') ||
-               lowerSkill.includes('database') || lowerSkill.includes('jdbc')) {
-      if (!skillsMap["Databases"].skills.includes(skill)) {
-        skillsMap["Databases"].skills.push(skill);
-      }
-    }
-  });
+    } else if (/(mysql|mongodb|postgresq|sqlite|database|jdbc|supabase)/i.test(skill)) {
+      pushUnique(skillsMap["Databases"].skills, skill);
+}});
 
   return skillsMap;
 }
@@ -168,7 +162,7 @@ export function kbToPassages() {
   passages.push(`PERSONAL: ${brianInfo.fun.join("; ")}`);
   
   // Education and involvement (first person)
-  passages.push(`MY EDUCATION: I'm a Software Engineering student at UC Irvine, involved with Associate of Computing Academy and Hacks at UCI`);
+  passages.push(`MY EDUCATION: I'm a Software Engineering student at UC Irvine, involved with Associate for Computing Machinery and Hacks at UCI`);
   
   return passages;
 }

@@ -18,6 +18,8 @@ try {
 let vectors = null;
 let passages = [];
 let openai = null;
+let indexInitialized = false;
+let initializationPromise = null;
 
 function initOpenAI() {
   if (!OpenAI || !process.env.OPENAI_API_KEY) {
@@ -34,24 +36,44 @@ function initOpenAI() {
 }
 
 /**
- * Ensure embeddings index is built
+ * Ensure embeddings index is built (optimized to run only once)
  */
 async function ensureIndex() {
-  if (vectors || !initOpenAI()) return;
-  
-  try {
-    passages = kbToPassages();
-    const response = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: passages
-    });
-    
-    vectors = response.data.map(d => d.embedding);
-    console.log(`Indexed ${passages.length} passages`);
-  } catch (error) {
-    console.error('Failed to create embeddings:', error);
-    vectors = null;
+  // Return immediately if already initialized or OpenAI not available
+  if (indexInitialized || !initOpenAI()) {
+    return;
   }
+  
+  // If initialization is already in progress, wait for it
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+  
+  // Start initialization
+  console.log('Building embeddings index...');
+  initializationPromise = (async () => {
+    try {
+      passages = kbToPassages();
+      console.log(`Creating embeddings for ${passages.length} passages...`);
+      
+      const response = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: passages
+      });
+      
+      vectors = response.data.map(d => d.embedding);
+      indexInitialized = true;
+      console.log(`✅ Embeddings index built successfully with ${passages.length} passages`);
+    } catch (error) {
+      console.error('❌ Failed to create embeddings:', error);
+      vectors = null;
+      indexInitialized = false;
+      initializationPromise = null;
+      throw error;
+    }
+  })();
+  
+  return initializationPromise;
 }
 
 /**
@@ -72,10 +94,13 @@ function cosine(a, b) {
 }
 
 /**
- * Retrieve relevant passages for a query
+ * Retrieve relevant passages for a query (optimized with timing)
  */
-async function retrievePassages(query, topK = 4) {
-  if (!vectors || !openai) return [];
+async function retrievePassages(query, topK = 3) {
+  if (!indexInitialized || !vectors || !openai) {
+    console.log('Index not ready for retrieval');
+    return [];
+  }
   
   try {
     const queryEmbedding = await openai.embeddings.create({
@@ -101,45 +126,27 @@ async function retrievePassages(query, topK = 4) {
 }
 
 /**
- * Generate response using OpenAI chat completion
+ * Generate response using OpenAI chat completion (optimized)
  */
 async function generateResponse(message, intent, relevantPassages) {
   if (!openai) {
     return getFallbackResponse(intent);
   }
   
-  const systemPrompt = `
-You are Brian Seo. Respond in first person as if you are Brian himself. Strict rules:
-- Only answer using the provided context passages about yourself
-- Speak as "I", "my", "me" - you ARE Brian, not talking about him
-- If the answer isn't in context, say: "I'm not sure about that specific detail, but I'd be happy to tell you about my projects, skills, or experience!"
-- Be concise, friendly, and conversational
-- Format responses for readability: use line breaks, organize with clear categories
-- When listing items, use "• " for bullet points and add line breaks between sections
-- Use **text** for important words and section headers (e.g., "**FRONTEND TECHNOLOGIES:**", "**MY PROJECTS:**")
-- Never use "---" as separators, use proper line breaks instead
-- If user asks "who are you" or similar, give a 2-3 sentence summary about yourself plus key highlights
-- Stay focused on your professional portfolio content
-- Don't make up information not in the context
+  // Shorter, more efficient system prompt
+  const systemPrompt = `You are Brian Seo. Answer in first person using only the context below. Be concise and friendly.
 
-Context passages about you:
-${relevantPassages.map((p, idx) => `[${idx + 1}] ${p}`).join('\n')}
-`.trim();
-
-  const userPrompt = `User question: "${message}"
-Intent: ${intent}
-
-Please provide a helpful response in first person as Brian Seo based on the context about yourself.`;
+Context: ${relevantPassages.join(' | ')}`;
 
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
+        { role: "user", content: message }
       ],
       temperature: 0.3,
-      max_tokens: 500
+      max_tokens: 400
     });
     
     return response.choices[0]?.message?.content || "Sorry, I couldn't generate a response right now.";
@@ -156,7 +163,7 @@ function getLocalResponse(message, intent) {
   const responses = {
     [INTENT_TYPES.ABOUT]: "Hi! I'm **Brian Seo**, a Software Engineering student at UC Irvine.\n\nI'm passionate about AI infrastructure, ML systems, and full-stack development. I'm involved with computing organizations at UCI and love working on innovative projects!",
     
-    [INTENT_TYPES.PROJECTS]: "I've worked on several exciting projects:\n\n**MY PROJECTS:**\n• **Rent-spiracy** - A hackathon project I built to identify rental scams using AI\n• **Fabflix/Decurb** - A full-stack movie eCommerce platform I developed with secure features\n• **Portfolio Website** - This responsive site I built with Next.js and React\n• **Decurb AI Platform** - An AI token optimization platform I'm currently working on\n\nWhich project interests you most?",
+    [INTENT_TYPES.PROJECTS]: "I've worked on several exciting projects:\n\n**MY PROJECTS:**\n• **Rent-spiracy** - A hackathon project built with Next.js, TypeScript, and MongoDB to identify rental scams using Gemini AI\n• **Fabflix** - A full-stack movie eCommerce platform developed with Java Servlets, MySQL, and AWS deployment\n• **Portfolio Website** - This responsive site built with Next.js, React, and Tailwind CSS with AI chatbot integration\n• **Decurb AI Platform** - An AI token optimization platform I'm currently developing with Python, FastAPI, and PostgreSQL\n\nI've used technologies like React, Next.js, Python, Java, Docker, Kubernetes, and various AI APIs. Which project would you like to know more about?",
     
     [INTENT_TYPES.SKILLS]: "I have a diverse set of skills across various technologies:\n\n**FRONTEND TECHNOLOGIES:**\n• React.js, Next.js, JavaScript, TypeScript\n• HTML/CSS, Tailwind CSS\n\n**BACKEND TECHNOLOGIES:**\n• Python, Java, Servlet, FastAPI\n• Node.js, Express.js\n\n**DATABASES:**\n• MongoDB, MySQL, PostgreSQL, JDBC\n\n**DEVOPS & INFRASTRUCTURE:**\n• Docker, Kubernetes, AWS, Microservices\n\n**AI & APIS:**\n• OpenAI API, Gemini API, prompt optimization\n\nWhat specific technology are you curious about?",
     
@@ -199,16 +206,42 @@ export async function POST(request) {
       });
     }
     
+    // Only use fast local responses for very simple, unambiguous questions
+    const isSimpleQuery = message.length < 30 && (
+      /^(who are you\??|about you\??)$/i.test(message.trim()) ||
+      /^(hi|hello|hey)$/i.test(message.trim())
+    );
+    
+    if (isSimpleQuery) {
+      return NextResponse.json({
+        reply: getLocalResponse(message, intent),
+        intent,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
     // Try to use OpenAI with RAG if available
     let reply;
     const client = initOpenAI();
     
     if (client) {
-      await ensureIndex();
-      const relevantPassages = await retrievePassages(message);
-      reply = await generateResponse(message, intent, relevantPassages);
+      try {
+        // Ensure index is built (this will only build once)
+        await ensureIndex();
+        
+        // Use RAG if index is ready, otherwise use local responses
+        if (indexInitialized) {
+          const relevantPassages = await retrievePassages(message);
+          reply = await generateResponse(message, intent, relevantPassages);
+        } else {
+          reply = getLocalResponse(message, intent);
+        }
+      } catch (error) {
+        console.error('Error in OpenAI processing:', error);
+        reply = getLocalResponse(message, intent);
+      }
     } else {
-      // Fallback to local responses
+      // Fallback to local responses when OpenAI not configured
       reply = getLocalResponse(message, intent);
     }
     
@@ -236,6 +269,18 @@ export async function GET() {
   return NextResponse.json({
     status: 'ok',
     openai_configured: hasOpenAI,
-    passages_indexed: vectors ? passages.length : 0
+    index_initialized: indexInitialized,
+    passages_indexed: indexInitialized ? passages.length : 0,
+    vectors_ready: !!vectors
   });
+}
+
+// Initialize embeddings on server startup (for better first-request performance)
+if (typeof window === 'undefined' && process.env.OPENAI_API_KEY) {
+  // Only run on server-side and if OpenAI is configured
+  setTimeout(() => {
+    ensureIndex().catch(error => {
+      console.log('Background index initialization failed:', error.message);
+    });
+  }, 1000); // Small delay to let server fully start
 }
