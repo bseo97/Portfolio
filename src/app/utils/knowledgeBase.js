@@ -87,9 +87,12 @@ export function getSkillsByCategory() {
       if (!skillsMap["AI & APIs"].skills.includes(skill)) {
         skillsMap["AI & APIs"].skills.push(skill);
       }
-    } else if (/(mysql|mongodb|postgresq|sqlite|database|jdbc|supabase)/i.test(skill)) {
-      pushUnique(skillsMap["Databases"].skills, skill);
-}});
+    } else if (lowerSkill.includes('mysql') || lowerSkill.includes('mongodb') || lowerSkill.includes('postgresql') || lowerSkill.includes('sqlite') || lowerSkill.includes('database') || lowerSkill.includes('jdbc') || lowerSkill.includes('supabase')) {
+      if (!skillsMap["Databases"].skills.includes(skill)) {
+        skillsMap["Databases"].skills.push(skill);
+      }
+    }
+  });
 
   return skillsMap;
 }

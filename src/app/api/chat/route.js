@@ -7,6 +7,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { routeIntent, INTENT_TYPES, getFallbackResponse } from '../../utils/intent.js';
 import { kbToPassages } from '../../utils/knowledgeBase.js';
 
+// Constants
+const EMBEDDING_MODEL = "text-embedding-3-small";
+const CHAT_MODEL = "gpt-4o-mini";
+const INDEX_INIT_DELAY = 1000;
+
 let OpenAI;
 try {
   OpenAI = require('openai').default;
@@ -57,7 +62,7 @@ async function ensureIndex() {
       console.log(`Creating embeddings for ${passages.length} passages...`);
       
       const response = await openai.embeddings.create({
-        model: "text-embedding-3-small",
+        model: EMBEDDING_MODEL,
         input: passages
       });
       
@@ -96,7 +101,7 @@ function cosine(a, b) {
 /**
  * Retrieve relevant passages for a query (optimized with timing)
  */
-async function retrievePassages(query, topK = 3) {
+async function retrievePassages(query, topK = 5) {
   if (!indexInitialized || !vectors || !openai) {
     console.log('Index not ready for retrieval');
     return [];
@@ -104,7 +109,7 @@ async function retrievePassages(query, topK = 3) {
   
   try {
     const queryEmbedding = await openai.embeddings.create({
-      model: "text-embedding-3-small",
+      model: EMBEDDING_MODEL,
       input: query
     });
     
@@ -126,27 +131,55 @@ async function retrievePassages(query, topK = 3) {
 }
 
 /**
- * Generate response using OpenAI chat completion (optimized)
+ * Get dynamic parameters based on intent
  */
-async function generateResponse(message, intent, relevantPassages) {
-  if (!openai) {
-    return getFallbackResponse(intent);
+function getDynamicParameters(intent) {
+  switch (intent) {
+    case INTENT_TYPES.PROJECTS:
+      return { topK: 12, maxTokens: 1200 }; // Increased to ensure we get all project passages
+    case INTENT_TYPES.SKILLS:
+      return { topK: 6, maxTokens: 700 }; // Multiple skill categories
+    case INTENT_TYPES.ABOUT:
+    case INTENT_TYPES.EXPERIENCE:
+      return { topK: 5, maxTokens: 600 }; // Comprehensive but focused
+    case INTENT_TYPES.GREETING:
+      return { topK: 3, maxTokens: 400 }; // Brief and welcoming
+    case INTENT_TYPES.CONTACT:
+    case INTENT_TYPES.FUN:
+      return { topK: 4, maxTokens: 500 }; // Moderate detail
+    default:
+      return { topK: 5, maxTokens: 600 }; // Balanced default
   }
-  
-  // Shorter, more efficient system prompt
-  const systemPrompt = `You are Brian Seo. Answer in first person using only the context below. Be concise and friendly.
+}
+
+/**
+ * Generate response using OpenAI chat completion
+ */
+async function generateResponse(message, intent, relevantPassages, maxTokens) {
+  const systemPrompt = `You are Brian Seo having a friendly conversation. 
+Answer naturally in first person using the context below. 
+Be concise, warm, enthusiastic, and conversational. 
+
+Always format your responses for readability:
+- Use short paragraphs separated by blank lines when necessary. if it is not necessary, don't add blank lines.
+- Add line breaks instead of long walls of text only when it's necessary. if it is not necessary, don't add line breaks.
+- Use bullet points or numbered lists when listing multiple items
+- Keep a friendly tone but prioritize clarity
+- If skills or projects are mentioned, differentiate the tech stack by field, such as frontend, backend, database, devops, ai, etc. 
+- For example: Tech stack (bold font, arrange to middle of the text since tech stack is the heading, do not arrange to the middle for detail of tech stack), (nextline) Frontend: React.js, Next.js, JavaScript, TypeScript, Tailwind CSS, (nextline) Backend: Python, Java, Servlet, FastAPI, Node.js, Express.js (nextline) Database: MongoDB, MySQL, PostgreSQL, JDBC (nextline) Devops: Docker, Kubernetes, AWS, Microservices, vercel, etc.
+- The example above is for the projects. Analyze corresponding tech stack of each projects/skills, and differentiate the tech stack by field, such as frontend, backend, database, devops, etc. 
 
 Context: ${relevantPassages.join(' | ')}`;
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: CHAT_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message }
       ],
       temperature: 0.3,
-      max_tokens: 400
+      max_tokens: maxTokens
     });
     
     return response.choices[0]?.message?.content || "Sorry, I couldn't generate a response right now.";
@@ -157,28 +190,41 @@ Context: ${relevantPassages.join(' | ')}`;
 }
 
 /**
- * Fallback response system when OpenAI is unavailable
+ * Create consistent JSON response
  */
-function getLocalResponse(message, intent) {
-  const responses = {
-    [INTENT_TYPES.ABOUT]: "Hi! I'm **Brian Seo**, a Software Engineering student at UC Irvine.\n\nI'm passionate about AI infrastructure, ML systems, and full-stack development. I'm involved with computing organizations at UCI and love working on innovative projects!",
-    
-    [INTENT_TYPES.PROJECTS]: "I've worked on several exciting projects:\n\n**MY PROJECTS:**\n• **Rent-spiracy** - A hackathon project built with Next.js, TypeScript, and MongoDB to identify rental scams using Gemini AI\n• **Fabflix** - A full-stack movie eCommerce platform developed with Java Servlets, MySQL, and AWS deployment\n• **Portfolio Website** - This responsive site built with Next.js, React, and Tailwind CSS with AI chatbot integration\n• **Decurb AI Platform** - An AI token optimization platform I'm currently developing with Python, FastAPI, and PostgreSQL\n\nI've used technologies like React, Next.js, Python, Java, Docker, Kubernetes, and various AI APIs. Which project would you like to know more about?",
-    
-    [INTENT_TYPES.SKILLS]: "I have a diverse set of skills across various technologies:\n\n**FRONTEND TECHNOLOGIES:**\n• React.js, Next.js, JavaScript, TypeScript\n• HTML/CSS, Tailwind CSS\n\n**BACKEND TECHNOLOGIES:**\n• Python, Java, Servlet, FastAPI\n• Node.js, Express.js\n\n**DATABASES:**\n• MongoDB, MySQL, PostgreSQL, JDBC\n\n**DEVOPS & INFRASTRUCTURE:**\n• Docker, Kubernetes, AWS, Microservices\n\n**AI & APIS:**\n• OpenAI API, Gemini API, prompt optimization\n\nWhat specific technology are you curious about?",
-    
-    [INTENT_TYPES.EXPERIENCE]: "I'm currently a **Software Engineering student at UC Irvine**, actively involved with:\n\n**UCI INVOLVEMENT:**\n• Associate of Computing Academy at UCI\n• Hacks at UCI\n• Various hackathons and coding competitions\n\nI have hands-on experience building full-stack applications, AI systems, and working in collaborative team environments.",
-    
-    [INTENT_TYPES.CONTACT]: "You can find my **contact information and resume** on this portfolio!\n\nFeel free to connect with me through the links provided here.",
-    
-    [INTENT_TYPES.FUN]: "Outside of coding, I really enjoy:\n\n**PERSONAL INTERESTS:**\n• Participating in hackathons and coding competitions\n• Building innovative AI solutions\n• Being active in computing communities at UCI\n• Working on scalable systems and optimization challenges",
-    
-    [INTENT_TYPES.OFF_TOPIC]: "I'd prefer to focus on topics related to my **portfolio**!\n\nFeel free to ask about my projects, skills, experience, or anything else related to my work as a developer.",
-    
-    [INTENT_TYPES.FALLBACK]: "I'm not sure I understand that question.\n\nTry asking about my **projects**, **technical skills**, **experience**, or background as a Software Engineering student!"
+function createResponse(reply, intent, status = 200) {
+  const response = {
+    reply,
+    intent,
+    timestamp: new Date().toISOString()
   };
   
-  return responses[intent] || responses[INTENT_TYPES.FALLBACK];
+  return NextResponse.json(response, { status });
+}
+
+/**
+ * Generate chatbot response
+ */
+async function getChatbotResponse(message, intent) {
+  const client = initOpenAI();
+  
+  if (!client) {
+    return getFallbackResponse(intent);
+  }
+  
+  try {
+    await ensureIndex();
+    
+    if (indexInitialized) {
+      const { topK, maxTokens } = getDynamicParameters(intent);
+      const relevantPassages = await retrievePassages(message, topK);
+      return await generateResponse(message, intent, relevantPassages, maxTokens);
+    }
+  } catch (error) {
+    console.error('Error in OpenAI processing:', error);
+  }
+  
+  return getFallbackResponse(intent);
 }
 
 /**
@@ -195,61 +241,10 @@ export async function POST(request) {
       );
     }
     
-    // Route the intent
     const intent = routeIntent(message);
+    const reply = await getChatbotResponse(message, intent);
     
-    // Handle off-topic requests immediately
-    if (intent === INTENT_TYPES.OFF_TOPIC) {
-      return NextResponse.json({
-        reply: "I don't think that's about me. Ask about my projects, skills, experience, or anything related to my portfolio!",
-        intent
-      });
-    }
-    
-    // Only use fast local responses for very simple, unambiguous questions
-    const isSimpleQuery = message.length < 30 && (
-      /^(who are you\??|about you\??)$/i.test(message.trim()) ||
-      /^(hi|hello|hey)$/i.test(message.trim())
-    );
-    
-    if (isSimpleQuery) {
-      return NextResponse.json({
-        reply: getLocalResponse(message, intent),
-        intent,
-        timestamp: new Date().toISOString()
-      });
-    }
-    
-    // Try to use OpenAI with RAG if available
-    let reply;
-    const client = initOpenAI();
-    
-    if (client) {
-      try {
-        // Ensure index is built (this will only build once)
-        await ensureIndex();
-        
-        // Use RAG if index is ready, otherwise use local responses
-        if (indexInitialized) {
-          const relevantPassages = await retrievePassages(message);
-          reply = await generateResponse(message, intent, relevantPassages);
-        } else {
-          reply = getLocalResponse(message, intent);
-        }
-      } catch (error) {
-        console.error('Error in OpenAI processing:', error);
-        reply = getLocalResponse(message, intent);
-      }
-    } else {
-      // Fallback to local responses when OpenAI not configured
-      reply = getLocalResponse(message, intent);
-    }
-    
-    return NextResponse.json({
-      reply,
-      intent,
-      timestamp: new Date().toISOString()
-    });
+    return createResponse(reply, intent);
     
   } catch (error) {
     console.error('Chat API error:', error);
@@ -282,5 +277,5 @@ if (typeof window === 'undefined' && process.env.OPENAI_API_KEY) {
     ensureIndex().catch(error => {
       console.log('Background index initialization failed:', error.message);
     });
-  }, 1000); // Small delay to let server fully start
+  }, INDEX_INIT_DELAY);
 }

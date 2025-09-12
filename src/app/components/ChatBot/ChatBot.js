@@ -7,6 +7,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [placeholder, setPlaceholder] = useState('')
   const [isTyping, setIsTyping] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [botIsTyping, setBotIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const fullText = "Ask anything about Brian!"
@@ -49,6 +50,12 @@ export default function ChatBot({ onExpand, typingReady }) {
     scrollToBottom()
     if (onExpand) onExpand(messages.length > 0)
   }, [messages, onExpand])
+  
+  useEffect(() => {
+    if (botIsTyping) {
+      scrollToBottom()
+    }
+  }, [botIsTyping])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -72,7 +79,7 @@ export default function ChatBot({ onExpand, typingReady }) {
     if (chatMessagesRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = chatMessagesRef.current;
       // Show scroll to top button if user has scrolled up and there are enough messages
-      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 100 && messages.length > 3);
+      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 50 && messages.length > 2);
     }
   }
 
@@ -88,11 +95,15 @@ export default function ChatBot({ onExpand, typingReady }) {
       setMessages(prev => [...prev, userMessage])
       setMessage('')
       
+      // Show typing animation
+      setBotIsTyping(true)
+      
       // Get bot response from API
       const userInput = message;
       setTimeout(async () => {
         try {
           const botResponseText = await getBotResponse(userInput);
+          setBotIsTyping(false)
           const botMessage = {
             id: Date.now() + 1,
             text: botResponseText,
@@ -102,6 +113,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           setMessages(prev => [...prev, botMessage])
         } catch (error) {
           console.error('Error getting bot response:', error);
+          setBotIsTyping(false)
           const errorMessage = {
             id: Date.now() + 1,
             text: "Sorry, I'm having trouble responding right now. Please try again!",
@@ -422,7 +434,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
         .scroll-top-button {
           position: absolute;
-          top: 1rem;
+          bottom: 6rem;
           right: 1rem;
           background: rgba(5, 217, 232, 0.9);
           border: none;
@@ -434,7 +446,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           justify-content: center;
           cursor: pointer;
           transition: all 0.3s ease;
-          z-index: 10;
+          z-index: 20;
           box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
         }
         .scroll-top-button:hover {
@@ -459,6 +471,46 @@ export default function ChatBot({ onExpand, typingReady }) {
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }
+        }
+        .typing-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+          border-radius: 16px;
+          border-bottom-left-radius: 6px;
+        }
+        .typing-dots {
+          display: flex;
+          gap: 0.2rem;
+        }
+        .typing-dots span {
+          width: 6px;
+          height: 6px;
+          background-color: rgba(255, 255, 255, 0.7);
+          border-radius: 50%;
+          animation: typingDots 1.4s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(1) {
+          animation-delay: 0s;
+        }
+        .typing-dots span:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .typing-dots span:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+        @keyframes typingDots {
+          0%, 80%, 100% {
+            transform: scale(0.8);
+            opacity: 0.5;
+          }
+          40% {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
         /* Mobile Responsive */
         @media (max-width: 900px) {
@@ -567,17 +619,32 @@ export default function ChatBot({ onExpand, typingReady }) {
                     </div>
                   </div>
                 ))}
+                {botIsTyping && (
+                  <div className="message bot">
+                    <div className="message-avatar">B</div>
+                    <div className="message-content">
+                      <div className="message-bubble typing-indicator">
+                        <span>Typing</span>
+                        <div className="typing-dots">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </>
             )}
-            {showScrollTop && (
-              <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              </button>
-            )}
           </div>
+          {showScrollTop && (
+            <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+          )}
           <form onSubmit={handleSubmit} className="chatbot-form">
             <input
               type="text"
