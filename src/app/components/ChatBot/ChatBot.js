@@ -599,9 +599,9 @@ export default function ChatBot({ onExpand, typingReady }) {
           >
             {messages.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-state-icon">💬</div>
-                <div className="empty-state-text">Start a conversation!</div>
-                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests</div>
+                <img src="/seo4.svg" alt="SEO Portfolio" className="empty-state-image" />
+                {/* <div className="empty-state-text">Start a conversation</div> */}
+                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests!</div>
               </div>
             ) : (
               <>
