@@ -68,9 +68,9 @@ async function ensureIndex() {
       
       vectors = response.data.map(d => d.embedding);
       indexInitialized = true;
-      console.log(`✅ Embeddings index built successfully with ${passages.length} passages`);
+      console.log(`Embeddings index built successfully with ${passages.length} passages`);
     } catch (error) {
-      console.error('❌ Failed to create embeddings:', error);
+      console.error('Failed to create embeddings:', error);
       vectors = null;
       indexInitialized = false;
       initializationPromise = null;
