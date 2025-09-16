@@ -1,13 +1,10 @@
 import React from "react";
-import { useRouter, usePathname } from "next/navigation";
 
 export default function DiagonalDrawer({
   isOpen,
   setIsOpen,
   activeSection,
 }) {
-  const route = useRouter();
-  const pathname = usePathname();
 
   return (
     <>

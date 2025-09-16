@@ -1,7 +1,8 @@
 
-
-
-// this is for the slider 
+/**
+ * Portfolio project data for slider and project details
+ * Contains information about Brian's projects including tech stacks, descriptions, and links
+ */
 export const DataArray = [
   {
     title: "Personal Portfolio Website Using Reactjs",

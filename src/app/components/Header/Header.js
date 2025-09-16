@@ -32,22 +32,12 @@ export default function Header() {
 
   return (
     <React.Fragment>
-      {/* Overlay */}
-      <div
-        className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={() => setIsOpen(false)}
-      ></div>
-
       {/* Drawer */}
-      <div className={`diagonal-drawer ${isOpen ? "open" : ""}`}>
-        <Drawer
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          activeSection={activeSection}
-        />
-      </div>
+      <Drawer
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        activeSection={activeSection}
+      />
 
       {/* Header */}
       <header

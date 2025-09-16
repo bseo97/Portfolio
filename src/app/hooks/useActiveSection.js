@@ -1,57 +1,40 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-export function useActiveSection() {
-  const [activeSection, setActiveSection] = useState('home')
+export function useActiveSection(sectionIds = ['home', 'about', 'projects']) {
+  const [activeSection, setActiveSection] = useState(sectionIds[0])
 
   useEffect(() => {
-    const sections = [
-      { id: 'home', element: null },
-      { id: 'about', element: null },
-      { id: 'projects', element: null }
-    ]
+    // Get all valid section elements in one pass
+    const validElements = sectionIds
+      .map(id => document.getElementById(id))
+      .filter(Boolean)
 
-    // Get section elements
-    sections.forEach(section => {
-      const element = document.getElementById(section.id)
-      if (element) {
-        section.element = element
-      }
-    })
-
-    // Filter out sections that don't exist
-    const validSections = sections.filter(section => section.element)
-
-    if (validSections.length === 0) return
+    if (validElements.length === 0) return
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const sectionId = entry.target.id
-            setActiveSection(sectionId)
+            setActiveSection(entry.target.id)
             
             // Update URL hash without triggering scroll
-            const newUrl = `${window.location.pathname}#${sectionId}`
+            const newUrl = `${window.location.pathname}#${entry.target.id}`
             window.history.replaceState({ path: newUrl }, '', newUrl)
           }
         })
       },
       {
-        threshold: 0.3, // Section needs to be at least 30% visible
-        rootMargin: '-20% 0px -20% 0px' // Adjust when section is considered "active"
+        threshold: 0.3,
+        rootMargin: '-20% 0px -20% 0px'
       }
     )
 
-    // Observe all sections
-    validSections.forEach(section => {
-      observer.observe(section.element)
-    })
+    // Observe all valid elements
+    validElements.forEach(element => observer.observe(element))
 
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
+    return () => observer.disconnect()
+  }, [sectionIds])
 
   return activeSection
 } 

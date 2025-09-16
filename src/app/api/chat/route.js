@@ -82,24 +82,23 @@ async function ensureIndex() {
 }
 
 /**
- * Calculate cosine similarity between two vectors
+ * Calculate cosine similarity between two vectors (optimized)
  */
 function cosine(a, b) {
-  let dotProduct = 0;
-  let normA = 0;
-  let normB = 0;
+  let dotProduct = 0, normA = 0, normB = 0;
   
-  for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+  for (let i = 0, len = a.length; i < len; i++) {
+    const ai = a[i], bi = b[i];
+    dotProduct += ai * bi;
+    normA += ai * ai;
+    normB += bi * bi;
   }
   
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
 /**
- * Retrieve relevant passages for a query (optimized with timing)
+ * Retrieve relevant passages for a query (optimized)
  */
 async function retrievePassages(query, topK = 5) {
   if (!indexInitialized || !vectors || !openai) {
@@ -108,22 +107,19 @@ async function retrievePassages(query, topK = 5) {
   }
   
   try {
-    const queryEmbedding = await openai.embeddings.create({
+    const { data } = await openai.embeddings.create({
       model: EMBEDDING_MODEL,
       input: query
     });
     
-    const qEmb = queryEmbedding.data[0].embedding;
+    const qEmb = data[0].embedding;
     
-    const scored = vectors.map((v, i) => ({
-      index: i,
-      score: cosine(v, qEmb)
-    }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, topK)
-    .map(({ index }) => passages[index]);
-    
-    return scored;
+    return vectors
+      .map((v, i) => ({ index: i, score: cosine(v, qEmb) }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, topK)
+      .map(({ index }) => passages[index]);
+      
   } catch (error) {
     console.error('Failed to retrieve passages:', error);
     return [];
@@ -131,32 +127,39 @@ async function retrievePassages(query, topK = 5) {
 }
 
 /**
+ * Intent-based parameter mapping for RAG optimization
+ */
+const INTENT_PARAMETERS = {
+  [INTENT_TYPES.PROJECTS]: { topK: 12, maxTokens: 1200 }, // All project passages
+  [INTENT_TYPES.SKILLS]: { topK: 6, maxTokens: 700 }, // Multiple skill categories
+  [INTENT_TYPES.ABOUT]: { topK: 5, maxTokens: 600 }, // Comprehensive but focused
+  [INTENT_TYPES.EXPERIENCE]: { topK: 5, maxTokens: 600 }, // Comprehensive but focused
+  [INTENT_TYPES.GREETING]: { topK: 3, maxTokens: 400 }, // Brief and welcoming
+  [INTENT_TYPES.CONTACT]: { topK: 4, maxTokens: 500 }, // Moderate detail
+  [INTENT_TYPES.FUN]: { topK: 4, maxTokens: 500 }, // Moderate detail
+};
+
+/**
  * Get dynamic parameters based on intent
  */
 function getDynamicParameters(intent) {
-  switch (intent) {
-    case INTENT_TYPES.PROJECTS:
-      return { topK: 12, maxTokens: 1200 }; // Increased to ensure we get all project passages
-    case INTENT_TYPES.SKILLS:
-      return { topK: 6, maxTokens: 700 }; // Multiple skill categories
-    case INTENT_TYPES.ABOUT:
-    case INTENT_TYPES.EXPERIENCE:
-      return { topK: 5, maxTokens: 600 }; // Comprehensive but focused
-    case INTENT_TYPES.GREETING:
-      return { topK: 3, maxTokens: 400 }; // Brief and welcoming
-    case INTENT_TYPES.CONTACT:
-    case INTENT_TYPES.FUN:
-      return { topK: 4, maxTokens: 500 }; // Moderate detail
-    default:
-      return { topK: 5, maxTokens: 600 }; // Balanced default
-  }
+  return INTENT_PARAMETERS[intent] || { topK: 5, maxTokens: 600 };
 }
 
 /**
- * Generate response using OpenAI chat completion
+ * Generate response using OpenAI chat completion with intelligent relevance detection
  */
 async function generateResponse(message, intent, relevantPassages, maxTokens) {
-  const systemPrompt = `You are Brian Seo having a friendly conversation. 
+  const systemPrompt = `You are Brian Seo having a friendly conversation about yourself. 
+
+IMPORTANT: You should answer questions about Brian in ANY language and respond to ALL types of greetings warmly.
+
+Guidelines:
+1. Answer questions about Brian's personal info, projects, skills, experience, education, portfolio
+2. Respond to greetings in ANY language (English, Spanish, French, German, Japanese, Korean, etc.)
+3. Handle casual greetings like "hey man!", "heyy", "sup", "what's up"
+4. If a question is clearly unrelated to Brian (e.g., general trivia, other people, unrelated topics), politely redirect with: "That seems like it's not related to me or my portfolio! I'm here to chat about my projects, skills, experiences, education, or anything else you'd like to know about me personally. What would you like to know about my work?"
+
 Answer naturally in first person using the context below. 
 Be concise, warm, enthusiastic, and conversational. 
 
@@ -203,12 +206,12 @@ function createResponse(reply, intent, status = 200) {
 }
 
 /**
- * Generate chatbot response
+ * Generate chatbot response with intelligent LLM-based relevance detection
  */
 async function getChatbotResponse(message, intent) {
-  const client = initOpenAI();
+  // No longer block OFF_TOPIC - let LLM make intelligent decisions about relevance
   
-  if (!client) {
+  if (!initOpenAI()) {
     return getFallbackResponse(intent);
   }
   
@@ -235,10 +238,7 @@ export async function POST(request) {
     const { message } = await request.json();
     
     if (!message || typeof message !== 'string') {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
     
     const intent = routeIntent(message);
@@ -248,10 +248,7 @@ export async function POST(request) {
     
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json(
-      { error: 'Something went wrong. Please try again.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
 
@@ -259,11 +256,9 @@ export async function POST(request) {
  * Health check endpoint
  */
 export async function GET() {
-  const hasOpenAI = !!process.env.OPENAI_API_KEY;
-  
   return NextResponse.json({
     status: 'ok',
-    openai_configured: hasOpenAI,
+    openai_configured: !!process.env.OPENAI_API_KEY,
     index_initialized: indexInitialized,
     passages_indexed: indexInitialized ? passages.length : 0,
     vectors_ready: !!vectors

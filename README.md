@@ -1,52 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Brian Seo — Portfolio
 
-## Getting Started
+A personal website where I keep my work, experiments, and a lightweight chat that answers questions about me and my projects.
 
-First, run the development server:
+**Developer:** Brian Seo
+
+## About
+
+It's a Next.js app for my portfolio. You'll find a short intro, selected projects, and a simple chatbot you can ask about my background, tech stack, and what I've built. The goal: fast to load, easy to read, and easy for me (or you) to extend.
+
+## Quick start
 
 ```bash
+# 1) Install dependencies
+npm install
+# (or: yarn / pnpm / bun)
+
+# 2) Run the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# App runs at:
+# http://localhost:3000
 ```
 
-In case anyone is struggling to run, .next and node_modules directories have to be rebuild.
-those two files are commonly excluded through .gitignore file (rebuildable)
+## Requirements (if you want to use the chatbot)
 
-to verity:
+1. Install deps (`npm install`).
+
+2. Put your LLM API key(s) in `.env.local`.
+
+3. Adjust the intent/knowledge files to match your info:
+   - `intent.js`
+   - `knowledgeBase.js`
+   - `data.js`
+
+4. Install your model/client of choice (OpenAI shown below, but any LLM client works).
+
+**Example `.env.local`:**
+
 ```bash
-Check .gitignore file to ensure followings exist.
+# Use whichever provider/model you prefer, make sure that chatbot matches the LLM model you use
+OPENAI_API_KEY=sk-...
+# Optional public config:
+NEXT_PUBLIC_APP_NAME=Brian Seo — Portfolio
+```
 
+## Scripts
+
+```bash
+npm run dev       # Start local dev
+npm run build     # Production build
+npm run start     # Run the built app
+npm run lint      # Lint (if configured)
+```
+
+## Customizing the chatbot
+
+All the "who is Brian / what's this project" answers come from a tiny knowledge layer—no vector DB needed to get started.
+
+- **`intent.js`** – lightweight routing for question types (about me, projects, contact, etc.)
+- **`knowledgeBase.js`** – your facts/answers live here, gets converted into searchable chunks for the AI
+- **`data.js`** – structured project portfolio data (titles, descriptions, tech stacks, links)
+
+Swap the LLM client if you want: OpenAI, Groq, Anthropic, LM Studio, local models—just adapt the small API wrapper you'll see in the code.
+
+## Project structure (simplified)
+
+```
+src/app/
+  page.js               # Landing page
+  components/           # React components
+  utils/
+    intent.js           # Intent routing logic
+    knowledgeBase.js    # RAG knowledge extraction
+  data.js               # Project portfolio data
+  api/chat/
+    route.js            # Chatbot API endpoint
+public/
+  (images, fonts)       # Static assets
+.env.local              # Your API keys (not committed)
+```
+
+## Common gotchas (and fixes)
+
+**"It won't start / weird build errors."**  
+You may need to rebuild the ephemeral folders that are in `.gitignore`.
+
+```bash
+# Remove and rebuild
+rm -rf .next node_modules
+npm install
+npm run build
+```
+
+Make sure `.gitignore` contains:
+
+```
 .next/
 node_modules/
-
-generate using:
-npm run build
-# or
-next build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**API keys not found:** Verify `.env.local` exists at the project root and you restarted the dev server after edits.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+You can deploy anywhere that supports Next.js.
 
-## Learn More
+- **Vercel:** Zero-config for Next.js; connect the repo and set your env vars.
+- **Self-host:** `npm run build` then `npm run start` behind your reverse proxy.
 
-To learn more about Next.js, take a look at the following resources:
+Remember to set your environment variables in the hosting platform before going live.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Why I built this
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+I wanted a clean place to point people to my work and a small, configurable chat that answers common questions about me without over-engineering. It's simple on purpose.
 
-## Deploy on Vercel
+## License & reuse
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All content (projects, copy, images) is mine. Feel free to use the structure as reference, but please don't copy my personal content verbatim.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contact
+
+Have a question or feedback? Open an issue or ask the site's chat.  
+Thanks for visiting!

@@ -33,63 +33,59 @@ const brianInfo = {
 };
 
 /**
+ * Skill categorization mapping for efficient categorization
+ */
+const SKILL_CATEGORIES = {
+  "Frontend Technologies": {
+    description: "Modern web development frameworks and technologies for building responsive user interfaces",
+    keywords: ['react', 'next', 'javascript', 'html', 'css', 'tailwind', 'typescript']
+  },
+  "Backend Technologies": {
+    description: "Server-side technologies, databases, and API development for robust applications", 
+    keywords: ['java', 'python', 'node', 'servlet', 'fastapi', 'express']
+  },
+  "DevOps & Infrastructure": {
+    description: "Infrastructure management, containerization, and deployment platforms",
+    keywords: ['docker', 'kubernetes', 'aws', 'microservices']
+  },
+  "AI & APIs": {
+    description: "Artificial intelligence integration and API development",
+    keywords: ['api', 'openai', 'gemini', 'ai', 'token']
+  },
+  "Databases": {
+    description: "Database management and data storage solutions",
+    keywords: ['mysql', 'mongodb', 'postgresql', 'sqlite', 'database', 'jdbc', 'supabase']
+  }
+};
+
+/**
  * Extracts skills from DataArray projects grouped by category
  * @returns {Object} Skills organized by category
  */
 export function getSkillsByCategory() {
-  const skillsMap = {
-    "Frontend Technologies": {
-      skills: [],
-      description: "Modern web development frameworks and technologies for building responsive user interfaces"
-    },
-    "Backend Technologies": {
-      skills: [],
-      description: "Server-side technologies, databases, and API development for robust applications"
-    },
-    "DevOps & Infrastructure": {
-      skills: [],
-      description: "Infrastructure management, containerization, and deployment platforms"
-    },
-    "AI & APIs": {
-      skills: [],
-      description: "Artificial intelligence integration and API development"
-    },
-    "Databases": {
-      skills: [],
-      description: "Database management and data storage solutions"
-    }
-  };
-
-  // Extract and categorize skills from project tech stacks
   const allSkills = getAllSkills();
   
+  // Initialize categories with empty skills arrays
+  const skillsMap = Object.fromEntries(
+    Object.entries(SKILL_CATEGORIES).map(([category, { description }]) => [
+      category, 
+      { skills: [], description }
+    ])
+  );
+
+  // Categorize skills efficiently
   allSkills.forEach(skill => {
     const lowerSkill = skill.toLowerCase();
     
-    if (lowerSkill.includes('react') || lowerSkill.includes('next') || lowerSkill.includes('javascript') || 
-        lowerSkill.includes('html') || lowerSkill.includes('css') || lowerSkill.includes('tailwind') ||
-        lowerSkill.includes('typescript')) {
-      if (!skillsMap["Frontend Technologies"].skills.includes(skill)) {
-        skillsMap["Frontend Technologies"].skills.push(skill);
-      }
-    } else if (lowerSkill.includes('java') || lowerSkill.includes('python') || lowerSkill.includes('node') ||
-               lowerSkill.includes('servlet') || lowerSkill.includes('fastapi') || lowerSkill.includes('express')) {
-      if (!skillsMap["Backend Technologies"].skills.includes(skill)) {
-        skillsMap["Backend Technologies"].skills.push(skill);
-      }
-    } else if (lowerSkill.includes('docker') || lowerSkill.includes('kubernetes') || lowerSkill.includes('aws') ||
-               lowerSkill.includes('microservices')) {
-      if (!skillsMap["DevOps & Infrastructure"].skills.includes(skill)) {
-        skillsMap["DevOps & Infrastructure"].skills.push(skill);
-      }
-    } else if (lowerSkill.includes('api') || lowerSkill.includes('openai') || lowerSkill.includes('gemini') ||
-               lowerSkill.includes('ai') || lowerSkill.includes('token')) {
-      if (!skillsMap["AI & APIs"].skills.includes(skill)) {
-        skillsMap["AI & APIs"].skills.push(skill);
-      }
-    } else if (lowerSkill.includes('mysql') || lowerSkill.includes('mongodb') || lowerSkill.includes('postgresql') || lowerSkill.includes('sqlite') || lowerSkill.includes('database') || lowerSkill.includes('jdbc') || lowerSkill.includes('supabase')) {
-      if (!skillsMap["Databases"].skills.includes(skill)) {
-        skillsMap["Databases"].skills.push(skill);
+    // Find the first matching category
+    const categoryEntry = Object.entries(SKILL_CATEGORIES).find(([, { keywords }]) =>
+      keywords.some(keyword => lowerSkill.includes(keyword))
+    );
+    
+    if (categoryEntry) {
+      const [categoryName] = categoryEntry;
+      if (!skillsMap[categoryName].skills.includes(skill)) {
+        skillsMap[categoryName].skills.push(skill);
       }
     }
   });
@@ -102,15 +98,7 @@ export function getSkillsByCategory() {
  * @returns {Array} All unique skills from all projects
  */
 export function getAllSkills() {
-  const allSkills = new Set();
-  
-  DataArray.forEach(project => {
-    project.techStack.forEach(skill => {
-      allSkills.add(skill);
-    });
-  });
-  
-  return Array.from(allSkills);
+  return [...new Set(DataArray.flatMap(project => project.techStack))];
 }
 
 /**
@@ -178,8 +166,9 @@ export function kbToPassages() {
 export function getProjectByName(projectName) {
   const normalizedName = projectName.toLowerCase();
   return DataArray.find(project => 
-    project.name.toLowerCase().includes(normalizedName) ||
-    project.title.toLowerCase().includes(normalizedName)
+    [project.name, project.title].some(field => 
+      field.toLowerCase().includes(normalizedName)
+    )
   ) || null;
 }
 
@@ -214,23 +203,16 @@ export function getProjectsByStatus(status) {
  */
 export function searchSkills(query) {
   const normalizedQuery = query.toLowerCase();
-  const results = [];
   const skillsData = getSkillsByCategory();
   
-  Object.entries(skillsData).forEach(([category, data]) => {
-    const matchingSkills = data.skills.filter(skill => 
-      skill.toLowerCase().includes(normalizedQuery)
-    );
-    
-    if (matchingSkills.length > 0) {
-      results.push({
-        category,
-        skills: matchingSkills
-      });
-    }
-  });
-  
-  return results;
+  return Object.entries(skillsData)
+    .map(([category, data]) => ({
+      category,
+      skills: data.skills.filter(skill => 
+        skill.toLowerCase().includes(normalizedQuery)
+      )
+    }))
+    .filter(result => result.skills.length > 0);
 }
 
 export default {

@@ -1,17 +1,12 @@
 'use client'
 
-// parent page
-import Image from "next/image";
-
 import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
 import MySlider from "./components/SliderCard/MySlider";
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 
-// import { transform } from "next/dist/build/swc/generated-native";
 export default function Home() {
   // Scroll animation hooks for different elements
-  const [titleRef, titleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [sliderRef, sliderVisible] = useScrollAnimation({ threshold: 0.1 })
@@ -41,19 +36,6 @@ export default function Home() {
           margin-bottom: 3rem;
         }
 
-        .projects-title {
-          font-size: clamp(4rem, 8vw, 6rem);
-          color: #F7FBFD;
-          font-family: 'Inter', Arial, sans-serif;
-          font-weight: bold;
-          margin: 0;
-          padding: 0;
-          text-align: left;
-          max-width: 750px;
-          width: 100%;
-          overflow: hidden;
-        }
-
         .recent-works-subtitle {
           color: #53c9c9;
           font-size: 3rem;
@@ -78,14 +60,7 @@ export default function Home() {
           margin-top: 0;
         }
 
-
-
         @media (max-width: 768px) {
-          .projects-title {
-            font-size: clamp(3rem, 10vw, 4rem);
-            padding-left: 1.25rem;
-          }
-          
           .recent-works-subtitle {
             font-size: 2rem;
             padding-left: 1.25rem;
@@ -98,10 +73,6 @@ export default function Home() {
         }
 
         @media (min-width: 768px) {
-          .projects-title {
-            padding-left: 50px;
-          }
-          
           .recent-works-subtitle {
             padding-left: 80px;
           }
@@ -124,12 +95,6 @@ export default function Home() {
         className="projects-container"
       >
         <div className="container m-auto">
-          {/* <p 
-            ref={titleRef}
-            className={`projects-title ${titleVisible ? 'visible' : ''}`}
-          >
-            projects
-          </p> */}
           <div>
             <p 
               ref={subtitleRef}

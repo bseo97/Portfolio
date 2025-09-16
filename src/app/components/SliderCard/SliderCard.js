@@ -1,28 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-
-// Helper functions for status colors
-const getStatusColor = (color) => {
-  switch (color) {
-    case 'green': return 'bg-green-500';
-    case 'blue': return 'bg-blue-500';
-    case 'yellow': return 'bg-yellow-500';
-    case 'purple': return 'bg-purple-500';
-    case 'red': return 'bg-red-500';
-    default: return 'bg-green-500';
-  }
-};
-
-const getStatusTextColor = (color) => {
-  switch (color) {
-    case 'green': return 'text-green-500';
-    case 'blue': return 'text-blue-500';
-    case 'yellow': return 'text-yellow-500';
-    case 'purple': return 'text-purple-500';
-    case 'red': return 'text-red-500';
-    default: return 'text-green-500';
-  }
-};
+import { getStatusColor, getStatusTextColor } from '../../utils/statusHelpers'
 
 // props over item, index inside the parameter. it will represent each element within the array
 // maps through the data array, and pass in the item to data array

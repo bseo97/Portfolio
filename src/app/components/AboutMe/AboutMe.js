@@ -3,10 +3,18 @@ import React from 'react'
 import { useScrollAnimation } from '../../hooks/useScrollAnimation'
 
 export default function AboutMe() {
+  // Consolidate scroll animations with similar thresholds
   const [sectionRef, sectionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [photoRef, photoVisible] = useScrollAnimation({ threshold: 0.3 })
   const [contentRef, contentVisible] = useScrollAnimation({ threshold: 0.3 })
   const [hobbiesRef, hobbiesVisible] = useScrollAnimation({ threshold: 0.3 })
+
+  // Hobby data for maintainability
+  const hobbies = [
+    { image: '/Hackathon.JPG', alt: 'Hackathon' },
+    { image: '/hawaii.JPG', alt: 'Travel' },
+    { image: '/museum.png', alt: 'Museums' }
+  ]
 
   return (
     <div className="about-me-section" id="about">
@@ -423,27 +431,15 @@ export default function AboutMe() {
             Swimming, Travel, Museums, and Hackathons
           </p>
           <div className="hobbies-grid">
-            <div className="hobby-item">
-              <img 
-                src="/Hackathon.jpg" 
-                alt="Hackathon"
-                className="hobby-image"
-              />
-            </div>
-            <div className="hobby-item">
-              <img 
-                src="/hawaii.jpg" 
-                alt="Travel"
-                className="hobby-image"
-              />
-            </div>
-            <div className="hobby-item">
-              <img 
-                src="/museum.png" 
-                alt="Museums"
-                className="hobby-image"
-              />
-            </div>
+            {hobbies.map((hobby, index) => (
+              <div key={index} className="hobby-item">
+                <img 
+                  src={hobby.image} 
+                  alt={hobby.alt}
+                  className="hobby-image"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>

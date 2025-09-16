@@ -7,17 +7,21 @@ export default function HomeComponent() {
   const [headingAnimationDone, setHeadingAnimationDone] = useState(false);
 
   useEffect(() => {
-    // Check if this is a page refresh
-    const isPageRefresh = performance.navigation?.type === 1 || 
-                         performance.getEntriesByType('navigation')[0]?.type === 'reload';
-    
-    // Only show loading screen on refresh
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      if (!isPageRefresh) {
-        loadingScreen.style.display = 'none';
+    // Robust loading screen hiding logic
+    const hideLoadingScreen = () => {
+      const loadingScreen = document.getElementById('loading-screen')
+      if (loadingScreen) {
+        loadingScreen.style.display = 'none'
       }
     }
+
+    // Hide immediately and with timeout as fallback
+    hideLoadingScreen()
+    const timeoutId = setTimeout(hideLoadingScreen, 50)
+    
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timeoutId)
+
     // Shooting Stars Canvas Implementation
     class ShootingStar {
       constructor(canvas) {
@@ -380,8 +384,8 @@ export default function HomeComponent() {
 
   // Handler for subtitle animation end
   const handleSubtitleAnimationEnd = () => {
-    setHeadingAnimationDone(true);
-  };
+    setHeadingAnimationDone(true)
+  }
 
   return (
 <React.Fragment>

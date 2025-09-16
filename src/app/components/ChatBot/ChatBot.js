@@ -14,15 +14,11 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   // Simple markdown parser for basic formatting
   const parseMessage = (text) => {
-    if (!text) return text;
+    if (!text) return text
     
-    // Convert **text** to bold
-    let parsed = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Replace --- with a proper visual separator
-    parsed = parsed.replace(/^---$/gm, '<div class="message-separator"></div>');
-    
-    return parsed;
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert **text** to bold
+      .replace(/^---$/gm, '<div class="message-separator"></div>') // Replace --- with separator
   }
 
   useEffect(() => {
@@ -31,9 +27,11 @@ export default function ChatBot({ onExpand, typingReady }) {
       setIsTyping(true)
       return
     }
+    
     let currentIndex = 0
     setPlaceholder('')
     setIsTyping(true)
+    
     const typeText = () => {
       if (currentIndex <= fullText.length) {
         setPlaceholder(fullText.slice(0, currentIndex))
@@ -43,6 +41,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         setIsTyping(false)
       }
     }
+    
     typeText()
   }, [typingReady])
 
@@ -59,67 +58,55 @@ export default function ChatBot({ onExpand, typingReady }) {
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
-      const chatMessages = messagesEndRef.current.closest('.chat-messages');
+      const chatMessages = messagesEndRef.current.closest('.chat-messages')
       if (chatMessages) {
-        // Small delay to ensure DOM is updated
         setTimeout(() => {
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 50);
+          chatMessages.scrollTop = chatMessages.scrollHeight
+        }, 50)
       }
     }
   }
 
   const scrollToTop = () => {
     if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = 0;
+      chatMessagesRef.current.scrollTop = 0
     }
   }
 
   const handleScroll = () => {
     if (chatMessagesRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = chatMessagesRef.current;
-      // Show scroll to top button if user has scrolled up and there are enough messages
-      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 50 && messages.length > 2);
+      const { scrollTop, scrollHeight, clientHeight } = chatMessagesRef.current
+      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 50 && messages.length > 2)
     }
   }
+
+  // Helper function to create message objects
+  const createMessage = (text, isUser = false, id = null) => ({
+    id: id || Date.now(),
+    text,
+    isUser,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (message.trim()) {
-      const userMessage = {
-        id: Date.now(),
-        text: message,
-        isUser: true,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
+      const userMessage = createMessage(message, true)
       setMessages(prev => [...prev, userMessage])
+      const userInput = message
       setMessage('')
-      
-      // Show typing animation
       setBotIsTyping(true)
       
-      // Get bot response from API
-      const userInput = message;
       setTimeout(async () => {
         try {
-          const botResponseText = await getBotResponse(userInput);
+          const botResponseText = await getBotResponse(userInput)
           setBotIsTyping(false)
-          const botMessage = {
-            id: Date.now() + 1,
-            text: botResponseText,
-            isUser: false,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
+          const botMessage = createMessage(botResponseText, false, Date.now() + 1)
           setMessages(prev => [...prev, botMessage])
         } catch (error) {
-          console.error('Error getting bot response:', error);
+          console.error('Error getting bot response:', error)
           setBotIsTyping(false)
-          const errorMessage = {
-            id: Date.now() + 1,
-            text: "Sorry, I'm having trouble responding right now. Please try again!",
-            isUser: false,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
+          const errorMessage = createMessage("Sorry, I'm having trouble responding right now. Please try again!", false, Date.now() + 1)
           setMessages(prev => [...prev, errorMessage])
         }
       }, 800)
@@ -153,6 +140,14 @@ export default function ChatBot({ onExpand, typingReady }) {
     setMessages([])
   }
 
+  // Style variables for consistency
+  const colors = {
+    primary: '#05d9e8',
+    secondary: '#53c9c9',
+    white: '#ffffff',
+    whiteAlpha: (alpha) => `rgba(255, 255, 255, ${alpha})`,
+    primaryAlpha: (alpha) => `rgba(5, 217, 232, ${alpha})`
+  }
 
   return (
     <div className="chatbot-container">
@@ -580,96 +575,93 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
       `}</style>
       
-      <div className="chatbot-container">
-        <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
-          <div className="chat-header">
-            <h3 className="chat-title">Chat with Brian</h3>
-            <div className="header-buttons">
-              {messages.length > 0 && (
-                <button onClick={clearChat} className="clear-button">
-                  Clear Chat
-                </button>
-              )}
-            </div>
+      <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
+        <div className="chat-header">
+          <h3 className="chat-title">Chat with Brian</h3>
+          <div className="header-buttons">
+            {messages.length > 0 && (
+              <button onClick={clearChat} className="clear-button">
+                Clear Chat
+              </button>
+            )}
           </div>
-          <div 
-            ref={chatMessagesRef}
-            className={`chat-messages ${messages.length === 0 ? 'empty' : ''}`}
-            onScroll={handleScroll}
-          >
-            {messages.length === 0 ? (
-              <div className="empty-state">
-                <img src="/seo4.svg" alt="SEO Portfolio" className="empty-state-image" />
-                {/* <div className="empty-state-text">Start a conversation</div> */}
-                <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests!</div>
-              </div>
-            ) : (
-              <>
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                    <div className="message-avatar">
-                      {msg.isUser ? 'U' : 'B'}
-                    </div>
-                    <div className="message-content">
-                      <div 
-                        className="message-bubble" 
-                        dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
-                      />
-                      <div className="message-time">{msg.timestamp}</div>
-                    </div>
+        </div>
+        <div 
+          ref={chatMessagesRef}
+          className={`chat-messages ${messages.length === 0 ? 'empty' : ''}`}
+          onScroll={handleScroll}
+        >
+          {messages.length === 0 ? (
+            <div className="empty-state">
+               <img src="/seo1.svg" alt="SEO Portfolio" className="empty-state-image" />
+              <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests!</div>
+            </div>
+          ) : (
+            <>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
+                  <div className="message-avatar">
+                    {msg.isUser ? 'U' : 'B'}
                   </div>
-                ))}
-                {botIsTyping && (
-                  <div className="message bot">
-                    <div className="message-avatar">B</div>
-                    <div className="message-content">
-                      <div className="message-bubble typing-indicator">
-                        <span>Typing</span>
-                        <div className="typing-dots">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
+                  <div className="message-content">
+                    <div 
+                      className="message-bubble" 
+                      dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
+                    />
+                    <div className="message-time">{msg.timestamp}</div>
+                  </div>
+                </div>
+              ))}
+              {botIsTyping && (
+                <div className="message bot">
+                  <div className="message-avatar">B</div>
+                  <div className="message-content">
+                    <div className="message-bubble typing-indicator">
+                      <span>Typing</span>
+                      <div className="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                       </div>
                     </div>
                   </div>
-                )}
-                <div ref={messagesEndRef} />
-              </>
-            )}
-          </div>
-          {showScrollTop && (
-            <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </>
           )}
-          <form onSubmit={handleSubmit} className="chatbot-form">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={placeholder + (isTyping ? '|' : '')}
-              className="chatbot-input"
-            />
-            <button type="submit" className="submit-button" disabled={!message.trim()}>
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </button>
-          </form>
         </div>
+        {showScrollTop && (
+          <button onClick={scrollToTop} className="scroll-top-button" title="Scroll to top">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+        )}
+        <form onSubmit={handleSubmit} className="chatbot-form">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={placeholder + (isTyping ? '|' : '')}
+            className="chatbot-input"
+          />
+          <button type="submit" className="submit-button" disabled={!message.trim()}>
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
+          </button>
+        </form>
       </div>
     </div>
   )
