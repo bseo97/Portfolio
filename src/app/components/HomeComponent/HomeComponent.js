@@ -18,9 +18,6 @@ export default function HomeComponent() {
     // Hide immediately and with timeout as fallback
     hideLoadingScreen()
     const timeoutId = setTimeout(hideLoadingScreen, 50)
-    
-    // Cleanup timeout on unmount
-    return () => clearTimeout(timeoutId)
 
     // Shooting Stars Canvas Implementation
     class ShootingStar {
@@ -308,7 +305,7 @@ export default function HomeComponent() {
     
     // Create particles
     function createParticles() {
-      const container = document.getElementById('hero-section');
+      const container = document.getElementById('home');
       if (!container) return;
       
       const particleCount = Math.min(12, Math.floor(window.innerWidth / 120));
@@ -355,8 +352,8 @@ export default function HomeComponent() {
       if (neuralNetwork) neuralNetwork.classList.add('active');
       if (starNetwork) starNetwork.classList.add('active');
       
-      // Hide loading screen only if it was shown (on refresh)
-      if (loadingScreen && isPageRefresh && loadingScreen.style.display !== 'none') {
+      // Hide loading screen if it exists
+      if (loadingScreen && loadingScreen.style.display !== 'none') {
         loadingScreen.style.opacity = '0';
         setTimeout(() => {
           loadingScreen.style.display = 'none';
@@ -366,12 +363,15 @@ export default function HomeComponent() {
     
     // Cleanup function
     return () => {
+      // Clear timeout
+      clearTimeout(timeoutId);
+      
       if (shootingStarSystem) {
         shootingStarSystem.destroy();
       }
       
       // Clean up created elements
-      const containers = ['neural-network', 'star-network', 'hero-section'];
+      const containers = ['neural-network', 'star-network', 'home'];
       containers.forEach(id => {
         const container = document.getElementById(id);
         if (container) {
