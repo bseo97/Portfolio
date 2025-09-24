@@ -18,10 +18,8 @@ export default function SliderCard({ item, index }) {
                      {/* Overlay for hover effect */}
            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
              <div className="absolute bottom-4 left-4 right-4">
-               <Link href={`/projects/${index}`}>
-                 <button className="w-full bg-[#53c9c9] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#244e4e] transition-colors duration-200">
-                   View Project
-                 </button>
+               <Link href={`/projects/${index}`} className="block w-full bg-[#53c9c9] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#244e4e] transition-colors duration-200 text-center">
+                 View Project
                </Link>
              </div>
            </div>
