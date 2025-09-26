@@ -673,6 +673,9 @@ export default function HomeComponent() {
         <div className="realistic-cloud cloud4"></div>
         <div className="realistic-cloud cloud5"></div>
         
+        {/* Dark Mode Moon */}
+        <div className="moon"></div>
+        
         <div className="bottom-fade"></div>
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
