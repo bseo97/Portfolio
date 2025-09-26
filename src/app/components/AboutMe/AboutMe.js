@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
 import { useScrollAnimation } from '../../hooks/useScrollAnimation'
+import { useTheme } from '../../hooks/useTheme'
 
 export default function AboutMe() {
   // Consolidate scroll animations with similar thresholds
@@ -8,6 +9,7 @@ export default function AboutMe() {
   const [photoRef, photoVisible] = useScrollAnimation({ threshold: 0.3 })
   const [contentRef, contentVisible] = useScrollAnimation({ threshold: 0.3 })
   const [hobbiesRef, hobbiesVisible] = useScrollAnimation({ threshold: 0.3 })
+  const { isDarkMode } = useTheme()
 
   // Hobby data for maintainability
   const hobbies = [
@@ -21,11 +23,15 @@ export default function AboutMe() {
       <style jsx>{`
         .about-me-section {
           min-height: 100vh;
-          background: linear-gradient(180deg, #475569 0%, #64748b 30%, #94a3b8 60%, #cbd5e1 90%, #e2e8f0 100%);
+          background: ${isDarkMode 
+            ? 'linear-gradient(180deg, #475569 0%, #64748b 30%, #94a3b8 60%, #cbd5e1 90%, #e2e8f0 100%)'
+            : 'linear-gradient(180deg, #E6F3FF 0%, #B8E0FF 30%, #7BB3F0 60%, #4A90E2 90%, #87CEEB 100%)'
+          };
           padding: 4rem 0;
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .about-container {
@@ -38,7 +44,7 @@ export default function AboutMe() {
         .about-title {
           font-size: clamp(3rem, 6vw, 4rem);
           font-weight: bold;
-          color: #F7FBFD;
+          color: ${isDarkMode ? '#F7FBFD' : '#2c3e50'};
           text-align: center;
           margin-bottom: 3rem;
           font-family: 'Inter', Arial, sans-serif;
@@ -119,7 +125,7 @@ export default function AboutMe() {
         .education h3,
         .involvement h3,
         .interests h3 {
-          color: #05d9e8;
+          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 0.8rem;
@@ -129,7 +135,7 @@ export default function AboutMe() {
         .education p,
         .involvement p,
         .interests p {
-          color: #ffffff;
+          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
           font-size: 1.2rem;
           line-height: 1.8;
           margin: 0;
@@ -202,7 +208,7 @@ export default function AboutMe() {
         }
 
         .hobbies h3 {
-          color: #05d9e8;
+          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
@@ -242,7 +248,7 @@ export default function AboutMe() {
         }
 
         .hobby-description {
-          color: #ffffff;
+          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
           font-size: 1.2rem;
           line-height: 1.8;
           margin-bottom: 1rem;

@@ -1,10 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
   const [chatExpanded, setChatExpanded] = useState(false);
   const [headingAnimationDone, setHeadingAnimationDone] = useState(false);
+  const { isDarkMode, isLightMode } = useTheme();
 
   useEffect(() => {
     // Robust loading screen hiding logic
@@ -332,14 +334,54 @@ export default function HomeComponent() {
         container.appendChild(particle);
       }
     }
+
+    // Create light mode floating particles
+    function createLightModeParticles() {
+      const container = document.getElementById('home');
+      if (!container) return;
+      
+      const containerRect = container.getBoundingClientRect();
+      
+      // Create floating particles for light mode
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'light-particle';
+          particle.style.left = Math.random() * containerRect.width + 'px';
+          particle.style.top = containerRect.height + 'px'; // Start from bottom
+          particle.style.width = (Math.random() * 4 + 2) + 'px';
+          particle.style.height = particle.style.width;
+          particle.style.animationDelay = Math.random() * 8 + 's';
+          particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+          container.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.remove();
+            }
+          }, 10000);
+        }, i * 300);
+      }
+    }
     
-    // Initialize everything
-    createNeuralNetwork();
-    createStarNetwork();
-    createParticles();
+    // Initialize everything based on theme
+    if (isDarkMode) {
+      createNeuralNetwork();
+      createStarNetwork();
+      createParticles();
+    }
     
-    // Initialize shooting star system
-    const shootingStarSystem = new ShootingStarSystem('shootingCanvas');
+    // Initialize shooting star system only in dark mode
+    let shootingStarSystem = null;
+    if (isDarkMode) {
+      shootingStarSystem = new ShootingStarSystem('shootingCanvas');
+    }
+    
+    // Create light mode particles if in light mode
+    if (isLightMode) {
+      createLightModeParticles();
+    }
 
     // Activate animations and hide loading screen if shown
     setTimeout(() => {
@@ -375,12 +417,12 @@ export default function HomeComponent() {
       containers.forEach(id => {
         const container = document.getElementById(id);
         if (container) {
-          const elements = container.querySelectorAll('.neural-node, .neural-connection, .star-node, .floating-particle');
+          const elements = container.querySelectorAll('.neural-node, .neural-connection, .star-node, .floating-particle, .light-particle');
           elements.forEach(el => el.remove());
         }
       });
     };
-  }, []);
+  }, [isDarkMode, isLightMode]);
 
   // Handler for subtitle animation end
   const handleSubtitleAnimationEnd = () => {
@@ -396,6 +438,7 @@ export default function HomeComponent() {
           position: relative;
           background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
           overflow: hidden;
+          z-index: 0;
         }
 
         .neural-network, .star-network {
@@ -478,6 +521,8 @@ export default function HomeComponent() {
            transition: padding 0.5s cubic-bezier(0.4,0,0.2,1);
            padding-top: 0;
            padding-bottom: 0;
+           position: relative;
+           z-index: 10;
          }
 
          .hero-text {
@@ -613,9 +658,21 @@ export default function HomeComponent() {
         <div id="loading-screen" className="loading-screen">
           <div className="loading-text">Loading...</div>
         </div>
+        
+        {/* Dark Mode Elements */}
         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
         <div className="neural-network" id="neural-network"></div>
         <div className="star-network" id="star-network"></div>
+        
+        {/* Light Mode Elements */}
+        <div className="glass-overlay"></div>
+        <div className="sun"></div>
+        <div className="realistic-cloud cloud1"></div>
+        <div className="realistic-cloud cloud2"></div>
+        <div className="realistic-cloud cloud3"></div>
+        <div className="realistic-cloud cloud4"></div>
+        <div className="realistic-cloud cloud5"></div>
+        
         <div className="bottom-fade"></div>
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
