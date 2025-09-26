@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
+import { useTheme } from '../../hooks/useTheme'
 
 export default function ChatBot({ onExpand, typingReady }) {
   const [message, setMessage] = useState('')
@@ -11,6 +12,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const fullText = "Ask anything about Brian!"
+  const { isDarkMode } = useTheme()
 
   // Simple markdown parser for basic formatting
   const parseMessage = (text) => {
@@ -169,11 +171,11 @@ export default function ChatBot({ onExpand, typingReady }) {
         
         
         .chatbot-wrapper {
-          background: rgba(255, 255, 255, 0.1);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
           backdrop-filter: blur(15px);
           border-radius: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.4)'};
+          box-shadow: ${isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)'};
           overflow: hidden;
           transition: all 0.3s ease;
           position: relative;
@@ -202,8 +204,8 @@ export default function ChatBot({ onExpand, typingReady }) {
           justify-content: space-between;
           align-items: center;
           padding: 1rem 1.5rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.05);
+          border-bottom: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.3)'};
           flex-shrink: 0;
         }
         .chat-title {
@@ -217,9 +219,9 @@ export default function ChatBot({ onExpand, typingReady }) {
           gap: 0.5rem;
         }
         .clear-button, .close-button {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: rgba(255, 255, 255, 0.8);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'};
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)'};
           padding: 0.5rem 1rem;
           border-radius: 10px;
           cursor: pointer;
@@ -228,8 +230,8 @@ export default function ChatBot({ onExpand, typingReady }) {
           font-family: 'Inter', Arial, sans-serif;
         }
         .clear-button:hover, .close-button:hover {
-          background: rgba(255, 255, 255, 0.2);
-          color: #ffffff;
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)'};
+          color: ${isDarkMode ? '#ffffff' : '#000000'};
         }
         .close-button {
           background: rgba(239, 68, 68, 0.2);
@@ -258,7 +260,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           width: 6px;
         }
         .chat-messages::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
           border-radius: 3px;
         }
         .chat-messages::-webkit-scrollbar-thumb {
@@ -297,7 +299,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           color: #ffffff;
         }
         .message.bot .message-avatar {
-          background: rgba(255, 255, 255, 0.2);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'};
           color: #05d9e8;
         }
         .message-content {
@@ -324,13 +326,13 @@ export default function ChatBot({ onExpand, typingReady }) {
           border-bottom-right-radius: 6px;
         }
         .message.bot .message-bubble {
-          background: rgba(255, 255, 255, 0.15);
-          color: #ffffff;
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.05)'};
+          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
           border-bottom-left-radius: 6px;
         }
         .message-time {
           font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'};
           margin-top: 0.25rem;
           text-align: right;
         }
@@ -343,7 +345,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           align-items: center;
           justify-content: center;
           height: 100%;
-          color: rgba(255, 255, 255, 0.6);
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
           text-align: center;
         }
         .empty-state-icon {
@@ -358,25 +360,25 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
         .empty-state-subtext {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'};
           text-align: center;
         }
         .chatbot-form {
           display: flex;
           align-items: center;
           padding: 1rem 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.05);
+          border-top: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.3)'};
           position: relative;
           flex-shrink: 0;
         }
         .chatbot-input {
           flex: 1;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'};
           border-radius: 999px;
           padding: 0.75rem 3rem 0.75rem 1rem;
-          color: #ffffff;
+          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
           font-size: 1rem;
           font-family: 'Inter', Arial, sans-serif;
           outline: none;
@@ -386,10 +388,10 @@ export default function ChatBot({ onExpand, typingReady }) {
         .chatbot-input:focus {
           border-color: #05d9e8;
           box-shadow: 0 0 0 2px rgba(5, 217, 232, 0.1);
-          background: rgba(255, 255, 255, 0.15);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.9)'};
         }
         .chatbot-input::placeholder {
-          color: rgba(255, 255, 255, 0.6);
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)'};
           font-style: italic;
         }
         .submit-button {
@@ -472,8 +474,8 @@ export default function ChatBot({ onExpand, typingReady }) {
           align-items: center;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          background: rgba(255, 255, 255, 0.15);
-          color: #ffffff;
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.05)'};
+          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
           border-radius: 16px;
           border-bottom-left-radius: 6px;
         }
@@ -484,7 +486,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         .typing-dots span {
           width: 6px;
           height: 6px;
-          background-color: rgba(255, 255, 255, 0.7);
+          background-color: ${isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.5)'};
           border-radius: 50%;
           animation: typingDots 1.4s infinite ease-in-out;
         }
