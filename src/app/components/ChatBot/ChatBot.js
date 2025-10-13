@@ -59,30 +59,25 @@ export default function ChatBot({ onExpand, typingReady }) {
     }
   }, [botIsTyping])
 
-  // Handle mobile keyboard to prevent viewport shift
+  // Handle mobile keyboard - maintain scroll position
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || window.innerWidth > 768) return
+
+    let scrollPosition = 0
 
     const handleFocus = () => {
-      // Prevent body scroll on mobile when keyboard opens
-      if (window.innerWidth <= 768) {
-        document.body.style.position = 'fixed'
-        document.body.style.width = '100%'
-        document.body.style.top = `-${window.scrollY}px`
-      }
+      // Just store the scroll position
+      scrollPosition = window.scrollY
     }
 
     const handleBlur = () => {
-      // Restore body scroll when keyboard closes
-      if (window.innerWidth <= 768) {
-        const scrollY = document.body.style.top
-        document.body.style.position = ''
-        document.body.style.width = ''
-        document.body.style.top = ''
-        if (scrollY) {
-          window.scrollTo(0, parseInt(scrollY || '0') * -1)
-        }
-      }
+      // Restore scroll position after keyboard closes
+      setTimeout(() => {
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'instant'
+        })
+      }, 150)
     }
 
     const inputElement = inputRef.current
@@ -556,17 +551,10 @@ export default function ChatBot({ onExpand, typingReady }) {
             max-width: 98vw;
             padding: 0 0.5rem;
             min-height: 340px;
-            position: relative;
           }
           .chatbot-wrapper {
             min-height: 340px;
             max-height: 600px;
-            position: relative;
-          }
-          body.keyboard-open {
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
           }
           .message {
             max-width: 90%;
