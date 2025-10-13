@@ -59,64 +59,28 @@ export default function ChatBot({ onExpand, typingReady }) {
     }
   }, [botIsTyping])
 
-  // Prevent viewport resize when keyboard opens
+  // Set viewport height on mobile to prevent resize when keyboard opens
   useEffect(() => {
     if (typeof window === 'undefined' || window.innerWidth > 768) return
 
-    // Store initial viewport height
-    const initialHeight = window.innerHeight
-    let isKeyboardOpen = false
-
+    // Store initial viewport height and set CSS variable
     const setViewportHeight = () => {
-      // Lock the viewport to initial height
-      document.documentElement.style.setProperty('--viewport-height', `${initialHeight}px`)
+      const vh = window.innerHeight
+      document.documentElement.style.setProperty('--viewport-height', `${vh}px`)
     }
 
-    const handleFocus = () => {
-      isKeyboardOpen = true
-      setViewportHeight()
-      // Prevent any scroll/resize
-      document.body.style.height = `${initialHeight}px`
-      document.body.style.overflow = 'hidden'
-    }
-
-    const handleBlur = () => {
-      isKeyboardOpen = false
-      // Restore after keyboard closes
-      setTimeout(() => {
-        document.body.style.height = ''
-        document.body.style.overflow = ''
-      }, 100)
-    }
-
-    // Prevent visual viewport resize
-    const handleResize = () => {
-      if (isKeyboardOpen && window.visualViewport) {
-        // Keep the layout viewport locked
-        window.scrollTo(0, 0)
-      }
-    }
-
+    // Set on mount
     setViewportHeight()
 
-    const inputElement = inputRef.current
-    if (inputElement) {
-      inputElement.addEventListener('focus', handleFocus)
-      inputElement.addEventListener('blur', handleBlur)
+    // Optionally update on window resize (orientation change)
+    const handleOrientationChange = () => {
+      setTimeout(setViewportHeight, 100)
     }
 
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize)
-    }
+    window.addEventListener('resize', handleOrientationChange)
 
     return () => {
-      if (inputElement) {
-        inputElement.removeEventListener('focus', handleFocus)
-        inputElement.removeEventListener('blur', handleBlur)
-      }
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize)
-      }
+      window.removeEventListener('resize', handleOrientationChange)
     }
   }, [])
 
@@ -229,6 +193,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           align-items: center;
           max-height: 50vh;
           overflow-y: auto;
+          box-sizing: border-box;
         }
         
         
@@ -247,6 +212,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           display: flex;
           flex-direction: column;
           margin-top: 1rem;
+          box-sizing: border-box;
         }
         .chatbot-wrapper.empty {
           min-height: 180px;
@@ -574,9 +540,11 @@ export default function ChatBot({ onExpand, typingReady }) {
         /* Mobile Responsive */
         @media (max-width: 900px) {
           .chatbot-container {
-            max-width: 98vw;
+            max-width: calc(100% - 1rem);
             padding: 0 0.5rem;
             min-height: 340px;
+            margin-left: auto;
+            margin-right: auto;
           }
           .chatbot-wrapper {
             min-height: 340px;
@@ -600,14 +568,18 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
         @media (max-width: 600px) {
           .chatbot-container {
-            max-width: 100vw;
-            width: 98vw;
+            max-width: calc(100% - 0.5rem);
+            width: 100%;
             padding: 0 0.25rem;
             min-height: 240px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
           }
           .chatbot-wrapper {
             min-height: 240px;
             max-height: 420px;
+            box-sizing: border-box;
           }
           .chat-header {
             padding: 0.75rem 1rem;

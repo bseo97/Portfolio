@@ -8,6 +8,10 @@
   --background-end-rgb: 255, 255, 255;
   }
   
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   html, body {
   color: rgb(var(--foreground-rgb));
   font-family: 'Inter', Arial, sans-serif;
@@ -23,23 +27,18 @@
   /* Prevent mobile keyboard from shifting viewport */
   @media screen and (max-width: 768px) {
     html {
+      height: 100vh;
       height: var(--viewport-height);
-      overflow: hidden;
     }
     
     body {
-      height: var(--viewport-height);
-      overflow-x: hidden;
-      overflow-y: auto;
-      position: fixed;
+      min-height: 100vh;
+      min-height: var(--viewport-height);
       width: 100%;
-      top: 0;
-      left: 0;
     }
 
     main {
       min-height: var(--viewport-height);
-      overflow-y: auto;
     }
   }
   /*responsible for the blue tick when a link is clicked */
