@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
+import FlyingBird from '../FlyingBird/FlyingBird';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
@@ -672,6 +673,9 @@ export default function HomeComponent() {
         <div className="realistic-cloud cloud3"></div>
         <div className="realistic-cloud cloud4"></div>
         <div className="realistic-cloud cloud5"></div>
+        
+        {/* Flying Birds - Light Mode Only */}
+        {isLightMode && <FlyingBird />}
         
         <div className="bottom-fade"></div>
         <div className="hero-content">

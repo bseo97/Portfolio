@@ -11,6 +11,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [botIsTyping, setBotIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
+  const inputRef = useRef(null)
   const fullText = "Ask anything about Brian!"
   const { isDarkMode } = useTheme()
 
@@ -57,6 +58,46 @@ export default function ChatBot({ onExpand, typingReady }) {
       scrollToBottom()
     }
   }, [botIsTyping])
+
+  // Handle mobile keyboard to prevent viewport shift
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleFocus = () => {
+      // Prevent body scroll on mobile when keyboard opens
+      if (window.innerWidth <= 768) {
+        document.body.style.position = 'fixed'
+        document.body.style.width = '100%'
+        document.body.style.top = `-${window.scrollY}px`
+      }
+    }
+
+    const handleBlur = () => {
+      // Restore body scroll when keyboard closes
+      if (window.innerWidth <= 768) {
+        const scrollY = document.body.style.top
+        document.body.style.position = ''
+        document.body.style.width = ''
+        document.body.style.top = ''
+        if (scrollY) {
+          window.scrollTo(0, parseInt(scrollY || '0') * -1)
+        }
+      }
+    }
+
+    const inputElement = inputRef.current
+    if (inputElement) {
+      inputElement.addEventListener('focus', handleFocus)
+      inputElement.addEventListener('blur', handleBlur)
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener('focus', handleFocus)
+        inputElement.removeEventListener('blur', handleBlur)
+      }
+    }
+  }, [])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -515,10 +556,17 @@ export default function ChatBot({ onExpand, typingReady }) {
             max-width: 98vw;
             padding: 0 0.5rem;
             min-height: 340px;
+            position: relative;
           }
           .chatbot-wrapper {
             min-height: 340px;
             max-height: 600px;
+            position: relative;
+          }
+          body.keyboard-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
           }
           .message {
             max-width: 90%;
@@ -642,6 +690,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         )}
         <form onSubmit={handleSubmit} className="chatbot-form">
           <input
+            ref={inputRef}
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
