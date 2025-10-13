@@ -15,23 +15,31 @@
   overflow-x: hidden;
   }
 
+  /* CSS variable for locked viewport height */
+  :root {
+    --viewport-height: 100vh;
+  }
+
   /* Prevent mobile keyboard from shifting viewport */
   @media screen and (max-width: 768px) {
     html {
-      height: 100%;
-      height: -webkit-fill-available;
+      height: var(--viewport-height);
+      overflow: hidden;
     }
     
     body {
-      min-height: 100%;
-      min-height: -webkit-fill-available;
-      position: relative;
-      padding-bottom: env(safe-area-inset-bottom, 0);
+      height: var(--viewport-height);
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
     }
 
     main {
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
+      min-height: var(--viewport-height);
+      overflow-y: auto;
     }
   }
   /*responsible for the blue tick when a link is clicked */

@@ -59,26 +59,45 @@ export default function ChatBot({ onExpand, typingReady }) {
     }
   }, [botIsTyping])
 
-  // Handle mobile keyboard - maintain scroll position
+  // Prevent viewport resize when keyboard opens
   useEffect(() => {
     if (typeof window === 'undefined' || window.innerWidth > 768) return
 
-    let scrollPosition = 0
+    // Store initial viewport height
+    const initialHeight = window.innerHeight
+    let isKeyboardOpen = false
+
+    const setViewportHeight = () => {
+      // Lock the viewport to initial height
+      document.documentElement.style.setProperty('--viewport-height', `${initialHeight}px`)
+    }
 
     const handleFocus = () => {
-      // Just store the scroll position
-      scrollPosition = window.scrollY
+      isKeyboardOpen = true
+      setViewportHeight()
+      // Prevent any scroll/resize
+      document.body.style.height = `${initialHeight}px`
+      document.body.style.overflow = 'hidden'
     }
 
     const handleBlur = () => {
-      // Restore scroll position after keyboard closes
+      isKeyboardOpen = false
+      // Restore after keyboard closes
       setTimeout(() => {
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'instant'
-        })
-      }, 150)
+        document.body.style.height = ''
+        document.body.style.overflow = ''
+      }, 100)
     }
+
+    // Prevent visual viewport resize
+    const handleResize = () => {
+      if (isKeyboardOpen && window.visualViewport) {
+        // Keep the layout viewport locked
+        window.scrollTo(0, 0)
+      }
+    }
+
+    setViewportHeight()
 
     const inputElement = inputRef.current
     if (inputElement) {
@@ -86,10 +105,17 @@ export default function ChatBot({ onExpand, typingReady }) {
       inputElement.addEventListener('blur', handleBlur)
     }
 
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+    }
+
     return () => {
       if (inputElement) {
         inputElement.removeEventListener('focus', handleFocus)
         inputElement.removeEventListener('blur', handleBlur)
+      }
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize)
       }
     }
   }, [])

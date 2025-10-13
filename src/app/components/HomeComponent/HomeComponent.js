@@ -436,7 +436,6 @@ export default function HomeComponent() {
       <style jsx>{`
         .hero-section {
           min-height: 100vh;
-          min-height: -webkit-fill-available;
           height: 100%;
           position: relative;
           background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
@@ -446,10 +445,8 @@ export default function HomeComponent() {
 
         @media screen and (max-width: 768px) {
           .hero-section {
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            height: auto;
-            padding-bottom: env(safe-area-inset-bottom, 0);
+            min-height: var(--viewport-height, 100vh);
+            height: var(--viewport-height, 100vh);
           }
         }
 
