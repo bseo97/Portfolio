@@ -59,28 +59,106 @@ export default function ChatBot({ onExpand, typingReady }) {
     }
   }, [botIsTyping])
 
-  // Set viewport height on mobile to prevent resize when keyboard opens
+  // Handle mobile keyboard scroll issues
   useEffect(() => {
     if (typeof window === 'undefined' || window.innerWidth > 768) return
 
-    // Store initial viewport height and set CSS variable
-    const setViewportHeight = () => {
-      const vh = window.innerHeight
-      document.documentElement.style.setProperty('--viewport-height', `${vh}px`)
+    let savedScrollPosition = 0
+    let isKeyboardOpen = false
+    let savedBodyBackground = ''
+
+    const inputElement = inputRef.current
+    if (!inputElement) return
+
+    // Save scroll position before keyboard opens
+    const handleFocus = () => {
+      savedScrollPosition = window.scrollY || window.pageYOffset
+      isKeyboardOpen = true
+      
+      // Save current background
+      savedBodyBackground = document.body.style.background || ''
+      
+      // Get the computed background color from the main element or body
+      const mainElement = document.querySelector('main')
+      const computedBg = window.getComputedStyle(mainElement || document.body).backgroundColor
+      
+      // Lock the body scroll position and prevent white background
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${savedScrollPosition}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+      document.body.style.height = '100vh'
+      document.body.style.overflow = 'hidden'
+      // Set a background color to prevent white space
+      if (computedBg && computedBg !== 'rgba(0, 0, 0, 0)') {
+        document.body.style.backgroundColor = computedBg
+      } else {
+        // Fallback to a neutral color that matches your theme
+        document.body.style.backgroundColor = '#475569'
+      }
     }
 
-    // Set on mount
-    setViewportHeight()
-
-    // Optionally update on window resize (orientation change)
-    const handleOrientationChange = () => {
-      setTimeout(setViewportHeight, 100)
+    // Restore scroll position when keyboard closes
+    const handleBlur = () => {
+      if (isKeyboardOpen) {
+        isKeyboardOpen = false
+        
+        // Unlock body and restore scroll position
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+        document.body.style.right = ''
+        document.body.style.width = ''
+        document.body.style.height = ''
+        document.body.style.overflow = ''
+        document.body.style.background = savedBodyBackground
+        document.body.style.backgroundColor = ''
+        
+        // Use requestAnimationFrame for smoother restoration
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedScrollPosition)
+        })
+      }
     }
 
-    window.addEventListener('resize', handleOrientationChange)
+    // Handle visual viewport changes (more reliable for keyboard detection)
+    const handleViewportResize = () => {
+      if (!isKeyboardOpen && inputElement === document.activeElement) {
+        // Keyboard opened but we missed the focus event
+        savedScrollPosition = window.scrollY || window.pageYOffset
+        isKeyboardOpen = true
+      }
+    }
+
+    inputElement.addEventListener('focus', handleFocus)
+    inputElement.addEventListener('blur', handleBlur)
+    
+    // Use visualViewport API if available
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportResize)
+    }
 
     return () => {
-      window.removeEventListener('resize', handleOrientationChange)
+      inputElement.removeEventListener('focus', handleFocus)
+      inputElement.removeEventListener('blur', handleBlur)
+      
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportResize)
+      }
+      
+      // Cleanup: ensure body style is restored
+      if (isKeyboardOpen) {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+        document.body.style.right = ''
+        document.body.style.width = ''
+        document.body.style.height = ''
+        document.body.style.overflow = ''
+        document.body.style.background = savedBodyBackground
+        document.body.style.backgroundColor = ''
+      }
     }
   }, [])
 
@@ -168,15 +246,6 @@ export default function ChatBot({ onExpand, typingReady }) {
     setMessages([])
   }
 
-  // Style variables for consistency
-  const colors = {
-    primary: '#05d9e8',
-    secondary: '#53c9c9',
-    white: '#ffffff',
-    whiteAlpha: (alpha) => `rgba(255, 255, 255, ${alpha})`,
-    primaryAlpha: (alpha) => `rgba(5, 217, 232, ${alpha})`
-  }
-
   return (
     <div className="chatbot-container">
       <style jsx>{`
@@ -195,8 +264,6 @@ export default function ChatBot({ onExpand, typingReady }) {
           overflow-y: auto;
           box-sizing: border-box;
         }
-        
-        
         .chatbot-wrapper {
           background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
           backdrop-filter: blur(15px);
@@ -376,16 +443,6 @@ export default function ChatBot({ onExpand, typingReady }) {
           color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
           text-align: center;
         }
-        .empty-state-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-          color: #05d9e8;
-        }
-        .empty-state-text {
-          font-size: 1.1rem;
-          margin-bottom: 0.5rem;
-          text-align: center;
-        }
         .empty-state-subtext {
           font-size: 0.9rem;
           color: ${isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'};
@@ -407,7 +464,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           border-radius: 999px;
           padding: 0.75rem 3rem 0.75rem 1rem;
           color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
-          font-size: 1rem;
+          font-size: 16px; /* Prevent zoom on iOS when input is focused */
           font-family: 'Inter', Arial, sans-serif;
           outline: none;
           transition: all 0.3s ease;
@@ -554,7 +611,7 @@ export default function ChatBot({ onExpand, typingReady }) {
             max-width: 90%;
           }
           .chatbot-input {
-            font-size: 0.95rem;
+            font-size: 16px; /* Keep at 16px to prevent iOS zoom */
             padding: 0.65rem 2.5rem 0.65rem 0.9rem;
           }
           .submit-button {
