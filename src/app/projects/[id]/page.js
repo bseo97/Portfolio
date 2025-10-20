@@ -5,6 +5,8 @@ import { DataArray } from '@/app/data'
 import Link from 'next/link'
 import { getStatusColor, getStatusTextColor } from '@/app/utils/statusHelpers'
 import { useTheme } from '@/app/hooks/useTheme'
+import MoonIcon from '@/app/components/MoonIcon'
+import SunIcon from '@/app/components/SunIcon'
 
 export default function ProjectDetail() {
   const params = useParams()
@@ -90,7 +92,7 @@ export default function ProjectDetail() {
                 className={`px-3 py-1 rounded-full border border-[#53c9c9] text-[#53c9c9] hover:bg-[#53c9c9] hover:text-white font-semibold text-sm transition-all duration-300 backdrop-blur-sm`}
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
-                {isDarkMode ? '☀️' : '🌙'}
+                {isDarkMode ? <SunIcon/> : <MoonIcon/>}
               </button>
             </div>
           </div>
