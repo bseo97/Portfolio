@@ -128,15 +128,18 @@ export default function FlyingBird() {
             top: 7%;
             transform: rotate(-1deg);
           }
-          65% {
-            opacity: 1;
-          }
-          70% {
+          75% {
             top: 10%;
             transform: rotate(0deg);
-            opacity: 0.5;
+            opacity: 1;
           }
-          75% {
+          82% {
+            opacity: 0.7;
+          }
+          88% {
+            opacity: 0.3;
+          }
+          92% {
             opacity: 0;
           }
           100% {
@@ -165,15 +168,18 @@ export default function FlyingBird() {
             top: 25%;
             transform: scaleX(-1) rotate(-1deg);
           }
-          60% {
-            opacity: 1;
-          }
-          65% {
+          75% {
             top: 18%;
             transform: scaleX(-1) rotate(2deg);
-            opacity: 0.5;
+            opacity: 1;
           }
-          70% {
+          82% {
+            opacity: 0.7;
+          }
+          88% {
+            opacity: 0.3;
+          }
+          92% {
             opacity: 0;
           }
           100% {
@@ -206,15 +212,18 @@ export default function FlyingBird() {
             top: 28%;
             transform: rotate(-2deg) scale(0.85);
           }
-          60% {
-            opacity: 1;
-          }
-          65% {
+          75% {
             top: 33%;
             transform: rotate(1deg) scale(0.85);
-            opacity: 0.5;
+            opacity: 1;
           }
-          70% {
+          82% {
+            opacity: 0.7;
+          }
+          88% {
+            opacity: 0.3;
+          }
+          92% {
             opacity: 0;
           }
           100% {
@@ -294,24 +303,26 @@ export default function FlyingBird() {
               opacity: 1;
             }
             20% {
-              top: 5%;
-              transform: rotate(0deg);
+              top: 6%;
+              transform: rotate(-1deg);
             }
-            40% {
-              top: 12%;
+            35% {
+              top: 10%;
               transform: rotate(1deg);
             }
-            55% {
+            50% {
               top: 7%;
+              transform: rotate(0deg);
+            }
+            58% {
+              top: 9%;
               transform: rotate(-1deg);
               opacity: 1;
             }
-            60% {
-              top: 10%;
-              transform: rotate(0deg);
+            62% {
               opacity: 0.6;
             }
-            65% {
+            67% {
               opacity: 0;
             }
             100% {
@@ -332,21 +343,25 @@ export default function FlyingBird() {
             5% {
               opacity: 1;
             }
-            25% {
-              top: 16%;
+            22% {
+              top: 17%;
               transform: scaleX(-1) rotate(1deg);
             }
-            50% {
-              top: 25%;
+            40% {
+              top: 23%;
               transform: scaleX(-1) rotate(-1deg);
+            }
+            52% {
+              top: 19%;
+              transform: scaleX(-1) rotate(1deg);
               opacity: 1;
             }
-            55% {
-              top: 18%;
+            56% {
+              top: 21%;
               transform: scaleX(-1) rotate(2deg);
               opacity: 0.6;
             }
-            60% {
+            62% {
               opacity: 0;
             }
             100% {
@@ -367,25 +382,25 @@ export default function FlyingBird() {
             5% {
               opacity: 1;
             }
-            15% {
-              top: 25%;
+            20% {
+              top: 27%;
               transform: rotate(-1deg) scale(0.85);
             }
-            35% {
-              top: 35%;
+            38% {
+              top: 33%;
               transform: rotate(2deg) scale(0.85);
             }
-            50% {
+            52% {
               top: 28%;
               transform: rotate(-2deg) scale(0.85);
               opacity: 1;
             }
-            55% {
-              top: 33%;
-              transform: rotate(1deg) scale(0.85);
+            57% {
+              top: 31%;
+              transform: rotate(0deg) scale(0.85);
               opacity: 0.6;
             }
-            60% {
+            62% {
               opacity: 0;
             }
             100% {
