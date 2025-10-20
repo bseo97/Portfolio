@@ -705,9 +705,9 @@ export default function HomeComponent() {
           {/* Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="flex flex-col items-center">
-              <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span>
+              {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
               <svg 
-                className="w-6 h-6 text-white opacity-60" 
+                className="w-6 h-6 text-white opacity-70" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"

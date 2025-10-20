@@ -78,9 +78,18 @@ export default function ChatBot({ onExpand, typingReady }) {
       // Save current background
       savedBodyBackground = document.body.style.background || ''
       
-      // Get the computed background color from the main element or body
-      const mainElement = document.querySelector('main')
-      const computedBg = window.getComputedStyle(mainElement || document.body).backgroundColor
+      // Get the hero section's actual bottom gradient color based on theme
+      const heroSection = document.querySelector('.hero-section')
+      let backgroundColor = '#475569' // Default dark mode bottom color
+      
+      if (heroSection) {
+        // Check if light theme is active
+        const isLightTheme = document.documentElement.classList.contains('light-theme') || 
+                            document.body.classList.contains('light-theme')
+        
+        // Use the exact bottom gradient color that matches the theme
+        backgroundColor = isLightTheme ? '#E6F3FF' : '#475569'
+      }
       
       // Lock the body scroll position and prevent white background
       document.body.style.position = 'fixed'
@@ -90,13 +99,8 @@ export default function ChatBot({ onExpand, typingReady }) {
       document.body.style.width = '100%'
       document.body.style.height = '100vh'
       document.body.style.overflow = 'hidden'
-      // Set a background color to prevent white space
-      if (computedBg && computedBg !== 'rgba(0, 0, 0, 0)') {
-        document.body.style.backgroundColor = computedBg
-      } else {
-        // Fallback to a neutral color that matches your theme
-        document.body.style.backgroundColor = '#475569'
-      }
+      // Set background color to match the theme's bottom gradient color
+      document.body.style.backgroundColor = backgroundColor
     }
 
     // Restore scroll position when keyboard closes
