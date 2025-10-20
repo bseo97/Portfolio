@@ -11,6 +11,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [botIsTyping, setBotIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
+  const inputRef = useRef(null)
   const fullText = "Ask anything about Brian!"
   const { isDarkMode } = useTheme()
 
@@ -57,6 +58,113 @@ export default function ChatBot({ onExpand, typingReady }) {
       scrollToBottom()
     }
   }, [botIsTyping])
+
+  // Handle mobile keyboard scroll issues
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth > 768) return
+
+    let savedScrollPosition = 0
+    let isKeyboardOpen = false
+    let savedBodyBackground = ''
+
+    const inputElement = inputRef.current
+    if (!inputElement) return
+
+    // Save scroll position before keyboard opens
+    const handleFocus = () => {
+      savedScrollPosition = window.scrollY || window.pageYOffset
+      isKeyboardOpen = true
+      
+      // Save current background
+      savedBodyBackground = document.body.style.background || ''
+      
+      // Get the hero section's actual bottom gradient color based on theme
+      const heroSection = document.querySelector('.hero-section')
+      let backgroundColor = '#475569' // Default dark mode bottom color
+      
+      if (heroSection) {
+        // Check if light theme is active
+        const isLightTheme = document.documentElement.classList.contains('light-theme') || 
+                            document.body.classList.contains('light-theme')
+        
+        // Use the exact bottom gradient color that matches the theme
+        backgroundColor = isLightTheme ? '#E6F3FF' : '#475569'
+      }
+      
+      // Lock the body scroll position and prevent white background
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${savedScrollPosition}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+      document.body.style.height = '100vh'
+      document.body.style.overflow = 'hidden'
+      // Set background color to match the theme's bottom gradient color
+      document.body.style.backgroundColor = backgroundColor
+    }
+
+    // Restore scroll position when keyboard closes
+    const handleBlur = () => {
+      if (isKeyboardOpen) {
+        isKeyboardOpen = false
+        
+        // Unlock body and restore scroll position
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+        document.body.style.right = ''
+        document.body.style.width = ''
+        document.body.style.height = ''
+        document.body.style.overflow = ''
+        document.body.style.background = savedBodyBackground
+        document.body.style.backgroundColor = ''
+        
+        // Use requestAnimationFrame for smoother restoration
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedScrollPosition)
+        })
+      }
+    }
+
+    // Handle visual viewport changes (more reliable for keyboard detection)
+    const handleViewportResize = () => {
+      if (!isKeyboardOpen && inputElement === document.activeElement) {
+        // Keyboard opened but we missed the focus event
+        savedScrollPosition = window.scrollY || window.pageYOffset
+        isKeyboardOpen = true
+      }
+    }
+
+    inputElement.addEventListener('focus', handleFocus)
+    inputElement.addEventListener('blur', handleBlur)
+    
+    // Use visualViewport API if available
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportResize)
+    }
+
+    return () => {
+      inputElement.removeEventListener('focus', handleFocus)
+      inputElement.removeEventListener('blur', handleBlur)
+      
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportResize)
+      }
+      
+      // Cleanup: ensure body style is restored
+      if (isKeyboardOpen) {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+        document.body.style.right = ''
+        document.body.style.width = ''
+        document.body.style.height = ''
+        document.body.style.overflow = ''
+        document.body.style.background = savedBodyBackground
+        document.body.style.backgroundColor = ''
+      }
+    }
+  }, [])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -142,15 +250,6 @@ export default function ChatBot({ onExpand, typingReady }) {
     setMessages([])
   }
 
-  // Style variables for consistency
-  const colors = {
-    primary: '#05d9e8',
-    secondary: '#53c9c9',
-    white: '#ffffff',
-    whiteAlpha: (alpha) => `rgba(255, 255, 255, ${alpha})`,
-    primaryAlpha: (alpha) => `rgba(5, 217, 232, ${alpha})`
-  }
-
   return (
     <div className="chatbot-container">
       <style jsx>{`
@@ -167,9 +266,8 @@ export default function ChatBot({ onExpand, typingReady }) {
           align-items: center;
           max-height: 50vh;
           overflow-y: auto;
+          box-sizing: border-box;
         }
-        
-        
         .chatbot-wrapper {
           background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
           backdrop-filter: blur(15px);
@@ -185,6 +283,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           display: flex;
           flex-direction: column;
           margin-top: 1rem;
+          box-sizing: border-box;
         }
         .chatbot-wrapper.empty {
           min-height: 180px;
@@ -348,16 +447,6 @@ export default function ChatBot({ onExpand, typingReady }) {
           color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
           text-align: center;
         }
-        .empty-state-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-          color: #05d9e8;
-        }
-        .empty-state-text {
-          font-size: 1.1rem;
-          margin-bottom: 0.5rem;
-          text-align: center;
-        }
         .empty-state-subtext {
           font-size: 0.9rem;
           color: ${isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'};
@@ -379,7 +468,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           border-radius: 999px;
           padding: 0.75rem 3rem 0.75rem 1rem;
           color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
-          font-size: 1rem;
+          font-size: 16px; /* Prevent zoom on iOS when input is focused */
           font-family: 'Inter', Arial, sans-serif;
           outline: none;
           transition: all 0.3s ease;
@@ -512,9 +601,11 @@ export default function ChatBot({ onExpand, typingReady }) {
         /* Mobile Responsive */
         @media (max-width: 900px) {
           .chatbot-container {
-            max-width: 98vw;
+            max-width: calc(100% - 1rem);
             padding: 0 0.5rem;
             min-height: 340px;
+            margin-left: auto;
+            margin-right: auto;
           }
           .chatbot-wrapper {
             min-height: 340px;
@@ -524,7 +615,7 @@ export default function ChatBot({ onExpand, typingReady }) {
             max-width: 90%;
           }
           .chatbot-input {
-            font-size: 0.95rem;
+            font-size: 16px; /* Keep at 16px to prevent iOS zoom */
             padding: 0.65rem 2.5rem 0.65rem 0.9rem;
           }
           .submit-button {
@@ -538,14 +629,18 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
         @media (max-width: 600px) {
           .chatbot-container {
-            max-width: 100vw;
-            width: 98vw;
+            max-width: calc(100% - 0.5rem);
+            width: 100%;
             padding: 0 0.25rem;
             min-height: 240px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
           }
           .chatbot-wrapper {
             min-height: 240px;
             max-height: 420px;
+            box-sizing: border-box;
           }
           .chat-header {
             padding: 0.75rem 1rem;
@@ -642,6 +737,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         )}
         <form onSubmit={handleSubmit} className="chatbot-form">
           <input
+            ref={inputRef}
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}

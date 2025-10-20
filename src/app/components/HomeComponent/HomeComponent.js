@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
+import FlyingBird from '../FlyingBird/FlyingBird';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
@@ -435,10 +436,18 @@ export default function HomeComponent() {
       <style jsx>{`
         .hero-section {
           min-height: 100vh;
+          height: 100%;
           position: relative;
           background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
           overflow: hidden;
           z-index: 0;
+        }
+
+        @media screen and (max-width: 768px) {
+          .hero-section {
+            min-height: var(--viewport-height, 100vh);
+            height: var(--viewport-height, 100vh);
+          }
         }
 
         .neural-network, .star-network {
@@ -673,8 +682,8 @@ export default function HomeComponent() {
         <div className="realistic-cloud cloud4"></div>
         <div className="realistic-cloud cloud5"></div>
         
-        {/* Dark Mode Moon */}
-        <div className="moon"></div>
+        {/* Flying Birds - Light Mode Only */}
+        {isLightMode && <FlyingBird />}
         
         <div className="bottom-fade"></div>
         <div className="hero-content">
@@ -696,9 +705,9 @@ export default function HomeComponent() {
           {/* Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="flex flex-col items-center">
-              <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span>
+              {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
               <svg 
-                className="w-6 h-6 text-white opacity-60" 
+                className="w-6 h-6 text-white opacity-70" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
