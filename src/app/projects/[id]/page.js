@@ -57,11 +57,7 @@ export default function ProjectDetail() {
           : 'bg-gradient-to-b from-slate-50 to-slate-100'
       }`}>
       {/* Navigation */}
-      <nav className={`backdrop-blur-sm border-b sticky top-0 z-50 transition-all duration-500 ${
-        isDarkMode 
-          ? 'bg-slate-800/80 border-slate-700' 
-          : 'bg-white/80 border-slate-200'
-      }`}>
+      <nav className="glass sticky top-0 z-50 transition-all duration-500">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button 
@@ -134,11 +130,7 @@ export default function ProjectDetail() {
 
             {/* Detailed Description */}
             {project.des1 && (
-              <div className={`rounded-xl p-6 shadow-sm border transition-all duration-500 ${
-                isDarkMode 
-                  ? 'bg-slate-800/50 border-slate-700' 
-                  : 'bg-white border-slate-200'
-              }`}>
+              <div className="glass rounded-xl p-6 transition-all duration-500">
                 <h2 className={`text-lg font-semibold mb-3 transition-colors ${
                   isDarkMode ? 'text-white' : 'text-slate-800'
                 }`}>Project Details</h2>
@@ -350,16 +342,12 @@ export default function ProjectDetail() {
 
             {/* Decorative elements */}
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
           </div>
         </div>
 
         {/* Additional Project Info Section */}
-        <div className={`mt-16 rounded-2xl p-8 shadow-sm border transition-all duration-500 ${
-          isDarkMode 
-            ? 'bg-slate-800/50 border-slate-700' 
-            : 'bg-white border-slate-200'
-        }`}>
+        <div className="glass mt-16 rounded-2xl p-8 transition-all duration-500">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="text-3xl font-bold text-[#53c9c9] mb-2">{project.year}</div>

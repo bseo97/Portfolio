@@ -20,7 +20,7 @@ export default function DiagonalDrawer({
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-80 w-full shadow-2xl transform backdrop-blur-xl border-b transition-all duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-80 w-full shadow-2xl transform backdrop-blur-xl backdrop-saturate-150 border-b transition-all duration-300 ease-in-out z-50 ${
           isOpen ? "translate-y-0" : "-translate-y-full"
         } ${
           isDarkMode 

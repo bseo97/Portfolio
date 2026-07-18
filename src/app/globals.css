@@ -617,6 +617,50 @@
     }
   }
 
+  /* ------------------------------------------------------------------ */
+  /* Centralized glassmorphism utilities                                 */
+  /* Use ONLY on floating/overlay surfaces: sticky nav, cards, modals.   */
+  /* Spec: blur 12-16px + saturate 1.4, translucent fill, 1px inner      */
+  /* highlight border, soft diffuse shadow. Graceful solid fallback for  */
+  /* browsers without backdrop-filter.                                   */
+  /* ------------------------------------------------------------------ */
+  .glass {
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Stronger fill for surfaces that sit over busy imagery/content       */
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.1);
+  }
+
+  .dark-theme .glass {
+    background: rgba(15, 23, 42, 0.55);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .dark-theme .glass-strong {
+    background: rgba(15, 23, 42, 0.7);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Fallback: no backdrop-filter support -> raise opacity to stay legible */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass { background: rgba(255, 255, 255, 0.94); }
+    .glass-strong { background: rgba(255, 255, 255, 0.97); }
+    .dark-theme .glass { background: rgba(15, 23, 42, 0.94); }
+    .dark-theme .glass-strong { background: rgba(15, 23, 42, 0.97); }
+  }
+
   /* Modern Glass Morphism Effects for light mode - constrained to home section */
   .glass-overlay {
     position: absolute;

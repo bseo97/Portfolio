@@ -269,8 +269,9 @@ export default function ChatBot({ onExpand, typingReady }) {
           box-sizing: border-box;
         }
         .chatbot-wrapper {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'};
-          backdrop-filter: blur(15px);
+          background: ${isDarkMode ? 'rgba(30, 41, 59, 0.55)' : 'rgba(255, 255, 255, 0.7)'};
+          -webkit-backdrop-filter: blur(15px) saturate(1.4);
+          backdrop-filter: blur(15px) saturate(1.4);
           border-radius: 20px;
           border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.4)'};
           box-shadow: ${isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)'};
@@ -284,6 +285,11 @@ export default function ChatBot({ onExpand, typingReady }) {
           flex-direction: column;
           margin-top: 1rem;
           box-sizing: border-box;
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          .chatbot-wrapper {
+            background: ${isDarkMode ? 'rgba(30, 41, 59, 0.96)' : 'rgba(255, 255, 255, 0.96)'};
+          }
         }
         .chatbot-wrapper.empty {
           min-height: 180px;

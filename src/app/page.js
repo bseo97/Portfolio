@@ -2,7 +2,7 @@
 
 import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
-import MySlider from "./components/SliderCard/MySlider";
+import ProjectIndex from "./components/ProjectIndex/ProjectIndex";
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 import { useTheme } from './hooks/useTheme';
 
@@ -108,19 +108,19 @@ export default function Home() {
             >
               Recent Works
             </p>
-            <p 
+            <p
               ref={descriptionRef}
               className={`projects-description ${descriptionVisible ? 'visible' : ''}`}
             >
-            Take a look at some of my recent work, highlighting what I’ve been building and learning — from full-stack web applications to AI-powered tools, each project reflects my growth as a developer and my passion for solving real-world problems!
+            A selection of what I&apos;ve been building lately, from full-stack web apps to AI tooling. Hover any title to preview the work.
             </p>
           </div>
         </div>
-        <div 
+        <div
           ref={sliderRef}
           className={`scroll-animate-delayed-3 ${sliderVisible ? 'visible' : ''}`}
         >
-          <MySlider/>
+          <ProjectIndex/>
         </div>
       </div>
 

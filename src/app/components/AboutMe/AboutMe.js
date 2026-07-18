@@ -59,12 +59,13 @@ export default function AboutMe() {
         }
 
         .about-content {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          background: rgba(255, 255, 255, 0.14);
+          -webkit-backdrop-filter: blur(14px) saturate(1.4);
+          backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
           display: grid;
           grid-template-columns: 1fr 1.5fr;
           gap: 3rem;
@@ -189,12 +190,13 @@ export default function AboutMe() {
         }
 
         .hobbies {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          background: rgba(255, 255, 255, 0.14);
+          -webkit-backdrop-filter: blur(14px) saturate(1.4);
+          backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
           opacity: 0;
           transform: translateY(40px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
@@ -252,6 +254,13 @@ export default function AboutMe() {
           font-size: 1.2rem;
           line-height: 1.8;
           margin-bottom: 1rem;
+        }
+
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          .about-content,
+          .hobbies {
+            background: ${isDarkMode ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)'};
+          }
         }
 
         @media (max-width: 768px) {

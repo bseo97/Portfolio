@@ -43,7 +43,7 @@ export default function Header() {
 
       {/* Header */}
       <header
-        className={`fixed top-0 z-50 w-full transition-all duration-500 backdrop-blur-md border-b ${
+        className={`fixed top-0 z-50 w-full transition-all duration-500 backdrop-blur-md backdrop-saturate-150 border-b ${
           isDarkMode
             ? isScrolled 
               ? 'bg-slate-900/90 border-slate-700/50' 
