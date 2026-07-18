@@ -455,7 +455,7 @@ export default function HomeComponent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: #1C1A17;
+          background: #262948;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -499,10 +499,12 @@ export default function HomeComponent() {
          }
 
          .hero-text {
-           color: #53c9c9;
-           text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
+           color: var(--accent);
            margin-bottom: 0.5rem;
            transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
+         }
+         .hero-text h2 {
+           color: var(--text);
          }
          .hero-text.chat-expanded {
            margin-bottom: 0.25rem;
@@ -636,7 +638,7 @@ export default function HomeComponent() {
             <div className="flex flex-col items-center">
               {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
               <svg
-                className={`w-6 h-6 opacity-70 ${isDarkMode ? 'text-white' : 'text-slate-700'}`}
+                className="w-6 h-6 opacity-70 text-[color:var(--text)]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

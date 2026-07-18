@@ -4,30 +4,28 @@ import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
 import ProjectIndex from "./components/ProjectIndex/ProjectIndex";
 import { useScrollAnimation } from './hooks/useScrollAnimation';
-import { useTheme } from './hooks/useTheme';
 
 export default function Home() {
   // Scroll animation hooks for different elements
   const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [sliderRef, sliderVisible] = useScrollAnimation({ threshold: 0.1 })
-  const { isDarkMode } = useTheme()
   return (
     // minimum height = 100vh
     <main className="min-h-screen relative">
       {/* CSS Styles for Recent Works Section */}
       <style jsx>{`
         .recent-works-subtitle {
-          color: ${isDarkMode ? '#53c9c9' : '#2c3e50'};
-          font-size: 3rem;
+          color: var(--accent);
+          font-size: clamp(2.5rem, 5vw, 3.25rem);
           font-weight: 800;
           margin-top: 1rem;
         }
 
         .projects-description {
-          max-width: 2xl;
+          max-width: 65ch;
           font-size: 16px;
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           line-height: 2;
           margin-top: 1.25rem;
         }
@@ -43,7 +41,6 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .recent-works-subtitle {
-            font-size: 2rem;
             padding-left: 1.25rem;
           }
           

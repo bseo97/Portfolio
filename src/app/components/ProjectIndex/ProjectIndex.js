@@ -189,12 +189,11 @@ export default function ProjectIndex() {
           padding: 1.2rem 0.25rem;
           border-bottom: 1px solid rgba(44, 62, 80, 0.18);
           text-decoration: none;
-          color: #2c3e50;
+          color: var(--text);
           transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
         :global(.dark-theme) .pi-row {
           border-bottom-color: rgba(255, 255, 255, 0.16);
-          color: #f7fbfd;
         }
         .pi-row:focus-visible {
           outline: none;
@@ -229,7 +228,7 @@ export default function ProjectIndex() {
           font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
           font-size: 0.75rem;
           letter-spacing: 0.05em;
-          color: #53c9c9;
+          color: var(--accent);
           font-weight: 500;
         }
 
@@ -280,20 +279,19 @@ export default function ProjectIndex() {
           justify-content: center;
           font-size: 0.95rem;
           line-height: 1;
-          color: #2c3e50;
+          color: var(--text);
           background: rgba(44, 62, 80, 0.06);
           border: 1px solid rgba(44, 62, 80, 0.1);
           transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
             background 0.35s ease, color 0.35s ease;
         }
         :global(.dark-theme) .pi-arrow {
-          color: #f7fbfd;
           background: rgba(255, 255, 255, 0.08);
           border-color: rgba(255, 255, 255, 0.14);
         }
         .pi-row:hover .pi-arrow,
         .pi-row:focus-visible .pi-arrow {
-          background: #53c9c9;
+          background: var(--accent);
           color: #ffffff;
           transform: translate(3px, -3px);
         }

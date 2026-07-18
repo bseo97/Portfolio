@@ -82,7 +82,7 @@ export default function ChatBot({ onExpand, typingReady }) {
       // flash a mismatched color. Light = ivory, Dark = warm charcoal.
       const isLightTheme = document.documentElement.classList.contains('light-theme') ||
                           document.body.classList.contains('light-theme')
-      const backgroundColor = isLightTheme ? '#F4F1E9' : '#1C1A17'
+      const backgroundColor = isLightTheme ? '#F4F1E9' : '#262948'
       
       // Lock the body scroll position and prevent white background
       document.body.style.position = 'fixed'
@@ -307,7 +307,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           flex-shrink: 0;
         }
         .chat-title {
-          color: #05d9e8;
+          color: var(--accent);
           font-size: 1rem;
           font-weight: 600;
           margin: 0;

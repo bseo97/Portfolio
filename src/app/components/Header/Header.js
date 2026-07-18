@@ -64,7 +64,7 @@ export default function Header() {
           {/* Mobile Hamburger */}
           <button
             className={`xl:hidden text-2xl transition-all duration-300 hover:scale-110 ${
-              isDarkMode ? 'text-white hover:text-[#53c9c9]' : 'text-slate-800 hover:text-[#53c9c9]'
+              isDarkMode ? 'text-[color:var(--text)] hover:text-[color:var(--accent)]' : 'text-[color:var(--text)] hover:text-[color:var(--accent)]'
             } ${isOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
             onClick={() => setIsOpen(true)}
             aria-label="Open navigation menu"
@@ -99,46 +99,46 @@ export default function Header() {
               <a
                 className={`menu-item relative px-3 py-1 font-semibold text-lg transition-all duration-300 hover:scale-105 ${
                   activeSection === 'home' 
-                    ? "text-[#53c9c9]" 
+                    ? "text-[color:var(--accent)]"
                     : isDarkMode 
-                      ? "text-white hover:text-[#53c9c9]" 
-                      : "text-slate-700 hover:text-[#53c9c9]"
+                      ? "text-[color:var(--text)] hover:text-[color:var(--accent)]" 
+                      : "text-[color:var(--text)] hover:text-[color:var(--accent)]"
                 }`}
                 href="/#home"
               >
                 Home
                 {activeSection === 'home' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#53c9c9] rounded-full"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[color:var(--accent)] rounded-full"></div>
                 )}
               </a>
               <a
                 className={`menu-item relative px-3 py-1 font-semibold text-lg transition-all duration-300 hover:scale-105 ${
                   activeSection === 'about' 
-                    ? "text-[#53c9c9]" 
+                    ? "text-[color:var(--accent)]"
                     : isDarkMode 
-                      ? "text-white hover:text-[#53c9c9]" 
-                      : "text-slate-700 hover:text-[#53c9c9]"
+                      ? "text-[color:var(--text)] hover:text-[color:var(--accent)]" 
+                      : "text-[color:var(--text)] hover:text-[color:var(--accent)]"
                 }`}
                 href="/#about"
               >
                 About
                 {activeSection === 'about' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#53c9c9] rounded-full"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[color:var(--accent)] rounded-full"></div>
                 )}
               </a>
               <a
                 className={`menu-item relative px-3 py-1 font-semibold text-lg transition-all duration-300 hover:scale-105 ${
                   activeSection === 'projects' 
-                    ? "text-[#53c9c9]" 
+                    ? "text-[color:var(--accent)]"
                     : isDarkMode 
-                      ? "text-white hover:text-[#53c9c9]" 
-                      : "text-slate-700 hover:text-[#53c9c9]"
+                      ? "text-[color:var(--text)] hover:text-[color:var(--accent)]" 
+                      : "text-[color:var(--text)] hover:text-[color:var(--accent)]"
                 }`}
                 href="/#projects"
               >
                 Projects
                 {activeSection === 'projects' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#53c9c9] rounded-full"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[color:var(--accent)] rounded-full"></div>
                 )}
               </a>
             </div>

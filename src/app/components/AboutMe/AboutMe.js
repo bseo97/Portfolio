@@ -38,9 +38,9 @@ export default function AboutMe() {
         }
 
         .about-title {
-          font-size: clamp(3rem, 6vw, 4rem);
+          font-size: clamp(2.5rem, 5vw, 3.25rem);
           font-weight: bold;
-          color: ${isDarkMode ? '#F7FBFD' : '#2c3e50'};
+          color: var(--accent);
           text-align: center;
           margin-bottom: 3rem;
           font-family: 'Inter', Arial, sans-serif;
@@ -115,14 +115,14 @@ export default function AboutMe() {
         .education,
         .involvement,
         .interests {
-          border-left: 4px solid #05d9e8;
+          border-left: 4px solid var(--accent);
           padding-left: 1.5rem;
         }
 
         .education h3,
         .involvement h3,
         .interests h3 {
-          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 0.8rem;
@@ -132,7 +132,7 @@ export default function AboutMe() {
         .education p,
         .involvement p,
         .interests p {
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.2rem;
           line-height: 1.8;
           margin: 0;
@@ -206,7 +206,7 @@ export default function AboutMe() {
         }
 
         .hobbies h3 {
-          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
@@ -246,7 +246,7 @@ export default function AboutMe() {
         }
 
         .hobby-description {
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.2rem;
           line-height: 1.8;
           margin-bottom: 1rem;
@@ -288,7 +288,7 @@ export default function AboutMe() {
           .involvement,
           .interests {
             text-align: left;
-            border-left: 3px solid #05d9e8;
+            border-left: 3px solid var(--accent);
             padding-left: 1rem;
           }
 
