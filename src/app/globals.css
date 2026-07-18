@@ -24,7 +24,7 @@
     html {
       height: 100vh;
       /* Support for dynamic viewport units in modern browsers */
-      height: 100dvh;
+      height: 100dvh; /*dvh for dynamic viewport height. applies when width <= 768px*/
     }
     
     body {
