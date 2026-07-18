@@ -18,9 +18,7 @@ export default function ProjectDetail() {
   if (!project) {
     return (
       <div className={`min-h-screen flex items-center justify-center transition-all duration-2000 ${
-        isDarkMode 
-          ? 'bg-gradient-to-b from-slate-800 to-slate-900' 
-          : 'bg-gradient-to-b from-slate-50 to-slate-100'
+        isDarkMode ? 'bg-[#1C1A17]' : 'bg-[#F4F1E9]'
       }`}>
         <div className="text-center">
           <h1 className={`text-4xl font-bold mb-4 ${
@@ -52,9 +50,7 @@ export default function ProjectDetail() {
       `}</style>
       
       <div className={`min-h-screen transition-all duration-2000 ${
-        isDarkMode 
-          ? 'bg-gradient-to-b from-slate-800 to-slate-900' 
-          : 'bg-gradient-to-b from-slate-50 to-slate-100'
+        isDarkMode ? 'bg-[#1C1A17]' : 'bg-[#F4F1E9]'
       }`}>
       {/* Navigation */}
       <nav className="glass sticky top-0 z-50 transition-all duration-500">

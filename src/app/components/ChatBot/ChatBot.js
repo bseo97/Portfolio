@@ -78,18 +78,11 @@ export default function ChatBot({ onExpand, typingReady }) {
       // Save current background
       savedBodyBackground = document.body.style.background || ''
       
-      // Get the hero section's actual bottom gradient color based on theme
-      const heroSection = document.querySelector('.hero-section')
-      let backgroundColor = '#475569' // Default dark mode bottom color
-      
-      if (heroSection) {
-        // Check if light theme is active
-        const isLightTheme = document.documentElement.classList.contains('light-theme') || 
-                            document.body.classList.contains('light-theme')
-        
-        // Use the exact bottom gradient color that matches the theme
-        backgroundColor = isLightTheme ? '#E6F3FF' : '#475569'
-      }
+      // Match the unified site background so the mobile keyboard lock does not
+      // flash a mismatched color. Light = ivory, Dark = warm charcoal.
+      const isLightTheme = document.documentElement.classList.contains('light-theme') ||
+                          document.body.classList.contains('light-theme')
+      const backgroundColor = isLightTheme ? '#F4F1E9' : '#1C1A17'
       
       // Lock the body scroll position and prevent white background
       document.body.style.position = 'fixed'

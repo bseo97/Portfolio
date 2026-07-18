@@ -17,27 +17,6 @@ export default function Home() {
     <main className="min-h-screen relative">
       {/* CSS Styles for Recent Works Section */}
       <style jsx>{`
-        .next-section {
-          min-height: 100vh;
-          background: linear-gradient(180deg, #475569 0%, #64748b 20%, #94a3b8 50%, #cbd5e1 80%, #f1f5f9 100%);
-          position: relative;
-          z-index: 10;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          padding: 2rem;
-        }
-
-        .section-content {
-          color: #475569;
-          font-size: clamp(1.5rem, 4vw, 2rem);
-          text-align: center;
-          opacity: 0.8;
-          padding: 2rem;
-          margin-bottom: 3rem;
-        }
-
         .recent-works-subtitle {
           color: ${isDarkMode ? '#53c9c9' : '#2c3e50'};
           font-size: 3rem;
@@ -54,16 +33,12 @@ export default function Home() {
         }
 
         .projects-container {
-          background: ${isDarkMode 
-            ? 'linear-gradient(180deg, #475569 0%, #64748b 20%, #94a3b8 50%, #cbd5e1 80%, #e2e8f0 100%)'
-            : 'linear-gradient(180deg, #87CEEB 0%, #4A90E2 20%, #7BB3F0 50%, #B8E0FF 80%, #E6F3FF 100%)'
-          };
+          background: transparent; /* unified body color shows through */
           width: 100%;
           font-family: 'Inter', Arial, sans-serif;
           padding-top: 1.25rem;
           padding-bottom: 6rem;
           margin-top: 0;
-          transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (max-width: 768px) {

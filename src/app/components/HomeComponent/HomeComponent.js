@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
-import FlyingBird from '../FlyingBird/FlyingBird';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
@@ -336,52 +335,17 @@ export default function HomeComponent() {
       }
     }
 
-    // Create light mode floating particles
-    function createLightModeParticles() {
-      const container = document.getElementById('home');
-      if (!container) return;
-      
-      const containerRect = container.getBoundingClientRect();
-      
-      // Create floating particles for light mode
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const particle = document.createElement('div');
-          particle.className = 'light-particle';
-          particle.style.left = Math.random() * containerRect.width + 'px';
-          particle.style.top = containerRect.height + 'px'; // Start from bottom
-          particle.style.width = (Math.random() * 4 + 2) + 'px';
-          particle.style.height = particle.style.width;
-          particle.style.animationDelay = Math.random() * 8 + 's';
-          particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
-          container.appendChild(particle);
-          
-          // Remove particle after animation
-          setTimeout(() => {
-            if (particle.parentNode) {
-              particle.remove();
-            }
-          }, 10000);
-        }, i * 300);
-      }
-    }
-    
-    // Initialize everything based on theme
+    // Initialize dark-mode sky scene only (light mode is a plain ivory hero)
     if (isDarkMode) {
       createNeuralNetwork();
       createStarNetwork();
       createParticles();
     }
-    
+
     // Initialize shooting star system only in dark mode
     let shootingStarSystem = null;
     if (isDarkMode) {
       shootingStarSystem = new ShootingStarSystem('shootingCanvas');
-    }
-    
-    // Create light mode particles if in light mode
-    if (isLightMode) {
-      createLightModeParticles();
     }
 
     // Activate animations and hide loading screen if shown
@@ -438,7 +402,7 @@ export default function HomeComponent() {
           min-height: 100vh;
           height: 100%;
           position: relative;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          background: transparent; /* unified body color shows through */
           overflow: hidden;
           z-index: 0;
         }
@@ -491,7 +455,7 @@ export default function HomeComponent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          background: #1C1A17;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -551,28 +515,6 @@ export default function HomeComponent() {
            display: flex;
            flex-direction: column;
            align-items: center;
-         }
-
-         .bottom-fade {
-           position: absolute;
-           bottom: 0;
-           left: 0;
-           width: 100%;
-           height: 25vh;
-           background: linear-gradient(
-             to bottom, 
-             transparent 0%, 
-             rgba(71, 85, 105, 0.05) 15%,
-             rgba(71, 85, 105, 0.1) 25%,
-             rgba(71, 85, 105, 0.2) 35%,
-             rgba(71, 85, 105, 0.35) 50%,
-             rgba(71, 85, 105, 0.5) 65%,
-             rgba(71, 85, 105, 0.7) 80%,
-             rgba(71, 85, 105, 0.85) 90%,
-             #475569 100%
-           );
-           z-index: 5;
-           pointer-events: none;
          }
 
         @keyframes advancedPulse {
@@ -668,24 +610,11 @@ export default function HomeComponent() {
           <div className="loading-text">Loading...</div>
         </div>
         
-        {/* Dark Mode Elements */}
+        {/* Dark Mode Sky Scene (light mode is a plain ivory hero) */}
         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
         <div className="neural-network" id="neural-network"></div>
         <div className="star-network" id="star-network"></div>
-        
-        {/* Light Mode Elements */}
-        <div className="glass-overlay"></div>
-        <div className="sun"></div>
-        <div className="realistic-cloud cloud1"></div>
-        <div className="realistic-cloud cloud2"></div>
-        <div className="realistic-cloud cloud3"></div>
-        <div className="realistic-cloud cloud4"></div>
-        <div className="realistic-cloud cloud5"></div>
-        
-        {/* Flying Birds - Light Mode Only */}
-        {isLightMode && <FlyingBird />}
-        
-        <div className="bottom-fade"></div>
+
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
             <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-2 fade-in-up delay-1">
@@ -706,10 +635,10 @@ export default function HomeComponent() {
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="flex flex-col items-center">
               {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
-              <svg 
-                className="w-6 h-6 text-white opacity-70" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className={`w-6 h-6 opacity-70 ${isDarkMode ? 'text-white' : 'text-slate-700'}`}
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />

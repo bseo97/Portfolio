@@ -23,15 +23,11 @@ export default function AboutMe() {
       <style jsx>{`
         .about-me-section {
           min-height: 100vh;
-          background: ${isDarkMode 
-            ? 'linear-gradient(180deg, #475569 0%, #64748b 30%, #94a3b8 60%, #cbd5e1 90%, #e2e8f0 100%)'
-            : 'linear-gradient(180deg, #E6F3FF 0%, #B8E0FF 30%, #7BB3F0 60%, #4A90E2 90%, #87CEEB 100%)'
-          };
+          background: transparent; /* unified body color shows through */
           padding: 4rem 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .about-container {
@@ -59,13 +55,13 @@ export default function AboutMe() {
         }
 
         .about-content {
-          background: rgba(255, 255, 255, 0.14);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.55)'};
           -webkit-backdrop-filter: blur(14px) saturate(1.4);
           backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(44, 62, 80, 0.08)'};
+          box-shadow: 0 10px 30px rgba(15, 23, 42, ${isDarkMode ? '0.35' : '0.08'});
           display: grid;
           grid-template-columns: 1fr 1.5fr;
           gap: 3rem;
@@ -190,13 +186,13 @@ export default function AboutMe() {
         }
 
         .hobbies {
-          background: rgba(255, 255, 255, 0.14);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.55)'};
           -webkit-backdrop-filter: blur(14px) saturate(1.4);
           backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(44, 62, 80, 0.08)'};
+          box-shadow: 0 10px 30px rgba(15, 23, 42, ${isDarkMode ? '0.35' : '0.08'});
           opacity: 0;
           transform: translateY(40px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
