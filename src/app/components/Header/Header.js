@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import Drawer from "./DiagonalDrawer";
 import { useActiveSection } from "../../hooks/useActiveSection";
 import { useTheme } from "../../hooks/useTheme";
+import MoonIcon from "../MoonIcon"
+import SunIcon from "../SunIcon"
 
 export default function Header() {
   const activeSection = useActiveSection();
@@ -87,7 +89,7 @@ export default function Header() {
             aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
           >
             <span className="text-sm font-medium">
-              {isDarkMode ? '☀️' : '🌙'}
+              {isDarkMode ? <SunIcon/> : <MoonIcon/>}
             </span>
           </button>
         </div>
@@ -154,7 +156,7 @@ export default function Header() {
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
                 <span className="text-base">
-                  {isDarkMode ? '☀️' : '🌙'}
+                  {isDarkMode ? <SunIcon/> : <MoonIcon/>}
                 </span>
                 <span>
                   {isDarkMode ? 'Light Mode' : 'Dark Mode'}
