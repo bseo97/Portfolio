@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
-import FlyingBird from '../FlyingBird/FlyingBird';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
@@ -336,52 +335,17 @@ export default function HomeComponent() {
       }
     }
 
-    // Create light mode floating particles
-    function createLightModeParticles() {
-      const container = document.getElementById('home');
-      if (!container) return;
-      
-      const containerRect = container.getBoundingClientRect();
-      
-      // Create floating particles for light mode
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const particle = document.createElement('div');
-          particle.className = 'light-particle';
-          particle.style.left = Math.random() * containerRect.width + 'px';
-          particle.style.top = containerRect.height + 'px'; // Start from bottom
-          particle.style.width = (Math.random() * 4 + 2) + 'px';
-          particle.style.height = particle.style.width;
-          particle.style.animationDelay = Math.random() * 8 + 's';
-          particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
-          container.appendChild(particle);
-          
-          // Remove particle after animation
-          setTimeout(() => {
-            if (particle.parentNode) {
-              particle.remove();
-            }
-          }, 10000);
-        }, i * 300);
-      }
-    }
-    
-    // Initialize everything based on theme
+    // Initialize dark-mode sky scene only (light mode is a plain ivory hero)
     if (isDarkMode) {
       createNeuralNetwork();
       createStarNetwork();
       createParticles();
     }
-    
+
     // Initialize shooting star system only in dark mode
     let shootingStarSystem = null;
     if (isDarkMode) {
       shootingStarSystem = new ShootingStarSystem('shootingCanvas');
-    }
-    
-    // Create light mode particles if in light mode
-    if (isLightMode) {
-      createLightModeParticles();
     }
 
     // Activate animations and hide loading screen if shown
@@ -438,7 +402,7 @@ export default function HomeComponent() {
           min-height: 100vh;
           height: 100%;
           position: relative;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          background: transparent; /* unified body color shows through */
           overflow: hidden;
           z-index: 0;
         }
@@ -491,7 +455,7 @@ export default function HomeComponent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+          background: #262948;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -504,7 +468,7 @@ export default function HomeComponent() {
           color: #53c9c9;
           font-size: 2rem;
           font-weight: bold;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
           text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
           animation: loadingPulse 1.5s ease-in-out infinite;
         }
@@ -535,14 +499,61 @@ export default function HomeComponent() {
          }
 
          .hero-text {
-           color: #53c9c9;
-           text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
-           margin-bottom: 0.5rem;
-           transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
+           color: var(--accent);
+           margin-bottom: 2rem;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           text-align: center;
+           transition: margin-bottom 0.6s cubic-bezier(0.32,0.72,0,1), margin-top 0.6s cubic-bezier(0.32,0.72,0,1);
+         }
+         .hero-text h2 {
+           color: var(--text);
          }
          .hero-text.chat-expanded {
-           margin-bottom: 0.25rem;
+           margin-bottom: 0.75rem;
            margin-top: 0;
+         }
+         .hero-text.chat-expanded .hero-subtitle {
+           opacity: 0;
+           max-height: 0;
+           margin-top: 0;
+           transform: translateY(-6px);
+         }
+
+         /* Display headline — refined modern wordmark */
+         .hero-title {
+           font-size: clamp(2.6rem, 6vw, 4.75rem);
+           font-weight: 600;
+           line-height: 1.02;
+           letter-spacing: -0.035em;
+           color: var(--text);
+           margin: 0;
+         }
+         .hero-title-accent {
+           color: var(--accent);
+           background: ${isDarkMode
+             ? 'linear-gradient(120deg, #7fe4e4 0%, #53c9c9 55%, #37b6b6 100%)'
+             : 'none'};
+           -webkit-background-clip: ${isDarkMode ? 'text' : 'border-box'};
+           background-clip: ${isDarkMode ? 'text' : 'border-box'};
+           -webkit-text-fill-color: ${isDarkMode ? 'transparent' : 'currentColor'};
+         }
+
+         /* Supporting subtitle */
+         .hero-subtitle {
+           margin-top: 1.35rem;
+           max-width: 30ch;
+           font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+           font-weight: 400;
+           line-height: 1.55;
+           color: ${isDarkMode ? 'rgba(242,242,242,0.62)' : 'rgba(26,26,26,0.6)'};
+           overflow: hidden;
+           transition: opacity 0.5s cubic-bezier(0.32,0.72,0,1),
+                       max-height 0.6s cubic-bezier(0.32,0.72,0,1),
+                       transform 0.5s cubic-bezier(0.32,0.72,0,1),
+                       margin-top 0.5s cubic-bezier(0.32,0.72,0,1);
+           max-height: 120px;
          }
          .chatbot-hero-wrapper {
            width: 100%;
@@ -551,28 +562,6 @@ export default function HomeComponent() {
            display: flex;
            flex-direction: column;
            align-items: center;
-         }
-
-         .bottom-fade {
-           position: absolute;
-           bottom: 0;
-           left: 0;
-           width: 100%;
-           height: 25vh;
-           background: linear-gradient(
-             to bottom, 
-             transparent 0%, 
-             rgba(71, 85, 105, 0.05) 15%,
-             rgba(71, 85, 105, 0.1) 25%,
-             rgba(71, 85, 105, 0.2) 35%,
-             rgba(71, 85, 105, 0.35) 50%,
-             rgba(71, 85, 105, 0.5) 65%,
-             rgba(71, 85, 105, 0.7) 80%,
-             rgba(71, 85, 105, 0.85) 90%,
-             #475569 100%
-           );
-           z-index: 5;
-           pointer-events: none;
          }
 
         @keyframes advancedPulse {
@@ -633,22 +622,26 @@ export default function HomeComponent() {
           }
         }
 
-        .fade-in-up {
+        /* Choreographed entry — heavy fade-up with blur resolve */
+        .reveal {
           opacity: 0;
-          transform: translateY(30px);
-          animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1) forwards;
+          transform: translateY(24px);
+          filter: blur(10px);
+          animation: heroReveal 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
+          will-change: transform, opacity, filter;
         }
-        .fade-in-up.delay-1 {
-          animation-delay: 0.2s;
-        }
-        .fade-in-up.delay-2 {
-          animation-delay: 1s;
-        }
-        @keyframes fadeInUp {
+        .reveal-1 { animation-delay: 0.15s; }
+        .reveal-2 { animation-delay: 0.32s; }
+        .reveal-3 { animation-delay: 0.5s; }
+        @keyframes heroReveal {
           to {
             opacity: 1;
             transform: translateY(0);
+            filter: blur(0);
           }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal { animation: none; opacity: 1; transform: none; filter: none; }
         }
 
         @media (max-width: 900px) {
@@ -668,35 +661,22 @@ export default function HomeComponent() {
           <div className="loading-text">Loading...</div>
         </div>
         
-        {/* Dark Mode Elements */}
+        {/* Dark Mode Sky Scene (light mode is a plain ivory hero) */}
         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
         <div className="neural-network" id="neural-network"></div>
         <div className="star-network" id="star-network"></div>
-        
-        {/* Light Mode Elements */}
-        <div className="glass-overlay"></div>
-        <div className="sun"></div>
-        <div className="realistic-cloud cloud1"></div>
-        <div className="realistic-cloud cloud2"></div>
-        <div className="realistic-cloud cloud3"></div>
-        <div className="realistic-cloud cloud4"></div>
-        <div className="realistic-cloud cloud5"></div>
-        
-        {/* Flying Birds - Light Mode Only */}
-        {isLightMode && <FlyingBird />}
-        
-        <div className="bottom-fade"></div>
+
         <div className="hero-content">
-          <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
-            <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-2 fade-in-up delay-1">
-          I'm Brian
-        </h1>
-            <h2
-              className="mt-2 py-1 font-bold md:text-xl mb-1 fade-in-up delay-2"
+          <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>
+            <h1
+              className="hero-title reveal reveal-1"
               onAnimationEnd={handleSubtitleAnimationEnd}
             >
-              University of California, <br />Irvine Student
-        </h2>
+              I&apos;m <span className="hero-title-accent">Brian</span>
+            </h1>
+            <p className="hero-subtitle reveal reveal-2">
+              Building AI-driven products &amp; full-stack systems. Ask anything about me below
+            </p>
           </div>
           {/* AI Chatbot */}
           <div className="chatbot-hero-wrapper">
@@ -706,10 +686,10 @@ export default function HomeComponent() {
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="flex flex-col items-center">
               {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
-              <svg 
-                className="w-6 h-6 text-white opacity-70" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6 opacity-70 text-[color:var(--text)]"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />

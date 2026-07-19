@@ -20,13 +20,11 @@ export default function ProjectDetail() {
   if (!project) {
     return (
       <div className={`min-h-screen flex items-center justify-center transition-all duration-2000 ${
-        isDarkMode 
-          ? 'bg-gradient-to-b from-slate-800 to-slate-900' 
-          : 'bg-gradient-to-b from-slate-50 to-slate-100'
+        isDarkMode ? 'bg-[#262948]' : 'bg-[#F4F1E9]'
       }`}>
         <div className="text-center">
           <h1 className={`text-4xl font-bold mb-4 ${
-            isDarkMode ? 'text-white' : 'text-gray-800'
+            'text-[color:var(--text)]'
           }`}>Project Not Found</h1>
           <Link href="/" className="bg-[#53c9c9] text-white px-6 py-3 rounded-lg hover:bg-[#244e4e] transition-colors">
             Back to Portfolio
@@ -54,22 +52,16 @@ export default function ProjectDetail() {
       `}</style>
       
       <div className={`min-h-screen transition-all duration-2000 ${
-        isDarkMode 
-          ? 'bg-gradient-to-b from-slate-800 to-slate-900' 
-          : 'bg-gradient-to-b from-slate-50 to-slate-100'
+        isDarkMode ? 'bg-[#262948]' : 'bg-[#F4F1E9]'
       }`}>
       {/* Navigation */}
-      <nav className={`backdrop-blur-sm border-b sticky top-0 z-50 transition-all duration-500 ${
-        isDarkMode 
-          ? 'bg-slate-800/80 border-slate-700' 
-          : 'bg-white/80 border-slate-200'
-      }`}>
+      <nav className="glass sticky top-0 z-50 transition-all duration-500">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => router.back()}
-              className={`flex items-center space-x-2 hover:text-[#53c9c9] transition-colors ${
-                isDarkMode ? 'text-slate-300' : 'text-slate-600'
+              className={`flex items-center space-x-2 hover:text-[color:var(--accent)] transition-colors ${
+                'text-[color:var(--text)]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +81,7 @@ export default function ProjectDetail() {
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
-                className={`px-3 py-1 rounded-full border border-[#53c9c9] text-[#53c9c9] hover:bg-[#53c9c9] hover:text-white font-semibold text-sm transition-all duration-300 backdrop-blur-sm`}
+                className={`px-3 py-1 rounded-full border border-[#53c9c9] text-[color:var(--accent)] hover:bg-[#53c9c9] hover:text-white font-semibold text-sm transition-all duration-300 backdrop-blur-sm`}
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
                 {isDarkMode ? <SunIcon/> : <MoonIcon/>}
@@ -122,13 +114,13 @@ export default function ProjectDetail() {
               </div>
               
               <h1 className={`text-4xl lg:text-5xl font-bold mb-4 leading-tight transition-colors ${
-                isDarkMode ? 'text-white' : 'text-slate-800'
+                'text-[color:var(--text)]'
               }`}>
                 {project.name}
               </h1>
               
               <p className={`text-xl leading-relaxed transition-colors ${
-                isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                'text-[color:var(--text)]'
               }`}>
                 {project.des}
               </p>
@@ -136,16 +128,12 @@ export default function ProjectDetail() {
 
             {/* Detailed Description */}
             {project.des1 && (
-              <div className={`rounded-xl p-6 shadow-sm border transition-all duration-500 ${
-                isDarkMode 
-                  ? 'bg-slate-800/50 border-slate-700' 
-                  : 'bg-white border-slate-200'
-              }`}>
+              <div className="glass rounded-xl p-6 transition-all duration-500">
                 <h2 className={`text-lg font-semibold mb-3 transition-colors ${
-                  isDarkMode ? 'text-white' : 'text-slate-800'
+                  'text-[color:var(--text)]'
                 }`}>Project Details</h2>
                 <p className={`leading-relaxed transition-colors ${
-                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                  'text-[color:var(--text)]'
                 }`}>
                   {project.des1}
                 </p>
@@ -155,13 +143,13 @@ export default function ProjectDetail() {
             {/* Tech Stack */}
             <div>
               <h2 className={`text-lg font-semibold mb-4 transition-colors ${
-                isDarkMode ? 'text-white' : 'text-slate-800'
+                'text-[color:var(--text)]'
               }`}>Technologies Used</h2>
               <div className="flex flex-wrap gap-3">
                 {project.techStack && project.techStack.map((tech, index) => (
                   <span 
                     key={index}
-                    className="px-4 py-2 bg-[#53c9c9]/10 text-[#53c9c9] rounded-lg font-medium border border-[#53c9c9]/20 hover:bg-[#53c9c9]/20 transition-colors"
+                    className="px-4 py-2 bg-[#53c9c9]/10 text-[color:var(--accent)] rounded-lg font-medium border border-[#53c9c9]/20 hover:bg-[#53c9c9]/20 transition-colors"
                   >
                     {tech}
                   </span>
@@ -239,7 +227,7 @@ export default function ProjectDetail() {
                       href={project.repositoryLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[#53c9c9] transition-colors flex items-center space-x-2 ${
+                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[color:var(--accent)] transition-colors flex items-center space-x-2 ${
                         isDarkMode 
                           ? 'border-slate-600 text-slate-300' 
                           : 'border-slate-300 text-slate-700'
@@ -310,7 +298,7 @@ export default function ProjectDetail() {
                       href={project.repositoryLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[#53c9c9] transition-colors flex items-center space-x-2 ${
+                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[color:var(--accent)] transition-colors flex items-center space-x-2 ${
                         isDarkMode 
                           ? 'border-slate-600 text-slate-300' 
                           : 'border-slate-300 text-slate-700'
@@ -352,27 +340,23 @@ export default function ProjectDetail() {
 
             {/* Decorative elements */}
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
           </div>
         </div>
 
         {/* Additional Project Info Section */}
-        <div className={`mt-16 rounded-2xl p-8 shadow-sm border transition-all duration-500 ${
-          isDarkMode 
-            ? 'bg-slate-800/50 border-slate-700' 
-            : 'bg-white border-slate-200'
-        }`}>
+        <div className="glass mt-16 rounded-2xl p-8 transition-all duration-500">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#53c9c9] mb-2">{project.year}</div>
+              <div className="text-3xl font-bold text-[color:var(--accent)] mb-2">{project.year}</div>
               <div className={`transition-colors ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                'text-[color:var(--text)]'
               }`}>Year Completed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#53c9c9] mb-2">{project.techStack?.length || 0}</div>
+              <div className="text-3xl font-bold text-[color:var(--accent)] mb-2">{project.techStack?.length || 0}</div>
               <div className={`transition-colors ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                'text-[color:var(--text)]'
               }`}>Technologies</div>
             </div>
             <div className="text-center">
@@ -380,7 +364,7 @@ export default function ProjectDetail() {
                 {project.status?.text}
               </div>
               <div className={`transition-colors ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                'text-[color:var(--text)]'
               }`}>Project Status</div>
             </div>
           </div>

@@ -8,30 +8,18 @@ export default function AboutMe() {
   const [sectionRef, sectionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [photoRef, photoVisible] = useScrollAnimation({ threshold: 0.3 })
   const [contentRef, contentVisible] = useScrollAnimation({ threshold: 0.3 })
-  const [hobbiesRef, hobbiesVisible] = useScrollAnimation({ threshold: 0.3 })
   const { isDarkMode } = useTheme()
-
-  // Hobby data for maintainability
-  const hobbies = [
-    { image: '/Hackathon.JPG', alt: 'Hackathon' },
-    { image: '/hawaii.JPG', alt: 'Travel' },
-    { image: '/museum.png', alt: 'Museums' }
-  ]
 
   return (
     <div className="about-me-section" id="about">
       <style jsx>{`
         .about-me-section {
-          min-height: 100vh;
-          background: ${isDarkMode 
-            ? 'linear-gradient(180deg, #475569 0%, #64748b 30%, #94a3b8 60%, #cbd5e1 90%, #e2e8f0 100%)'
-            : 'linear-gradient(180deg, #E6F3FF 0%, #B8E0FF 30%, #7BB3F0 60%, #4A90E2 90%, #87CEEB 100%)'
-          };
-          padding: 4rem 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
+          background: transparent; /* unified body color shows through */
+          /* Flow naturally after the hero and connect straight into Works —
+             no forced full-viewport stage / vertical centering. Small top pad
+             so About sits just below the fold and appears almost immediately
+             once the user starts scrolling. */
+          padding: 2rem 0 2rem;
         }
 
         .about-container {
@@ -42,12 +30,12 @@ export default function AboutMe() {
         }
 
         .about-title {
-          font-size: clamp(3rem, 6vw, 4rem);
+          font-size: clamp(2.5rem, 5vw, 3.25rem);
           font-weight: bold;
-          color: ${isDarkMode ? '#F7FBFD' : '#2c3e50'};
+          color: var(--accent);
           text-align: center;
           margin-bottom: 3rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
           opacity: 0;
           transform: translateY(30px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,19 +47,19 @@ export default function AboutMe() {
         }
 
         .about-content {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.55)'};
+          -webkit-backdrop-filter: blur(14px) saturate(1.4);
+          backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(44, 62, 80, 0.08)'};
+          box-shadow: 0 10px 30px rgba(15, 23, 42, ${isDarkMode ? '0.35' : '0.08'});
           display: grid;
           grid-template-columns: 1fr 1.5fr;
           gap: 3rem;
           align-items: start;
-          margin-bottom: 4rem;
           max-width: 1200px;
-          margin: 0 auto 4rem auto;
+          margin: 0 auto;
         }
 
         .photo-section {
@@ -118,24 +106,24 @@ export default function AboutMe() {
         .education,
         .involvement,
         .interests {
-          border-left: 4px solid #05d9e8;
+          border-left: 4px solid var(--accent);
           padding-left: 1.5rem;
         }
 
         .education h3,
         .involvement h3,
         .interests h3 {
-          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 0.8rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .education p,
         .involvement p,
         .interests p {
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.2rem;
           line-height: 1.8;
           margin: 0;
@@ -162,7 +150,7 @@ export default function AboutMe() {
           box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
           border: 1px solid rgba(255, 255, 255, 0.2);
           backdrop-filter: blur(10px);
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .resume-button:hover {
@@ -189,12 +177,13 @@ export default function AboutMe() {
         }
 
         .hobbies {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.55)'};
+          -webkit-backdrop-filter: blur(14px) saturate(1.4);
+          backdrop-filter: blur(14px) saturate(1.4);
           border-radius: 20px;
           padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(44, 62, 80, 0.08)'};
+          box-shadow: 0 10px 30px rgba(15, 23, 42, ${isDarkMode ? '0.35' : '0.08'});
           opacity: 0;
           transform: translateY(40px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
@@ -208,11 +197,11 @@ export default function AboutMe() {
         }
 
         .hobbies h3 {
-          color: ${isDarkMode ? '#05d9e8' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .hobbies-grid {
@@ -248,10 +237,17 @@ export default function AboutMe() {
         }
 
         .hobby-description {
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           font-size: 1.2rem;
           line-height: 1.8;
           margin-bottom: 1rem;
+        }
+
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          .about-content,
+          .hobbies {
+            background: ${isDarkMode ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)'};
+          }
         }
 
         @media (max-width: 768px) {
@@ -283,7 +279,7 @@ export default function AboutMe() {
           .involvement,
           .interests {
             text-align: left;
-            border-left: 3px solid #05d9e8;
+            border-left: 3px solid var(--accent);
             padding-left: 1rem;
           }
 
@@ -399,16 +395,16 @@ export default function AboutMe() {
               <div className="involvement">
                 <h3>Involvement</h3>
                 <div className="involvement-item">
-                  <p>Associate of Computing Machinery @ UCI (2023-present)</p>
+                  <p>Associate of Computing Machinery @ UCI (2023-2026)</p>
                 </div>
                 <div className="involvement-item">
-                  <p>Hacks at UCI (2025-present)</p>
+                  <p>Hacks at UCI (2025-2026)</p>
                 </div>
               </div>
 
               <div className="interests">
                 <h3>Interests</h3>
-                <p>AI Infrastructure, ML Systems Engineer, Prompt Optimization</p>
+                <p>AI/ML development, Full-stack Software Engineering</p>
               </div>
 
               <div className="resume-button-section">
@@ -428,26 +424,6 @@ export default function AboutMe() {
           </div>
         </div>
 
-        <div 
-          ref={hobbiesRef}
-          className={`hobbies ${hobbiesVisible ? 'visible' : ''}`}
-        >
-          <h3>Hobbies</h3>
-          <p className="hobby-description">
-            Swimming, Travel, Museums, and Hackathons
-          </p>
-          <div className="hobbies-grid">
-            {hobbies.map((hobby, index) => (
-              <div key={index} className="hobby-item">
-                <img 
-                  src={hobby.image} 
-                  alt={hobby.alt}
-                  className="hobby-image"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   )

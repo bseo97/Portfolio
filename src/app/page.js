@@ -2,73 +2,46 @@
 
 import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
-import MySlider from "./components/SliderCard/MySlider";
+import ProjectIndex from "./components/ProjectIndex/ProjectIndex";
 import { useScrollAnimation } from './hooks/useScrollAnimation';
-import { useTheme } from './hooks/useTheme';
 
 export default function Home() {
   // Scroll animation hooks for different elements
   const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [sliderRef, sliderVisible] = useScrollAnimation({ threshold: 0.1 })
-  const { isDarkMode } = useTheme()
   return (
     // minimum height = 100vh
     <main className="min-h-screen relative">
       {/* CSS Styles for Recent Works Section */}
       <style jsx>{`
-        .next-section {
-          min-height: 100vh;
-          background: linear-gradient(180deg, #475569 0%, #64748b 20%, #94a3b8 50%, #cbd5e1 80%, #f1f5f9 100%);
-          position: relative;
-          z-index: 10;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          padding: 2rem;
-        }
-
-        .section-content {
-          color: #475569;
-          font-size: clamp(1.5rem, 4vw, 2rem);
-          text-align: center;
-          opacity: 0.8;
-          padding: 2rem;
-          margin-bottom: 3rem;
-        }
-
         .recent-works-subtitle {
-          color: ${isDarkMode ? '#53c9c9' : '#2c3e50'};
-          font-size: 3rem;
+          color: var(--accent);
+          font-size: clamp(2.5rem, 5vw, 3.25rem);
           font-weight: 800;
           margin-top: 1rem;
         }
 
         .projects-description {
-          max-width: 2xl;
+          max-width: 65ch;
           font-size: 16px;
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          color: var(--text);
           line-height: 2;
           margin-top: 1.25rem;
         }
 
         .projects-container {
-          background: ${isDarkMode 
-            ? 'linear-gradient(180deg, #475569 0%, #64748b 20%, #94a3b8 50%, #cbd5e1 80%, #e2e8f0 100%)'
-            : 'linear-gradient(180deg, #87CEEB 0%, #4A90E2 20%, #7BB3F0 50%, #B8E0FF 80%, #E6F3FF 100%)'
-          };
+          background: transparent; /* unified body color shows through */
           width: 100%;
-          font-family: 'Inter', Arial, sans-serif;
-          padding-top: 1.25rem;
+          font-family: var(--font-sans), sans-serif;
+          /* Continues the About rhythm so the two read as one connected flow. */
+          padding-top: 2rem;
           padding-bottom: 6rem;
           margin-top: 0;
-          transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (max-width: 768px) {
           .recent-works-subtitle {
-            font-size: 2rem;
             padding-left: 1.25rem;
           }
           
@@ -106,21 +79,21 @@ export default function Home() {
               ref={subtitleRef}
               className={`recent-works-subtitle ${subtitleVisible ? 'visible' : ''}`}
             >
-              Recent Works
+              Works
             </p>
-            <p 
+            {/* <p
               ref={descriptionRef}
               className={`projects-description ${descriptionVisible ? 'visible' : ''}`}
             >
-            Take a look at some of my recent work, highlighting what I’ve been building and learning — from full-stack web applications to AI-powered tools, each project reflects my growth as a developer and my passion for solving real-world problems!
-            </p>
+            A selection of what I&apos;ve been building lately, from full-stack web apps to AI tooling. Hover any title to preview the work.
+            </p> */}
           </div>
         </div>
-        <div 
+        <div
           ref={sliderRef}
           className={`scroll-animate-delayed-3 ${sliderVisible ? 'visible' : ''}`}
         >
-          <MySlider/>
+          <ProjectIndex/>
         </div>
       </div>
 
