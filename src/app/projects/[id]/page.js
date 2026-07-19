@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { getStatusColor, getStatusTextColor } from '@/app/utils/statusHelpers'
 import { useTheme } from '@/app/hooks/useTheme'
 import AmbientOrbs from '@/app/components/AmbientOrbs/AmbientOrbs'
+import MoonIcon from '@/app/components/MoonIcon'
+import SunIcon from '@/app/components/SunIcon'
 
 export default function ProjectDetail() {
   const params = useParams()
@@ -172,7 +174,7 @@ export default function ProjectDetail() {
                 }}
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
-                {isDarkMode ? '☀️' : '🌙'}
+                {isDarkMode ? <SunIcon/> : <MoonIcon/>}
               </button>
             </div>
           </div>
