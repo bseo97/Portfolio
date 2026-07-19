@@ -34,7 +34,8 @@ export default function Home() {
           background: transparent; /* unified body color shows through */
           width: 100%;
           font-family: 'Inter', Arial, sans-serif;
-          padding-top: 1.25rem;
+          /* Continues the About rhythm so the two read as one connected flow. */
+          padding-top: 2rem;
           padding-bottom: 6rem;
           margin-top: 0;
         }
@@ -78,14 +79,14 @@ export default function Home() {
               ref={subtitleRef}
               className={`recent-works-subtitle ${subtitleVisible ? 'visible' : ''}`}
             >
-              Recent Works
+              Works
             </p>
-            <p
+            {/* <p
               ref={descriptionRef}
               className={`projects-description ${descriptionVisible ? 'visible' : ''}`}
             >
             A selection of what I&apos;ve been building lately, from full-stack web apps to AI tooling. Hover any title to preview the work.
-            </p>
+            </p> */}
           </div>
         </div>
         <div

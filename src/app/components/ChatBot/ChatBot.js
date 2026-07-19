@@ -191,29 +191,40 @@ export default function ChatBot({ onExpand, typingReady }) {
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   })
 
+  // Starter prompts shown in the empty state so the user always has a way in.
+  const suggestions = [
+    'What have you built?',
+    'What is your experience?',
+    'What tech do you use?',
+  ]
+
+  const sendMessage = (text) => {
+    const userInput = (text || '').trim()
+    if (!userInput) return
+
+    const userMessage = createMessage(userInput, true)
+    setMessages(prev => [...prev, userMessage])
+    setMessage('')
+    setBotIsTyping(true)
+
+    setTimeout(async () => {
+      try {
+        const botResponseText = await getBotResponse(userInput)
+        setBotIsTyping(false)
+        const botMessage = createMessage(botResponseText, false, Date.now() + 1)
+        setMessages(prev => [...prev, botMessage])
+      } catch (error) {
+        console.error('Error getting bot response:', error)
+        setBotIsTyping(false)
+        const errorMessage = createMessage("Sorry, I'm having trouble responding right now. Please try again!", false, Date.now() + 1)
+        setMessages(prev => [...prev, errorMessage])
+      }
+    }, 800)
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (message.trim()) {
-      const userMessage = createMessage(message, true)
-      setMessages(prev => [...prev, userMessage])
-      const userInput = message
-      setMessage('')
-      setBotIsTyping(true)
-      
-      setTimeout(async () => {
-        try {
-          const botResponseText = await getBotResponse(userInput)
-          setBotIsTyping(false)
-          const botMessage = createMessage(botResponseText, false, Date.now() + 1)
-          setMessages(prev => [...prev, botMessage])
-        } catch (error) {
-          console.error('Error getting bot response:', error)
-          setBotIsTyping(false)
-          const errorMessage = createMessage("Sorry, I'm having trouble responding right now. Please try again!", false, Date.now() + 1)
-          setMessages(prev => [...prev, errorMessage])
-        }
-      }, 800)
-    }
+    sendMessage(message)
   }
 
   const getBotResponse = async (userMessage) => {
@@ -249,15 +260,15 @@ export default function ChatBot({ onExpand, typingReady }) {
         .chatbot-container {
           width: 100%;
           max-width: 750px;
-          margin: 2rem auto 0 auto;
+          margin: 0 auto;
           padding: 0 1.5rem;
           position: relative;
-          min-height: 420px;
+          min-height: 0;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
           align-items: center;
-          max-height: 50vh;
+          max-height: 70vh;
           overflow-y: auto;
           box-sizing: border-box;
         }
@@ -265,7 +276,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           background: ${isDarkMode ? 'rgba(30, 41, 59, 0.55)' : 'rgba(255, 255, 255, 0.7)'};
           -webkit-backdrop-filter: blur(15px) saturate(1.4);
           backdrop-filter: blur(15px) saturate(1.4);
-          border-radius: 20px;
+          border-radius: 24px;
           border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.4)'};
           box-shadow: ${isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)'};
           overflow: hidden;
@@ -276,7 +287,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           max-height: 80vh;
           display: flex;
           flex-direction: column;
-          margin-top: 1rem;
+          margin-top: 0;
           box-sizing: border-box;
         }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -285,16 +296,16 @@ export default function ChatBot({ onExpand, typingReady }) {
           }
         }
         .chatbot-wrapper.empty {
-          min-height: 180px;
+          min-height: 340px;
         }
         @media (max-width: 900px) {
           .chatbot-wrapper.empty {
-            min-height: 140px;
+            min-height: 300px;
           }
         }
         @media (max-width: 600px) {
           .chatbot-wrapper.empty {
-            min-height: 100px;
+            min-height: 260px;
           }
         }
         .chat-header {
@@ -416,10 +427,10 @@ export default function ChatBot({ onExpand, typingReady }) {
           color: inherit;
         }
         .message.bot .message-bubble strong {
-          color: #05d9e8;
+          color: var(--accent);
         }
         .message.user .message-bubble {
-          background: linear-gradient(135deg, #05d9e8, #53c9c9);
+          background: var(--accent);
           color: #ffffff;
           border-bottom-right-radius: 6px;
         }
@@ -443,13 +454,46 @@ export default function ChatBot({ onExpand, typingReady }) {
           align-items: center;
           justify-content: center;
           height: 100%;
-          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
+          gap: 0.5rem;
+          padding: 1.5rem 1rem;
           text-align: center;
+        }
+        .empty-state-title {
+          font-size: 1.15rem;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          color: var(--text);
         }
         .empty-state-subtext {
           font-size: 0.9rem;
-          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.5)'};
-          text-align: center;
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.5)'};
+          max-width: 42ch;
+        }
+        .chat-suggestions {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.6rem;
+          margin-top: 1rem;
+        }
+        .chat-suggestion {
+          font-family: 'Inter', Arial, sans-serif;
+          font-size: 0.85rem;
+          color: var(--text);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'};
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 0, 0, 0.1)'};
+          padding: 0.55rem 1rem;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .chat-suggestion:hover {
+          background: ${isDarkMode ? 'rgba(83, 201, 201, 0.14)' : 'rgba(0, 0, 0, 0.06)'};
+          border-color: var(--accent);
+          transform: translateY(-1px);
+        }
+        .chat-suggestion:active {
+          transform: scale(0.98);
         }
         .chatbot-form {
           display: flex;
@@ -474,31 +518,31 @@ export default function ChatBot({ onExpand, typingReady }) {
           margin-right: 0.75rem;
         }
         .chatbot-input:focus {
-          border-color: #05d9e8;
-          box-shadow: 0 0 0 2px rgba(5, 217, 232, 0.1);
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.9)'};
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px ${isDarkMode ? 'rgba(83, 201, 201, 0.18)' : 'rgba(0, 0, 0, 0.06)'};
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.95)'};
         }
         .chatbot-input::placeholder {
           color: ${isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)'};
           font-style: italic;
         }
         .submit-button {
-          background: linear-gradient(135deg, #05d9e8, #53c9c9);
+          background: var(--accent);
           border: none;
           border-radius: 50%;
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
+          transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, opacity 0.2s ease;
+          box-shadow: 0 6px 18px ${isDarkMode ? 'rgba(0, 0, 0, 0.35)' : 'rgba(0, 0, 0, 0.15)'};
           flex-shrink: 0;
         }
         .submit-button:hover {
-          transform: scale(1.1);
-          box-shadow: 0 6px 20px rgba(5, 217, 232, 0.5);
+          transform: translateY(-1px) scale(1.05);
+          box-shadow: 0 10px 24px ${isDarkMode ? 'rgba(0, 0, 0, 0.45)' : 'rgba(0, 0, 0, 0.22)'};
         }
         .submit-button:active {
           transform: scale(0.95);
@@ -602,7 +646,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           .chatbot-container {
             max-width: calc(100% - 1rem);
             padding: 0 0.5rem;
-            min-height: 340px;
+            min-height: 0;
             margin-left: auto;
             margin-right: auto;
           }
@@ -631,7 +675,7 @@ export default function ChatBot({ onExpand, typingReady }) {
             max-width: calc(100% - 0.5rem);
             width: 100%;
             padding: 0 0.25rem;
-            min-height: 240px;
+            min-height: 0;
             margin-left: auto;
             margin-right: auto;
             box-sizing: border-box;
@@ -673,7 +717,7 @@ export default function ChatBot({ onExpand, typingReady }) {
       
       <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
         <div className="chat-header">
-          <h3 className="chat-title">Chat with Brian</h3>
+          <h3 className="chat-title">Legendary Conversation</h3>
           <div className="header-buttons">
             {messages.length > 0 && (
               <button onClick={clearChat} className="clear-button">
@@ -689,19 +733,28 @@ export default function ChatBot({ onExpand, typingReady }) {
         >
           {messages.length === 0 ? (
             <div className="empty-state">
-               <img src="/seo1.svg" alt="SEO Portfolio" className="empty-state-image" />
-              <div className="empty-state-subtext">Ask me anything about my projects, experience, or interests!</div>
+              <div className="empty-state-title">Ask me anything about Brian</div>
+              <div className="empty-state-subtext">Projects, experience, skills, or what he is building now.</div>
+              <div className="chat-suggestions">
+                {suggestions.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="chat-suggestion"
+                    onClick={() => sendMessage(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <>
               {messages.map((msg) => (
                 <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
-                  <div className="message-avatar">
-                    {msg.isUser ? 'U' : 'B'}
-                  </div>
                   <div className="message-content">
-                    <div 
-                      className="message-bubble" 
+                    <div
+                      className="message-bubble"
                       dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
                     />
                     <div className="message-time">{msg.timestamp}</div>
@@ -710,7 +763,6 @@ export default function ChatBot({ onExpand, typingReady }) {
               ))}
               {botIsTyping && (
                 <div className="message bot">
-                  <div className="message-avatar">B</div>
                   <div className="message-content">
                     <div className="message-bubble typing-indicator">
                       <span>Typing</span>

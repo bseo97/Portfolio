@@ -500,7 +500,7 @@ export default function HomeComponent() {
 
          .hero-text {
            color: var(--accent);
-           margin-bottom: 0.5rem;
+           margin-bottom: 1.25rem;
            transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
          }
          .hero-text h2 {
@@ -618,16 +618,13 @@ export default function HomeComponent() {
         <div className="star-network" id="star-network"></div>
 
         <div className="hero-content">
-          <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}> 
-            <h1 className="font-black text-3xl md:text-5xl lg:text-5xl xl:text-5xl mt-2 mb-2 fade-in-up delay-1">
-          I'm Brian
-        </h1>
-            <h2
-              className="mt-2 py-1 font-bold md:text-xl mb-1 fade-in-up delay-2"
+          <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>
+            <h1
+              className="font-black text-4xl md:text-6xl lg:text-6xl tracking-tight fade-in-up delay-1"
               onAnimationEnd={handleSubtitleAnimationEnd}
             >
-              University of California, <br />Irvine Student
-        </h2>
+          I&apos;m Brian
+        </h1>
           </div>
           {/* AI Chatbot */}
           <div className="chatbot-hero-wrapper">

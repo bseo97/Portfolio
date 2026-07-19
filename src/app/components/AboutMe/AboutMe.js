@@ -8,26 +8,18 @@ export default function AboutMe() {
   const [sectionRef, sectionVisible] = useScrollAnimation({ threshold: 0.2 })
   const [photoRef, photoVisible] = useScrollAnimation({ threshold: 0.3 })
   const [contentRef, contentVisible] = useScrollAnimation({ threshold: 0.3 })
-  const [hobbiesRef, hobbiesVisible] = useScrollAnimation({ threshold: 0.3 })
   const { isDarkMode } = useTheme()
-
-  // Hobby data for maintainability
-  const hobbies = [
-    { image: '/Hackathon.JPG', alt: 'Hackathon' },
-    { image: '/hawaii.JPG', alt: 'Travel' },
-    { image: '/museum.png', alt: 'Museums' }
-  ]
 
   return (
     <div className="about-me-section" id="about">
       <style jsx>{`
         .about-me-section {
-          min-height: 100vh;
           background: transparent; /* unified body color shows through */
-          padding: 4rem 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          /* Flow naturally after the hero and connect straight into Works —
+             no forced full-viewport stage / vertical centering. Small top pad
+             so About sits just below the fold and appears almost immediately
+             once the user starts scrolling. */
+          padding: 2rem 0 2rem;
         }
 
         .about-container {
@@ -66,9 +58,8 @@ export default function AboutMe() {
           grid-template-columns: 1fr 1.5fr;
           gap: 3rem;
           align-items: start;
-          margin-bottom: 4rem;
           max-width: 1200px;
-          margin: 0 auto 4rem auto;
+          margin: 0 auto;
         }
 
         .photo-section {
@@ -433,26 +424,6 @@ export default function AboutMe() {
           </div>
         </div>
 
-        <div 
-          ref={hobbiesRef}
-          className={`hobbies ${hobbiesVisible ? 'visible' : ''}`}
-        >
-          <h3>Hobbies</h3>
-          <p className="hobby-description">
-            Swimming, Travel, Museums, and Hackathons
-          </p>
-          <div className="hobbies-grid">
-            {hobbies.map((hobby, index) => (
-              <div key={index} className="hobby-item">
-                <img 
-                  src={hobby.image} 
-                  alt={hobby.alt}
-                  className="hobby-image"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   )
