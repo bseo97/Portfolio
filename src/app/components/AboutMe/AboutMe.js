@@ -404,16 +404,16 @@ export default function AboutMe() {
               <div className="involvement">
                 <h3>Involvement</h3>
                 <div className="involvement-item">
-                  <p>Associate of Computing Machinery @ UCI (2023-present)</p>
+                  <p>Associate of Computing Machinery @ UCI (2023-2026)</p>
                 </div>
                 <div className="involvement-item">
-                  <p>Hacks at UCI (2025-present)</p>
+                  <p>Hacks at UCI (2025-2026)</p>
                 </div>
               </div>
 
               <div className="interests">
                 <h3>Interests</h3>
-                <p>AI Infrastructure, ML Systems Engineer, Prompt Optimization</p>
+                <p>AI/ML development, Full-stack Software Engineering</p>
               </div>
 
               <div className="resume-button-section">
