@@ -310,19 +310,19 @@ export default function ChatBot({ onExpand, typingReady }) {
           overflow: visible;
           box-sizing: border-box;
         }
-        /* ---- Double-Bezel: OUTER SHELL ---- */
+        /* ---- Double-Bezel: OUTER SHELL (translucent glass frame) ---- */
         .chatbot-wrapper {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.045)' : 'rgba(255, 255, 255, 0.45)'};
-          -webkit-backdrop-filter: blur(20px) saturate(1.5);
-          backdrop-filter: blur(20px) saturate(1.5);
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.28)'};
+          -webkit-backdrop-filter: blur(24px) saturate(1.8);
+          backdrop-filter: blur(24px) saturate(1.8);
           border-radius: 30px;
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(38, 41, 72, 0.07)'};
-          /* Bottom-weighted ambient shadow — minimal horizontal bleed so it
-             never gets clipped by the container's overflow into side strips. */
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.55)'};
+          /* Bottom-weighted ambient shadow + a light-catching top edge highlight.
+             Minimal horizontal bleed so it never clips into side strips. */
           box-shadow: ${isDarkMode
-            ? '0 30px 50px -28px rgba(0, 0, 0, 0.65), 0 10px 22px -18px rgba(0, 0, 0, 0.5)'
-            : '0 28px 50px -30px rgba(38, 41, 72, 0.30), 0 10px 22px -18px rgba(38, 41, 72, 0.14)'};
-          padding: 6px;
+            ? '0 30px 50px -28px rgba(0, 0, 0, 0.65), 0 10px 22px -18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.14)'
+            : '0 28px 50px -30px rgba(38, 41, 72, 0.30), 0 10px 22px -18px rgba(38, 41, 72, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8)'};
+          padding: 1.2px;
           transition: box-shadow 0.5s cubic-bezier(0.32,0.72,0,1), transform 0.5s cubic-bezier(0.32,0.72,0,1);
           position: relative;
           width: 100%;
@@ -333,7 +333,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           margin-top: 0;
           box-sizing: border-box;
         }
-        /* ---- Double-Bezel: INNER CORE (concentric radius) ---- */
+        /* ---- Double-Bezel: INNER CORE (primary glass surface) ---- */
         .chatbot-core {
           flex: 1;
           min-height: 0;
@@ -341,9 +341,16 @@ export default function ChatBot({ onExpand, typingReady }) {
           flex-direction: column;
           overflow: hidden;
           border-radius: 24px;
-          background: ${isDarkMode ? 'rgba(18, 22, 42, 0.62)' : 'rgba(255, 255, 255, 0.72)'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.7)'};
-          box-shadow: inset 0 1px 1px ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.8)'};
+          /* Vertical sheen (light from the top) over a translucent fill so the
+             ambient orbs behind subtly refract through the surface. */
+          background: ${isDarkMode
+            ? 'linear-gradient(180deg, rgba(34, 40, 72, 0.56), rgba(18, 22, 42, 0.46))'
+            : 'linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.4))'};
+          -webkit-backdrop-filter: blur(30px) saturate(1.7);
+          backdrop-filter: blur(30px) saturate(1.7);
+          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.07)' : 'rgba(255, 255, 255, 0.55)'};
+          box-shadow: inset 0 1px 0 ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.9)'},
+                      inset 0 -1px 0 ${isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(38, 41, 72, 0.03)'};
         }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
           .chatbot-wrapper {
@@ -939,7 +946,7 @@ export default function ChatBot({ onExpand, typingReady }) {
               <span className="chat-title">Brian</span>
               <span className="chat-status">
                 <span className="status-dot" aria-hidden="true"></span>
-                Legendary Engineer · online
+                Legendary Developer
               </span>
             </div>
           </div>
@@ -958,7 +965,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         >
           {messages.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-state-eyebrow">Conversation</div>
+              {/* <div className="empty-state-eyebrow">Conversation</div> */}
               <div className="empty-state-title">What brings you here?</div>
               {/* <div className="empty-state-subtext">Projects, experience, skills, or what he&apos;s building right now.</div> */}
               <div className="chat-suggestions">

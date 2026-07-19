@@ -45,21 +45,19 @@ export default function Header() {
 
       {/* Header */}
       <header
-        className={`fixed top-0 z-50 w-full transition-all duration-500 backdrop-blur-md backdrop-saturate-150 border-b ${
-          isDarkMode
-            ? isScrolled 
-              ? 'bg-slate-900/90 border-slate-700/50' 
-              : 'bg-slate-900/70 border-transparent'
-            : isScrolled
-              ? 'bg-white/90 border-slate-200/50'
-              : 'bg-white/70 border-transparent'
-        }`}
+        className="fixed top-0 z-50 w-full transition-all duration-500 backdrop-blur-xl backdrop-saturate-[1.8] border-b"
         style={{
-          boxShadow: isScrolled 
-            ? isDarkMode 
-              ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
-              : '0 4px 20px rgba(0, 0, 0, 0.1)'
-            : 'none'
+          backgroundColor: isDarkMode
+            ? (isScrolled ? 'rgba(30, 34, 62, 0.82)' : 'rgba(30, 34, 62, 0.55)')
+            : (isScrolled ? 'rgba(244, 241, 233, 0.82)' : 'rgba(244, 241, 233, 0.55)'),
+          borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(38, 41, 72, 0.06)',
+          boxShadow: isScrolled
+            ? isDarkMode
+              ? '0 12px 30px -18px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              : '0 12px 30px -18px rgba(38, 41, 72, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+            : isDarkMode
+              ? 'inset 0 1px 0 rgba(255, 255, 255, 0.06)'
+              : 'inset 0 1px 0 rgba(255, 255, 255, 0.6)'
         }}
       >
         <div className="relative flex justify-between items-center px-4 py-2">
@@ -79,13 +77,14 @@ export default function Header() {
           {/* Theme Toggle for Mobile */}
           <button
             onClick={toggleTheme}
-            className={`xl:hidden px-3 py-1.5 rounded-full transition-all duration-300 ${
-              isDarkMode 
-                ? 'bg-slate-800/50 border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' 
-                : 'bg-white/80 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-            } backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-105 ${
+            className={`xl:hidden px-3 py-1.5 rounded-full transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-[color:var(--text)] ${
+              isDarkMode
+                ? 'bg-white/5 border border-white/10 hover:bg-white/10'
+                : 'bg-white/50 border border-[rgba(38,41,72,0.08)] hover:bg-white/80'
+            } backdrop-blur-md hover:scale-105 ${
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             }`}
+            style={{ boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4)' }}
             aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
           >
             <span className="text-sm font-medium">
@@ -148,11 +147,12 @@ export default function Header() {
             <div className="ml-6 pl-6 border-l border-slate-600/30">
               <button
                 onClick={toggleTheme}
-                className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-105 flex items-center space-x-2 ${
-                  isDarkMode 
-                    ? 'bg-slate-800/50 border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' 
-                    : 'bg-white/80 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] backdrop-blur-md hover:scale-105 flex items-center space-x-2 text-[color:var(--text)] ${
+                  isDarkMode
+                    ? 'bg-white/5 border border-white/10 hover:bg-white/10'
+                    : 'bg-white/50 border border-[rgba(38,41,72,0.08)] hover:bg-white/80'
                 }`}
+                style={{ boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4)' }}
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
                 <span className="text-base">

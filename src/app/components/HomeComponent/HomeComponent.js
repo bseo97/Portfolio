@@ -1,393 +1,12 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ChatBot from '../ChatBot/ChatBot';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeComponent() {
   const [chatExpanded, setChatExpanded] = useState(false);
   const [headingAnimationDone, setHeadingAnimationDone] = useState(false);
-  const { isDarkMode, isLightMode } = useTheme();
-
-  useEffect(() => {
-    // Robust loading screen hiding logic
-    const hideLoadingScreen = () => {
-      const loadingScreen = document.getElementById('loading-screen')
-      if (loadingScreen) {
-        loadingScreen.style.display = 'none'
-      }
-    }
-
-    // Hide immediately and with timeout as fallback
-    hideLoadingScreen()
-    const timeoutId = setTimeout(hideLoadingScreen, 50)
-
-    // Shooting Stars Canvas Implementation
-    class ShootingStar {
-      constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.reset();
-      }
-      
-      reset() {
-        // Start from random position along top and left edges
-        if (Math.random() > 0.5) {
-          this.x = Math.random() * this.canvas.width;
-          this.y = -10;
-        } else {
-          this.x = -10;
-          this.y = Math.random() * this.canvas.height * 0.3;
-        }
-        
-        // Velocity for diagonal movement
-        this.vx = Math.random() * 3 + 2;
-        this.vy = Math.random() * 3 + 2;
-        
-        // Trail properties
-        this.trail = [];
-        this.trailLength = Math.random() * 20 + 15;
-        this.size = Math.random() * 1.5 + 1;
-        this.brightness = Math.random() * 0.5 + 0.5;
-        this.life = 1.0;
-        this.decay = Math.random() * 0.015 + 0.005;
-        
-        // Color variation - keep all white/blue tones
-        this.hue = Math.random() * 30 + 200; // Blue to white range
-      }
-      
-      update() {
-        // Store current position in trail
-        this.trail.push({ x: this.x, y: this.y, life: this.life });
-        
-        // Remove old trail points
-        if (this.trail.length > this.trailLength) {
-          this.trail.shift();
-        }
-        
-        // Update position
-        this.x += this.vx;
-        this.y += this.vy;
-        
-        // Fade out over time
-        this.life -= this.decay;
-        
-        // Check if off screen or faded
-        return this.life > 0 && 
-               this.x < this.canvas.width + 50 && 
-               this.y < this.canvas.height + 50;
-      }
-      
-      draw() {
-        this.ctx.save();
-        
-        // Draw trail
-        for (let i = 0; i < this.trail.length; i++) {
-          const point = this.trail[i];
-          const trailOpacity = (i / this.trail.length) * point.life * this.brightness;
-          const trailSize = (i / this.trail.length) * this.size;
-          
-          this.ctx.beginPath();
-          this.ctx.arc(point.x, point.y, trailSize, 0, Math.PI * 2);
-          this.ctx.fillStyle = `hsla(${this.hue}, 100%, 90%, ${trailOpacity})`;
-          this.ctx.fill();
-          
-          // Add glow effect
-          this.ctx.shadowBlur = 8;
-          this.ctx.shadowColor = `hsla(${this.hue}, 100%, 90%, ${trailOpacity * 0.5})`;
-          this.ctx.fill();
-        }
-        
-        // Draw main star (brightest point)
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
-        this.ctx.fillStyle = `hsla(${this.hue}, 100%, 95%, ${this.life * this.brightness})`;
-        this.ctx.shadowBlur = 15;
-        this.ctx.shadowColor = `hsla(${this.hue}, 100%, 90%, ${this.life * 0.8})`;
-        this.ctx.fill();
-        
-        this.ctx.restore();
-      }
-    }
-    
-    class ShootingStarSystem {
-      constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        if (!this.canvas) return;
-        
-        this.ctx = this.canvas.getContext('2d');
-        this.stars = [];
-        this.maxStars = 5;
-        
-        this.resizeCanvas();
-        this.animate();
-        
-        // Create new stars more frequently
-        this.starInterval = setInterval(() => {
-          if (this.stars.length < this.maxStars && Math.random() > 0.6) {
-            this.stars.push(new ShootingStar(this.canvas));
-            
-            // 50% chance to spawn a second star shortly after
-            if (Math.random() > 0.5) {
-              setTimeout(() => {
-                if (this.stars.length < this.maxStars) {
-                  this.stars.push(new ShootingStar(this.canvas));
-                }
-              }, Math.random() * 500 + 200);
-            }
-          }
-        }, 1500);
-        
-        // Handle resize
-        this.resizeHandler = () => this.resizeCanvas();
-        window.addEventListener('resize', this.resizeHandler);
-      }
-      
-      resizeCanvas() {
-        this.canvas.width = this.canvas.offsetWidth;
-        this.canvas.height = this.canvas.offsetHeight;
-      }
-      
-      animate() {
-        // Completely clear canvas to prevent lingering marks
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Update and draw stars
-        this.stars = this.stars.filter(star => {
-          const alive = star.update();
-          if (alive) {
-            star.draw();
-          }
-          return alive;
-        });
-        
-        this.animationFrame = requestAnimationFrame(() => this.animate());
-      }
-      
-      destroy() {
-        if (this.starInterval) clearInterval(this.starInterval);
-        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
-        if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
-      }
-    }
-
-    // Create neural network
-    function createNeuralNetwork() {
-      const container = document.getElementById('neural-network');
-      if (!container) return;
-      
-      const nodes = [];
-      const nodeCount = Math.min(10, Math.floor(window.innerWidth / 100));
-      
-      // Create nodes only in top 60% of screen
-      for (let i = 0; i < nodeCount; i++) {
-        const node = document.createElement('div');
-        node.className = 'neural-node';
-        
-        const x = Math.random() * (window.innerWidth - 50) + 25;
-        const y = Math.random() * (window.innerHeight * 0.6) + 25;
-        
-        Object.assign(node.style, {
-          position: 'absolute',
-          width: '12px',
-          height: '12px',
-          background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4))',
-          borderRadius: '50%',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 0 10px rgba(255, 255, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)',
-          left: x + 'px',
-          top: y + 'px',
-          animation: 'advancedPulse 4s ease-in-out infinite'
-        });
-        
-        if (i % 2 === 1) node.style.animationDelay = '0.8s';
-        if (i % 3 === 0) node.style.animationDelay = '1.6s';
-        
-        container.appendChild(node);
-        nodes.push({ element: node, x, y });
-      }
-      
-      // Create connections
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const distance = Math.sqrt(
-            Math.pow(nodes[i].x - nodes[j].x, 2) + 
-            Math.pow(nodes[i].y - nodes[j].y, 2)
-          );
-          
-          if (distance < Math.min(200, window.innerWidth * 0.25)) {
-            const connection = document.createElement('div');
-            connection.className = 'neural-connection';
-            
-            const angle = Math.atan2(
-              nodes[j].y - nodes[i].y,
-              nodes[j].x - nodes[i].x
-            ) * 180 / Math.PI;
-            
-            Object.assign(connection.style, {
-              position: 'absolute',
-              height: '0.5px',
-              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
-              opacity: '0',
-              left: nodes[i].x + 'px',
-              top: nodes[i].y + 'px',
-              width: distance + 'px',
-              transform: `rotate(${angle}deg)`,
-              transformOrigin: '0 50%',
-              animation: 'flow 4s ease-in-out infinite',
-              animationDelay: Math.random() * 4 + 's'
-            });
-            
-            container.appendChild(connection);
-          }
-        }
-      }
-    }
-    
-    // Create star network
-    function createStarNetwork() {
-      const container = document.getElementById('star-network');
-      if (!container) return;
-      
-      const stars = [];
-      const starCount = Math.min(6, Math.floor(window.innerWidth / 200));
-      
-      for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.className = 'star-node';
-        
-        const x = Math.random() * (window.innerWidth - 50) + 25;
-        const y = Math.random() * (window.innerHeight * 0.6) + 25;
-        
-        Object.assign(star.style, {
-          position: 'absolute',
-          width: '8px',
-          height: '8px',
-          background: 'radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%)',
-          borderRadius: '50%',
-          left: x + 'px',
-          top: y + 'px',
-          animation: 'advancedStarTwinkle 6s ease-in-out infinite'
-        });
-        
-        if (i % 2 === 1) star.style.animationDelay = '1s';
-        if (i % 3 === 0) star.style.animationDelay = '2s';
-        
-        // Add star cross effect
-        const before = document.createElement('div');
-        Object.assign(before.style, {
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '16px',
-          height: '1.5px',
-          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '2px'
-        });
-        
-        const after = document.createElement('div');
-        Object.assign(after.style, {
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '1.5px',
-          height: '16px',
-          background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '2px'
-        });
-        
-        star.appendChild(before);
-        star.appendChild(after);
-        
-        container.appendChild(star);
-        stars.push({ element: star, x, y });
-      }
-    }
-    
-    // Create particles
-    function createParticles() {
-      const container = document.getElementById('home');
-      if (!container) return;
-      
-      const particleCount = Math.min(12, Math.floor(window.innerWidth / 120));
-      
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'floating-particle';
-        
-        const initialSize = Math.random() * 2 + 2;
-        Object.assign(particle.style, {
-          position: 'absolute',
-          background: '#ffffff',
-          borderRadius: '50%',
-          opacity: '0.7',
-          width: initialSize + 'px',
-          height: initialSize + 'px',
-          left: Math.random() * window.innerWidth + 'px',
-          top: Math.random() * (window.innerHeight * 0.6) + 'px',
-          animation: 'particleFloat 6s ease-in-out infinite',
-          animationDelay: Math.random() * 6 + 's',
-          animationDuration: (Math.random() * 4 + 4) + 's'
-        });
-        
-        container.appendChild(particle);
-      }
-    }
-
-    // Initialize dark-mode sky scene only (light mode is a plain ivory hero)
-    if (isDarkMode) {
-      createNeuralNetwork();
-      createStarNetwork();
-      createParticles();
-    }
-
-    // Initialize shooting star system only in dark mode
-    let shootingStarSystem = null;
-    if (isDarkMode) {
-      shootingStarSystem = new ShootingStarSystem('shootingCanvas');
-    }
-
-    // Activate animations and hide loading screen if shown
-    setTimeout(() => {
-      const canvas = document.getElementById('shootingCanvas');
-      const neuralNetwork = document.getElementById('neural-network');
-      const starNetwork = document.getElementById('star-network');
-      const loadingScreen = document.getElementById('loading-screen');
-      
-      if (canvas) canvas.classList.add('active');
-      if (neuralNetwork) neuralNetwork.classList.add('active');
-      if (starNetwork) starNetwork.classList.add('active');
-      
-      // Hide loading screen if it exists
-      if (loadingScreen && loadingScreen.style.display !== 'none') {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 500);
-      }
-    }, 300);
-    
-    // Cleanup function
-    return () => {
-      // Clear timeout
-      clearTimeout(timeoutId);
-      
-      if (shootingStarSystem) {
-        shootingStarSystem.destroy();
-      }
-      
-      // Clean up created elements
-      const containers = ['neural-network', 'star-network', 'home'];
-      containers.forEach(id => {
-        const container = document.getElementById(id);
-        if (container) {
-          const elements = container.querySelectorAll('.neural-node, .neural-connection, .star-node, .floating-particle, .light-particle');
-          elements.forEach(el => el.remove());
-        }
-      });
-    };
-  }, [isDarkMode, isLightMode]);
+  const { isDarkMode } = useTheme();
 
   // Handler for subtitle animation end
   const handleSubtitleAnimationEnd = () => {
@@ -407,11 +26,86 @@ export default function HomeComponent() {
           z-index: 0;
         }
 
+        /* WebGL aurora canvas (dark mode). The gradient is the instant fallback
+           shown before the shader paints or if WebGL is unavailable. */
+        .aurora-canvas {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          z-index: 0;
+          background: linear-gradient(180deg, #0b0e1b 0%, #171a2d 55%, #262948 100%);
+        }
+
         @media screen and (max-width: 768px) {
           .hero-section {
             min-height: var(--viewport-height, 100vh);
             height: var(--viewport-height, 100vh);
           }
+        }
+
+        /* ---- Ambient glass orbs ---- */
+        .hero-ambient {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(90px);
+          will-change: transform;
+        }
+        .orb-1 {
+          width: 46vw;
+          max-width: 620px;
+          aspect-ratio: 1;
+          top: -6%;
+          left: -4%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(83,201,201,0.28), transparent 70%)'
+            : 'radial-gradient(circle, rgba(83,201,201,0.40), transparent 70%)'};
+          animation: orbDrift1 26s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        .orb-2 {
+          width: 40vw;
+          max-width: 540px;
+          aspect-ratio: 1;
+          top: 8%;
+          right: -6%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(122,112,255,0.24), transparent 70%)'
+            : 'radial-gradient(circle, rgba(120,168,255,0.30), transparent 70%)'};
+          animation: orbDrift2 32s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        .orb-3 {
+          width: 44vw;
+          max-width: 580px;
+          aspect-ratio: 1;
+          bottom: -12%;
+          left: 24%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(60,120,180,0.20), transparent 70%)'
+            : 'radial-gradient(circle, rgba(255,206,150,0.30), transparent 70%)'};
+          animation: orbDrift3 29s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        @keyframes orbDrift1 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(6%, 8%, 0) scale(1.12); }
+        }
+        @keyframes orbDrift2 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+          50% { transform: translate3d(-7%, 5%, 0) scale(0.95); }
+        }
+        @keyframes orbDrift3 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(5%, -6%, 0) scale(1.1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .orb { animation: none; }
         }
 
         .neural-network, .star-network {
@@ -531,13 +225,11 @@ export default function HomeComponent() {
            margin: 0;
          }
          .hero-title-accent {
-           color: var(--accent);
-           background: ${isDarkMode
-             ? 'linear-gradient(120deg, #7fe4e4 0%, #53c9c9 55%, #37b6b6 100%)'
-             : 'none'};
-           -webkit-background-clip: ${isDarkMode ? 'text' : 'border-box'};
-           background-clip: ${isDarkMode ? 'text' : 'border-box'};
-           -webkit-text-fill-color: ${isDarkMode ? 'transparent' : 'currentColor'};
+           color: ${isDarkMode ? 'var(--text)' : 'var(--accent)'};
+           background: none;
+           -webkit-background-clip: border-box;
+           background-clip: border-box;
+           -webkit-text-fill-color: currentColor;
          }
 
          /* Supporting subtitle */
@@ -656,15 +348,15 @@ export default function HomeComponent() {
         }
       `}</style>
       <div id="home" className="hero-section">
-        {/* Loading Screen */}
-        <div id="loading-screen" className="loading-screen">
-          <div className="loading-text">Loading...</div>
-        </div>
-        
-        {/* Dark Mode Sky Scene (light mode is a plain ivory hero) */}
-        <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
-        <div className="neural-network" id="neural-network"></div>
-        <div className="star-network" id="star-network"></div>
+        {/* Light mode: soft ambient orbs the glass card refracts. In dark mode
+            the shared page-level aurora backdrop (see page.js) shows through. */}
+        {!isDarkMode && (
+          <div className="hero-ambient" aria-hidden="true">
+            <span className="orb orb-1"></span>
+            <span className="orb orb-2"></span>
+            <span className="orb orb-3"></span>
+          </div>
+        )}
 
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>
@@ -682,22 +374,8 @@ export default function HomeComponent() {
           <div className="chatbot-hero-wrapper">
             <ChatBot onExpand={setChatExpanded} typingReady={headingAnimationDone} />
           </div>
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="flex flex-col items-center">
-              {/* <span className="text-white text-sm mb-2 opacity-60">Scroll Down</span> */}
-              <svg
-                className="w-6 h-6 opacity-70 text-[color:var(--text)]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
         </div>
       </div>
-    </div>
-  </div>
 </React.Fragment>
   );
 }

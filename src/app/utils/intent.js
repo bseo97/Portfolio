@@ -44,7 +44,7 @@ const INTENT_PATTERNS = [
     patterns: [
       /\b(projects?\s+(you\s+)?(built|made|developed|created|worked\s+on))\b/,
       /\b(what.*projects|show.*projects|portfolio.*projects)\b/,
-      /\b(rentspiracy|fabflix|decurb)\b/,
+      /\b(rentspiracy|fabflix|intertru|point\s+of\s+sales|pos)\b/,
       /\b(built.*app|made.*website|developed.*platform)\b/
     ]
   },
@@ -111,7 +111,7 @@ export function getFallbackResponse(intent) {
   const fallbacks = {
     [INTENT_TYPES.GREETING]: "Hello! Great to meet you! I'm Brian, a Software Engineering student at UC Irvine. I'd love to tell you about my projects, experience, or anything else you're curious about!",
     [INTENT_TYPES.ABOUT]: "I'd be happy to tell you about myself! I'm Brian, a Software Engineering student at UC Irvine passionate about AI and full-stack development.",
-    [INTENT_TYPES.PROJECTS]: "I've worked on several exciting projects including Rent-spiracy, Fabflix, and Decurb. Which one would you like to know more about?",
+    [INTENT_TYPES.PROJECTS]: "I've worked on several projects and roles including Intertru, Rent-spiracy, Fabflix, and a Point of Sales Software. Which one would you like to know more about?",
     [INTENT_TYPES.SKILLS]: "I have experience with React.js, Next.js, Python, Java, and various AI/ML frameworks. What specific technology are you curious about?",
     [INTENT_TYPES.EXPERIENCE]: "I'm currently a Software Engineering student at UC Irvine, involved with computing organizations and hackathons. What aspect of my experience interests you?",
     [INTENT_TYPES.CONTACT]: "You can find my contact information and resume links on this portfolio. Feel free to connect with me!",
