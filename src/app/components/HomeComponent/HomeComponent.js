@@ -414,6 +414,69 @@ export default function HomeComponent() {
           }
         }
 
+        /* ---- Ambient glass orbs ---- */
+        .hero-ambient {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(90px);
+          will-change: transform;
+        }
+        .orb-1 {
+          width: 46vw;
+          max-width: 620px;
+          aspect-ratio: 1;
+          top: -6%;
+          left: -4%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(83,201,201,0.28), transparent 70%)'
+            : 'radial-gradient(circle, rgba(83,201,201,0.40), transparent 70%)'};
+          animation: orbDrift1 26s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        .orb-2 {
+          width: 40vw;
+          max-width: 540px;
+          aspect-ratio: 1;
+          top: 8%;
+          right: -6%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(122,112,255,0.24), transparent 70%)'
+            : 'radial-gradient(circle, rgba(120,168,255,0.30), transparent 70%)'};
+          animation: orbDrift2 32s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        .orb-3 {
+          width: 44vw;
+          max-width: 580px;
+          aspect-ratio: 1;
+          bottom: -12%;
+          left: 24%;
+          background: ${isDarkMode
+            ? 'radial-gradient(circle, rgba(60,120,180,0.20), transparent 70%)'
+            : 'radial-gradient(circle, rgba(255,206,150,0.30), transparent 70%)'};
+          animation: orbDrift3 29s cubic-bezier(0.45,0,0.55,1) infinite;
+        }
+        @keyframes orbDrift1 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(6%, 8%, 0) scale(1.12); }
+        }
+        @keyframes orbDrift2 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+          50% { transform: translate3d(-7%, 5%, 0) scale(0.95); }
+        }
+        @keyframes orbDrift3 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(5%, -6%, 0) scale(1.1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .orb { animation: none; }
+        }
+
         .neural-network, .star-network {
           position: absolute;
           top: 0;
@@ -665,6 +728,13 @@ export default function HomeComponent() {
         <canvas className="shooting-stars-canvas" id="shootingCanvas"></canvas>
         <div className="neural-network" id="neural-network"></div>
         <div className="star-network" id="star-network"></div>
+
+        {/* Ambient glass orbs — soft blurred color the glass card refracts */}
+        <div className="hero-ambient" aria-hidden="true">
+          <span className="orb orb-1"></span>
+          <span className="orb orb-2"></span>
+          <span className="orb orb-3"></span>
+        </div>
 
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>

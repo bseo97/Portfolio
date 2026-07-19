@@ -5,6 +5,7 @@ import { DataArray } from '@/app/data'
 import Link from 'next/link'
 import { getStatusColor, getStatusTextColor } from '@/app/utils/statusHelpers'
 import { useTheme } from '@/app/hooks/useTheme'
+import AmbientOrbs from '@/app/components/AmbientOrbs/AmbientOrbs'
 
 export default function ProjectDetail() {
   const params = useParams()
@@ -21,10 +22,12 @@ export default function ProjectDetail() {
         isDarkMode ? 'bg-[#262948]' : 'bg-[#F4F1E9]'
       }`}>
         <div className="text-center">
-          <h1 className={`text-4xl font-bold mb-4 ${
-            'text-[color:var(--text)]'
-          }`}>Project Not Found</h1>
-          <Link href="/" className="bg-[#53c9c9] text-white px-6 py-3 rounded-lg hover:bg-[#244e4e] transition-colors">
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] mb-5 text-[color:var(--text)]">Project Not Found</h1>
+          <Link
+            href="/"
+            className="inline-flex items-center px-7 py-3 rounded-full text-white font-semibold text-sm transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(140deg, #7fe4e4 0%, #53c9c9 50%, #37b6b6 100%)', boxShadow: '0 14px 30px -12px rgba(83,201,201,0.7), inset 0 1px 1px rgba(255,255,255,0.4)' }}
+          >
             Back to Portfolio
           </Link>
         </div>
@@ -32,54 +35,141 @@ export default function ProjectDetail() {
     )
   }
 
+  // Glass surfaces for the secondary / disabled pills (theme-aware).
+  const glassPill = {
+    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)',
+    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(38,41,72,0.09)'}`,
+    boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.45)',
+  }
+  const iconCircleDark = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(38,41,72,0.06)'
+
+  // Soft glass frame for project imagery (no harsh drop shadows).
+  const imageFrame = {
+    background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.5)',
+    boxShadow: isDarkMode
+      ? '0 30px 60px -26px rgba(0,0,0,0.62), inset 0 0 0 1px rgba(255,255,255,0.08)'
+      : '0 30px 60px -28px rgba(38,41,72,0.32), inset 0 0 0 1px rgba(255,255,255,0.55)',
+  }
+  const captionChip = {
+    background: 'rgba(12,14,28,0.5)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255,255,255,0.12)',
+  }
+
+  // Shared action buttons (primary demo + secondary repo). Rendered in both the
+  // Fabflix split layout and the default layout so they stay identical.
+  const renderActionButtons = () => (
+    <div className="flex flex-wrap gap-3 justify-center mt-7 mb-2">
+      {project.demoLink ? (
+        <a
+          href={project.demoLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full text-white font-semibold text-sm transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 active:scale-[0.98]"
+          style={{ background: 'linear-gradient(140deg, #7fe4e4 0%, #53c9c9 50%, #37b6b6 100%)', boxShadow: '0 14px 30px -12px rgba(83,201,201,0.7), inset 0 1px 1px rgba(255,255,255,0.4)' }}
+        >
+          <span>View Live Demo</span>
+          <span className="w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ background: 'rgba(255,255,255,0.22)' }}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M7 17L17 7M17 7H8M17 7v9" />
+            </svg>
+          </span>
+        </a>
+      ) : projectId === 0 ? (
+        <span
+          className="inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full text-white font-semibold text-sm"
+          style={{ background: 'linear-gradient(140deg, #7fe4e4 0%, #53c9c9 50%, #37b6b6 100%)', boxShadow: '0 14px 30px -12px rgba(83,201,201,0.7), inset 0 1px 1px rgba(255,255,255,0.4)' }}
+        >
+          <span>You are exploring the demo</span>
+          <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.22)' }}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+        </span>
+      ) : (
+        <span className="inline-flex items-center px-6 py-3 rounded-full font-semibold text-sm opacity-50 cursor-not-allowed text-[color:var(--text)]" style={glassPill}>
+          Demo Coming Soon
+        </span>
+      )}
+
+      {project.repositoryLink ? (
+        <a
+          href={project.repositoryLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full font-semibold text-sm text-[color:var(--text)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 active:scale-[0.98]"
+          style={glassPill}
+        >
+          <span>Explore Repository</span>
+          <span className="w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105" style={{ background: iconCircleDark }}>
+            <svg className="w-4 h-4 text-[color:var(--accent)]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </span>
+        </a>
+      ) : (
+        <span className="inline-flex items-center px-6 py-3 rounded-full font-semibold text-sm opacity-50 cursor-not-allowed text-[color:var(--text)]" style={glassPill}>
+          Repository Private
+        </span>
+      )}
+    </div>
+  )
+
   return (
     <>
-      <style jsx>{`
-        @keyframes pulse-glow {
-          0%, 100% {
-            box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2);
-          }
-          50% {
-            box-shadow: 0 4px 15px rgba(5, 217, 232, 0.4), 0 0 25px rgba(5, 217, 232, 0.3);
-          }
-        }
-        
-        .animate-pulse-glow {
-          animation: pulse-glow 2s ease-in-out infinite;
-        }
-      `}</style>
-      
-      <div className={`min-h-screen transition-all duration-2000 ${
+
+      <div className={`relative overflow-hidden min-h-screen transition-all duration-2000 ${
         isDarkMode ? 'bg-[#262948]' : 'bg-[#F4F1E9]'
       }`}>
+      <AmbientOrbs variant="a" />
       {/* Navigation */}
-      <nav className="glass sticky top-0 z-50 transition-all duration-500">
+      <nav className="glass sticky top-0 z-50 transition-all duration-500"
+        style={{ boxShadow: isDarkMode
+          ? '0 12px 30px -18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)'
+          : '0 12px 30px -18px rgba(38,41,72,0.18), inset 0 1px 0 rgba(255,255,255,0.8)' }}>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <button 
+            <button
               onClick={() => router.back()}
-              className={`flex items-center space-x-2 hover:text-[color:var(--accent)] transition-colors ${
-                'text-[color:var(--text)]'
-              }`}
+              className="group flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full text-[color:var(--text)] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+              style={{
+                background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(38,41,72,0.08)'}`,
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4)'
+              }}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="font-medium">Back to Portfolio</span>
+              <span className="w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-x-0.5"
+                style={{ background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(38,41,72,0.06)' }}>
+                <svg className="w-4 h-4 text-[color:var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 19l-7-7 7-7" />
+                </svg>
+              </span>
+              <span className="font-medium text-sm">Back to Portfolio</span>
             </button>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${getStatusColor(project.status?.color)}`}></div>
-                <span className={`font-medium ${getStatusTextColor(project.status?.color)}`}>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
+                style={{
+                  background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+                  border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(38,41,72,0.08)'}`
+                }}>
+                <div className={`w-2 h-2 rounded-full ${getStatusColor(project.status?.color)}`}></div>
+                <span className={`font-medium text-xs ${getStatusTextColor(project.status?.color)}`}>
                   {project.status?.text}
                 </span>
               </div>
-              
+
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
-                className={`px-3 py-1 rounded-full border border-[#53c9c9] text-[color:var(--accent)] hover:bg-[#53c9c9] hover:text-white font-semibold text-sm transition-all duration-300 backdrop-blur-sm`}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-sm transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105"
+                style={{
+                  background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+                  border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(38,41,72,0.08)'}`,
+                  boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4)'
+                }}
                 aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               >
                 {isDarkMode ? '☀️' : '🌙'}
@@ -90,49 +180,37 @@ export default function ProjectDetail() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Side - Project Info */}
           <div className="space-y-8">
             {/* Project Header */}
             <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <span className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${
-                  isDarkMode 
-                    ? 'text-slate-300 bg-slate-700' 
-                    : 'text-slate-500 bg-slate-100'
-                }`}>
-                  {project.year}
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)] opacity-85">
+                  {project.category}
                 </span>
-                <span className={`text-sm ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>•</span>
-                <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Project {projectId + 1} of {DataArray.length}
+                <span className="w-8 h-px" style={{ background: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(38,41,72,0.15)' }}></span>
+                <span className="text-xs font-medium tracking-wide" style={{ color: isDarkMode ? 'rgba(242,242,242,0.5)' : 'rgba(26,26,26,0.5)' }}>
+                  {project.year} · {String(projectId + 1).padStart(2, '0')} / {String(DataArray.length).padStart(2, '0')}
                 </span>
               </div>
-              
-              <h1 className={`text-4xl lg:text-5xl font-bold mb-4 leading-tight transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>
+
+              <h1 className="text-4xl lg:text-[3.25rem] font-semibold mb-5 leading-[1.05] tracking-[-0.035em] text-[color:var(--text)]">
                 {project.name}
               </h1>
-              
-              <p className={`text-xl leading-relaxed transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>
+
+              <p className="text-lg lg:text-xl leading-relaxed" style={{ color: isDarkMode ? 'rgba(242,242,242,0.68)' : 'rgba(26,26,26,0.64)' }}>
                 {project.des}
               </p>
             </div>
 
             {/* Detailed Description */}
             {project.des1 && (
-              <div className="glass rounded-xl p-6 transition-all duration-500">
-                <h2 className={`text-lg font-semibold mb-3 transition-colors ${
-                  'text-[color:var(--text)]'
-                }`}>Project Details</h2>
-                <p className={`leading-relaxed transition-colors ${
-                  'text-[color:var(--text)]'
-                }`}>
+              <div className="glass rounded-[1.75rem] p-7 transition-all duration-500">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)] opacity-85 mb-2.5">Overview</div>
+                <p className="leading-relaxed" style={{ color: isDarkMode ? 'rgba(242,242,242,0.72)' : 'rgba(26,26,26,0.68)' }}>
                   {project.des1}
                 </p>
               </div>
@@ -140,14 +218,17 @@ export default function ProjectDetail() {
 
             {/* Tech Stack */}
             <div>
-              <h2 className={`text-lg font-semibold mb-4 transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>Technologies Used</h2>
-              <div className="flex flex-wrap gap-3">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)] opacity-85 mb-4">Stack</div>
+              <div className="flex flex-wrap gap-2.5">
                 {project.techStack && project.techStack.map((tech, index) => (
-                  <span 
+                  <span
                     key={index}
-                    className="px-4 py-2 bg-[#53c9c9]/10 text-[color:var(--accent)] rounded-lg font-medium border border-[#53c9c9]/20 hover:bg-[#53c9c9]/20 transition-colors"
+                    className="px-4 py-1.5 text-sm font-medium text-[color:var(--text)] rounded-full transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+                    style={{
+                      background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)',
+                      border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(38,41,72,0.09)'}`,
+                      boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.5)'
+                    }}
                   >
                     {tech}
                   </span>
@@ -165,169 +246,53 @@ export default function ProjectDetail() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                   {/* Login Image - Left */}
-                    <div className={`relative overflow-hidden rounded-xl shadow-xl transition-colors ${
-                      isDarkMode ? 'bg-slate-800' : 'bg-white'
-                    }`}>
-                    <img 
+                  <div className="relative overflow-hidden rounded-[1.5rem] p-1.5" style={imageFrame}>
+                    <img
                       src={project.images[1]} // Decurb_login.png
                       alt={`${project.name} - Login Interface`}
-                      className="w-full h-auto object-cover"
+                      className="w-full h-auto object-cover rounded-[1.15rem]"
                     />
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute bottom-3 left-3 text-white text-[11px] font-medium px-2.5 py-1 rounded-full" style={captionChip}>
                       Login Interface
                     </div>
                   </div>
                   {/* Main Image - Right */}
-                    <div className={`relative overflow-hidden rounded-xl shadow-xl transition-colors ${
-                      isDarkMode ? 'bg-slate-800' : 'bg-white'
-                    }`}>
-                    <img 
+                  <div className="relative overflow-hidden rounded-[1.5rem] p-1.5" style={imageFrame}>
+                    <img
                       src={project.images[0]} // Decurb_main.png
                       alt={`${project.name} - Main Interface`}
-                      className="w-full h-auto object-cover"
+                      className="w-full h-auto object-cover rounded-[1.15rem]"
                     />
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute bottom-3 left-3 text-white text-[11px] font-medium px-2.5 py-1 rounded-full" style={captionChip}>
                       Main Interface
                     </div>
                   </div>
                 </div>
                 {/* Action Buttons below both images */}
-                <div className="flex flex-row gap-4 justify-center mt-6 mb-2">
-                  {project.demoLink ? (
-                    <a 
-                      href={project.demoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2 hover:shadow-[#05d9e8]/50 animate-pulse-glow"
-                      style={{ boxShadow: '0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2)' }}
-                    >
-                      <span>View Live Demo</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </a>
-                  ) : (
-                    projectId === 0 ? (
-                      <button className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2">
-                        <span>You are exploring demo!</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <button className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50">
-                        Demo Coming Soon
-                      </button>
-                    )
-                  )}
-                  {project.repositoryLink ? (
-                    <a 
-                      href={project.repositoryLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[color:var(--accent)] transition-colors flex items-center space-x-2 ${
-                        isDarkMode 
-                          ? 'border-slate-600 text-slate-300' 
-                          : 'border-slate-300 text-slate-700'
-                      }`}
-                    >
-                      <span>Explore Repository</span>
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                    </a>
-                  ) : (
-                    <button className={`border-2 px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50 ${
-                      isDarkMode 
-                        ? 'border-gray-600 text-gray-500' 
-                        : 'border-gray-300 text-gray-400'
-                    }`}>
-                      Repository Private
-                    </button>
-                  )}
-                </div>
+                {renderActionButtons()}
               </>
             ) : (
               /* Default layout for other projects */
               <>
                 {/* Main Image Container */}
-                <div className={`relative overflow-hidden rounded-2xl shadow-2xl w-full transition-colors ${
-                  isDarkMode ? 'bg-slate-800' : 'bg-white'
-                }`}>
-                  <img 
+                <div className="relative overflow-hidden rounded-[1.75rem] p-1.5 w-full" style={imageFrame}>
+                  <img
                     src={project.images[0]}
                     alt={project.name}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-auto object-cover rounded-[1.35rem]"
                   />
-                  {/* Overlay gradient for better text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                 </div>
                 {/* Action Buttons below image */}
-                <div className="flex flex-row gap-4 justify-center mt-6 mb-2">
-                  {project.demoLink ? (
-                    <a 
-                      href={project.demoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2 hover:shadow-[#05d9e8]/50 animate-pulse-glow"
-                      style={{ boxShadow: '0 4px 15px rgba(5, 217, 232, 0.3), 0 0 20px rgba(5, 217, 232, 0.2)' }}
-                    >
-                      <span>View Live Demo</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </a>
-                  ) : (
-                    projectId === 0 ? (
-                      <button className="bg-gradient-to-r from-[#05d9e8] to-[#53c9c9] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center space-x-2">
-                        <span>You are exploring demo!</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <button className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50">
-                        Demo Coming Soon
-                      </button>
-                    )
-                  )}
-                  {project.repositoryLink ? (
-                    <a 
-                      href={project.repositoryLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`border-2 px-8 py-3 rounded-lg font-semibold hover:border-[#53c9c9] hover:text-[color:var(--accent)] transition-colors flex items-center space-x-2 ${
-                        isDarkMode 
-                          ? 'border-slate-600 text-slate-300' 
-                          : 'border-slate-300 text-slate-700'
-                      }`}
-                    >
-                      <span>Explore Repository</span>
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                    </a>
-                  ) : (
-                    <button className={`border-2 px-8 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50 ${
-                      isDarkMode 
-                        ? 'border-gray-600 text-gray-500' 
-                        : 'border-gray-300 text-gray-400'
-                    }`}>
-                      Repository Private
-                    </button>
-                  )}
-                </div>
+                {renderActionButtons()}
                 {/* Additional Images Preview */}
                 {project.images.length > 1 && (
                   <div className="mt-6 grid grid-cols-3 gap-4 w-full">
                     {project.images.slice(1, 4).map((image, index) => (
-                      <div key={index} className={`relative overflow-hidden rounded-lg shadow-md aspect-square transition-colors ${
-                        isDarkMode ? 'bg-slate-800' : 'bg-white'
-                      }`}>
-                        <img 
+                      <div key={index} className="group relative overflow-hidden rounded-2xl aspect-square p-1" style={imageFrame}>
+                        <img
                           src={image}
                           alt={`${project.name} screenshot ${index + 2}`}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-cover rounded-[0.85rem] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
                         />
                       </div>
                     ))}
@@ -335,35 +300,25 @@ export default function ProjectDetail() {
                 )}
               </>
             )}
-
-            {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#53c9c9]/10 rounded-full blur-xl"></div>
           </div>
         </div>
 
         {/* Additional Project Info Section */}
-        <div className="glass mt-16 rounded-2xl p-8 transition-all duration-500">
+        <div className="glass mt-16 rounded-[1.75rem] p-8 md:p-10 transition-all duration-500">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[color:var(--accent)] mb-2">{project.year}</div>
-              <div className={`transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>Year Completed</div>
+            <div className="text-center px-4">
+              <div className="text-4xl font-semibold tracking-[-0.03em] text-[color:var(--accent)] mb-2">{project.year}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: isDarkMode ? 'rgba(242,242,242,0.5)' : 'rgba(26,26,26,0.5)' }}>Year Completed</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[color:var(--accent)] mb-2">{project.techStack?.length || 0}</div>
-              <div className={`transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>Technologies</div>
+            <div className="text-center px-4">
+              <div className="text-4xl font-semibold tracking-[-0.03em] text-[color:var(--accent)] mb-2">{project.techStack?.length || 0}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: isDarkMode ? 'rgba(242,242,242,0.5)' : 'rgba(26,26,26,0.5)' }}>Technologies</div>
             </div>
-            <div className="text-center">
-              <div className={`text-3xl font-bold mb-2 ${getStatusTextColor(project.status?.color)}`}>
+            <div className="text-center px-4">
+              <div className={`text-4xl font-semibold tracking-[-0.03em] mb-2 ${getStatusTextColor(project.status?.color)}`}>
                 {project.status?.text}
               </div>
-              <div className={`transition-colors ${
-                'text-[color:var(--text)]'
-              }`}>Project Status</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: isDarkMode ? 'rgba(242,242,242,0.5)' : 'rgba(26,26,26,0.5)' }}>Project Status</div>
             </div>
           </div>
         </div>
