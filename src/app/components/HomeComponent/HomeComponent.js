@@ -468,7 +468,7 @@ export default function HomeComponent() {
           color: #53c9c9;
           font-size: 2rem;
           font-weight: bold;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
           text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
           animation: loadingPulse 1.5s ease-in-out infinite;
         }
@@ -500,15 +500,60 @@ export default function HomeComponent() {
 
          .hero-text {
            color: var(--accent);
-           margin-bottom: 1.25rem;
-           transition: margin-bottom 0.5s cubic-bezier(0.4,0,0.2,1), margin-top 0.5s cubic-bezier(0.4,0,0.2,1);
+           margin-bottom: 2rem;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           text-align: center;
+           transition: margin-bottom 0.6s cubic-bezier(0.32,0.72,0,1), margin-top 0.6s cubic-bezier(0.32,0.72,0,1);
          }
          .hero-text h2 {
            color: var(--text);
          }
          .hero-text.chat-expanded {
-           margin-bottom: 0.25rem;
+           margin-bottom: 0.75rem;
            margin-top: 0;
+         }
+         .hero-text.chat-expanded .hero-subtitle {
+           opacity: 0;
+           max-height: 0;
+           margin-top: 0;
+           transform: translateY(-6px);
+         }
+
+         /* Display headline — refined modern wordmark */
+         .hero-title {
+           font-size: clamp(2.6rem, 6vw, 4.75rem);
+           font-weight: 600;
+           line-height: 1.02;
+           letter-spacing: -0.035em;
+           color: var(--text);
+           margin: 0;
+         }
+         .hero-title-accent {
+           color: var(--accent);
+           background: ${isDarkMode
+             ? 'linear-gradient(120deg, #7fe4e4 0%, #53c9c9 55%, #37b6b6 100%)'
+             : 'none'};
+           -webkit-background-clip: ${isDarkMode ? 'text' : 'border-box'};
+           background-clip: ${isDarkMode ? 'text' : 'border-box'};
+           -webkit-text-fill-color: ${isDarkMode ? 'transparent' : 'currentColor'};
+         }
+
+         /* Supporting subtitle */
+         .hero-subtitle {
+           margin-top: 1.35rem;
+           max-width: 30ch;
+           font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+           font-weight: 400;
+           line-height: 1.55;
+           color: ${isDarkMode ? 'rgba(242,242,242,0.62)' : 'rgba(26,26,26,0.6)'};
+           overflow: hidden;
+           transition: opacity 0.5s cubic-bezier(0.32,0.72,0,1),
+                       max-height 0.6s cubic-bezier(0.32,0.72,0,1),
+                       transform 0.5s cubic-bezier(0.32,0.72,0,1),
+                       margin-top 0.5s cubic-bezier(0.32,0.72,0,1);
+           max-height: 120px;
          }
          .chatbot-hero-wrapper {
            width: 100%;
@@ -577,22 +622,26 @@ export default function HomeComponent() {
           }
         }
 
-        .fade-in-up {
+        /* Choreographed entry — heavy fade-up with blur resolve */
+        .reveal {
           opacity: 0;
-          transform: translateY(30px);
-          animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1) forwards;
+          transform: translateY(24px);
+          filter: blur(10px);
+          animation: heroReveal 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
+          will-change: transform, opacity, filter;
         }
-        .fade-in-up.delay-1 {
-          animation-delay: 0.2s;
-        }
-        .fade-in-up.delay-2 {
-          animation-delay: 1s;
-        }
-        @keyframes fadeInUp {
+        .reveal-1 { animation-delay: 0.15s; }
+        .reveal-2 { animation-delay: 0.32s; }
+        .reveal-3 { animation-delay: 0.5s; }
+        @keyframes heroReveal {
           to {
             opacity: 1;
             transform: translateY(0);
+            filter: blur(0);
           }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal { animation: none; opacity: 1; transform: none; filter: none; }
         }
 
         @media (max-width: 900px) {
@@ -620,11 +669,14 @@ export default function HomeComponent() {
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>
             <h1
-              className="font-black text-4xl md:text-6xl lg:text-6xl tracking-tight fade-in-up delay-1"
+              className="hero-title reveal reveal-1"
               onAnimationEnd={handleSubtitleAnimationEnd}
             >
-          I&apos;m Brian
-        </h1>
+              I&apos;m <span className="hero-title-accent">Brian</span>
+            </h1>
+            <p className="hero-subtitle reveal reveal-2">
+              Building AI-driven products &amp; full-stack systems. Ask anything about me below
+            </p>
           </div>
           {/* AI Chatbot */}
           <div className="chatbot-hero-wrapper">

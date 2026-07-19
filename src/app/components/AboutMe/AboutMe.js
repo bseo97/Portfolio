@@ -35,7 +35,7 @@ export default function AboutMe() {
           color: var(--accent);
           text-align: center;
           margin-bottom: 3rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
           opacity: 0;
           transform: translateY(30px);
           transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -117,7 +117,7 @@ export default function AboutMe() {
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 0.8rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .education p,
@@ -150,7 +150,7 @@ export default function AboutMe() {
           box-shadow: 0 4px 15px rgba(5, 217, 232, 0.3);
           border: 1px solid rgba(255, 255, 255, 0.2);
           backdrop-filter: blur(10px);
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .resume-button:hover {
@@ -201,7 +201,7 @@ export default function AboutMe() {
           font-size: 1.8rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
         }
 
         .hobbies-grid {

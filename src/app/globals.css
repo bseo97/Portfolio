@@ -14,9 +14,11 @@
 
   html, body {
   color: rgb(var(--foreground-rgb));
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   width: 100%;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   }
 
   /* Unified site background: one flat color per theme (no gradients).
@@ -187,7 +189,7 @@
     color: #53c9c9;
     font-size: 2rem;
     font-weight: bold;
-    font-family: 'Inter', Arial, sans-serif;
+    font-family: var(--font-sans), sans-serif;
     text-shadow: 0 0 20px rgba(83, 201, 201, 0.5);
     animation: loadingPulse 1.5s ease-in-out infinite;
   }

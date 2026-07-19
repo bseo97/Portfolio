@@ -33,7 +33,7 @@ export default function Home() {
         .projects-container {
           background: transparent; /* unified body color shows through */
           width: 100%;
-          font-family: 'Inter', Arial, sans-serif;
+          font-family: var(--font-sans), sans-serif;
           /* Continues the About rhythm so the two read as one connected flow. */
           padding-top: 2rem;
           padding-bottom: 6rem;
