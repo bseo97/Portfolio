@@ -367,7 +367,7 @@ export default function HomeComponent() {
               I&apos;m <span className="hero-title-accent">Brian</span>
             </h1>
             <p className="hero-subtitle reveal reveal-2">
-              Building AI-driven products &amp; full-stack systems. Ask anything about me below
+              Software Engineer who builds AI-driven products &amp; full-stack systems.
             </p>
           </div>
           {/* AI Chatbot */}

@@ -17,7 +17,7 @@ export const DataArray = [
       text: "Completed",
       color: "green"
     },
-    year: "2025",
+    year: "2024",
     demoLink: null,
     repositoryLink: "https://github.com/bseo97/Portfolio"
   },
@@ -39,12 +39,12 @@ export const DataArray = [
     repositoryLink: "https://github.com/bseo97/Rent-Spiracy"
   },
   {
-    title: "Fabflix full-stack project",
-    name: "Fabflix",
-    label: "Fabflix",
-    category: "Full-Stack",
+    title: "Decurb full-stack project",
+    name: "Decurb",
+    label: "Decurb",
+    category: "Academic Project",
     des: "A full-stack movie eCommerce platform with secure login, dynamic search, chatbot integration, and full AWS deployment.",
-    des1: "Fabflix is a full-stack movie eCommerce web application that allows users to search, browse, and purchase movies through a secure and interactive interface. Built using Java Servlets, MySQL, and AJAX-powered front-end technologies, the platform supports advanced features such as fuzzy search, dynamic shopping cart, and an AI-powered chatbot integrated via the OpenAI API. I implemented secure login with JWT, optimized SQL performance, automated XML data import, and successfully deployed the application on AWS using Docker and Kubernetes, demonstrating a scalable microservices architecture before shutting down the server due to cost constraints. You can test the full project locally by visiting my GitHub repository, Fabflix!",
+    des1: "Decurb is a full-stack movie eCommerce web application that allows users to search, browse, and purchase movies through a secure and interactive interface. Built using Java Servlets, MySQL, and AJAX-powered front-end technologies, the platform supports advanced features such as fuzzy search, dynamic shopping cart, and an AI-powered chatbot integrated via the OpenAI API. I implemented secure login with JWT, optimized SQL performance, automated XML data import, and successfully deployed the application on AWS using Docker and Kubernetes, demonstrating a scalable microservices architecture before shutting down the server due to cost constraints. You can test the full project locally by visiting my GitHub repository, Decurb!",
     images: ["/Decurb_main.png", "/Decurb_login.png"],
     techStack: ["Java", "MySQL", "JavaScript (AJAX)", "HTML/CSS", "Servlet", "JDBC", "Docker", "Kubernetes", "AWS", "Microservices"],
     status: {
@@ -53,7 +53,7 @@ export const DataArray = [
     },
     year: "2025",
     demoLink: "https://youtu.be/R7KXw658VMg",
-    repositoryLink: "https://github.com/bseo97/Fabflix"
+    repositoryLink: "https://github.com/bseo97/fabflix"
   },
   {
     title: "Intertru — Full-Stack Software Engineer",
@@ -62,7 +62,7 @@ export const DataArray = [
     category: "Experience",
     des: "Full-stack software engineer building AI-driven interview session tooling.",
     des1: "As a Full-Stack Software Engineer at Intertru (Newport Beach, CA), I improved system efficiency by consolidating multiple API calls into a single endpoint for every session. I hardened the AI integration by adding security layers—input sanitization and structured JSON output enforcement—to prevent prompt injection and reduce failure points. I integrated hybrid and independent model selection into working-session generation, improving analysis-point accuracy on interview sessions by 2.3x. I also replaced background threading with async AWS Lambda calls through Boto3, so long-running jobs return a response immediately instead of blocking.",
-    images: [],
+    images: ["/Intertru.png", "/Intertru1.png"],
     techStack: ["Python", "AWS Lambda", "Boto3", "LLM Integration", "REST API", "JSON Schema"],
     status: {
       text: "In Progress",
