@@ -4,9 +4,12 @@ import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
 import ProjectIndex from "./components/ProjectIndex/ProjectIndex";
 import AmbientOrbs from './components/AmbientOrbs/AmbientOrbs';
+import AuroraBackground from './components/AuroraBackground/AuroraBackground';
 import { useScrollAnimation } from './hooks/useScrollAnimation';
+import { useTheme } from './hooks/useTheme';
 
 export default function Home() {
+  const { isDarkMode } = useTheme()
   // Scroll animation hooks for different elements
   const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
@@ -14,17 +17,11 @@ export default function Home() {
   return (
     // minimum height = 100vh
     <main className="min-h-screen relative">
+      {/* Shared dark-mode backdrop behind the whole page (fixed) so hero, About
+          and Works read as one continuous surface while scrolling. */}
+      {isDarkMode && <AuroraBackground />}
       {/* CSS Styles for Recent Works Section */}
       <style jsx>{`
-        .works-eyebrow {
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.24em;
-          text-transform: uppercase;
-          color: var(--accent);
-          opacity: 0.85;
-        }
-
         .recent-works-subtitle {
           color: var(--text);
           font-size: clamp(2.25rem, 5vw, 3.25rem);
@@ -61,7 +58,6 @@ export default function Home() {
         }
 
         @media (max-width: 768px) {
-          .works-eyebrow,
           .recent-works-subtitle {
             padding-left: 1.25rem;
           }
@@ -73,7 +69,6 @@ export default function Home() {
         }
 
         @media (min-width: 768px) {
-          .works-eyebrow,
           .recent-works-subtitle {
             padding-left: 80px;
           }
@@ -99,7 +94,6 @@ export default function Home() {
         <div className="projects-inner">
           <div className="container m-auto">
             <div>
-              <p className="works-eyebrow">Selected</p>
               <p
                 ref={subtitleRef}
                 className={`recent-works-subtitle ${subtitleVisible ? 'visible' : ''}`}

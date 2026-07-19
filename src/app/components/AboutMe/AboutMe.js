@@ -31,17 +31,6 @@ export default function AboutMe() {
           padding: 0 2rem;
         }
 
-        .about-eyebrow {
-          text-align: center;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.24em;
-          text-transform: uppercase;
-          color: var(--accent);
-          opacity: 0.85;
-          margin-bottom: 0.85rem;
-        }
-
         .about-title {
           font-size: clamp(2.25rem, 5vw, 3.25rem);
           font-weight: 600;
@@ -410,7 +399,6 @@ export default function AboutMe() {
       <AmbientOrbs variant="a" />
 
       <div className="about-container">
-        <div className="about-eyebrow">The Person</div>
         <h2
           ref={sectionRef}
           className={`about-title ${sectionVisible ? 'visible' : ''}`}

@@ -16,6 +16,10 @@ import { useTheme } from '../../hooks/useTheme'
 export default function AmbientOrbs({ variant = 'a' }) {
   const { isDarkMode } = useTheme()
 
+  // In dark mode the whole page shares one fixed aurora backdrop (see page.js),
+  // so per-section orbs are skipped to keep the background seamless.
+  if (isDarkMode) return null
+
   return (
     <div className={`ambient-orbs variant-${variant}`} aria-hidden="true">
       <span className="a-orb a-orb-1"></span>

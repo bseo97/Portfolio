@@ -322,7 +322,7 @@ export default function ChatBot({ onExpand, typingReady }) {
           box-shadow: ${isDarkMode
             ? '0 30px 50px -28px rgba(0, 0, 0, 0.65), 0 10px 22px -18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.14)'
             : '0 28px 50px -30px rgba(38, 41, 72, 0.30), 0 10px 22px -18px rgba(38, 41, 72, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8)'};
-          padding: 6px;
+          padding: 1.2px;
           transition: box-shadow 0.5s cubic-bezier(0.32,0.72,0,1), transform 0.5s cubic-bezier(0.32,0.72,0,1);
           position: relative;
           width: 100%;
@@ -946,7 +946,7 @@ export default function ChatBot({ onExpand, typingReady }) {
               <span className="chat-title">Brian</span>
               <span className="chat-status">
                 <span className="status-dot" aria-hidden="true"></span>
-                Legendary Engineer
+                Legendary Developer
               </span>
             </div>
           </div>

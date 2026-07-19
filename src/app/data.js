@@ -40,7 +40,7 @@ export const DataArray = [
   },
   {
     title: "Fabflix full-stack project",
-    name: "Fabflix (renamed to Decurb – Academic Project)",
+    name: "Fabflix",
     label: "Fabflix",
     category: "Full-Stack",
     des: "A full-stack movie eCommerce platform with secure login, dynamic search, chatbot integration, and full AWS deployment.",
@@ -56,19 +56,36 @@ export const DataArray = [
     repositoryLink: "https://github.com/bseo97/Fabflix"
   },
   {
-    title: "Decurb",
-    name: "Decurb – AI Token Forecasting & Optimization Platform",
-    label: "Decurb",
-    category: "AI Infrastructure",
-    des: "An AI infrastructure platform designed to minimize token usage and prevent hallucinations across LLM workflows.",
-    des1: "Decurb is an AI platform I’m currently leading as part of a collaborative team project, aimed at helping users better understand and optimize how much “token space” their prompts and completions consume when interacting with large language models like GPT. The platform analyzes token usage in real-time, forecasts when prompts are likely to exceed model limits or produce incomplete responses, and proactively manages those cases by breaking complex prompts into smaller subproblems. It also caches reusable outputs and recombines them intelligently to reduce cost while preserving accuracy and performance. Decurb was born out of both technical curiosity and a practical need for scalable, efficient AI workflows—especially in applications that involve long or dynamic user interactions. Stay Tuned!",
-    images: ["/Decurb.png"],
-    techStack: ["Python", "FastAPI", "PostgreSQL", "OpenAI API", "Regex", "Prompt Pattern Matching", "Token Forecasting Heuristics", "Modular Inference Planning", "Caching (LRU/Memoization)", "Docker", "Kubernetes", "AWS EC2", "JWT", "React", "marked.js"],
+    title: "Intertru — Full-Stack Software Engineer",
+    name: "Intertru",
+    label: "Intertru",
+    category: "Experience",
+    des: "Full-stack software engineer building AI-driven interview session tooling.",
+    des1: "As a Full-Stack Software Engineer at Intertru (Newport Beach, CA), I improved system efficiency by consolidating multiple API calls into a single endpoint for every session. I hardened the AI integration by adding security layers—input sanitization and structured JSON output enforcement—to prevent prompt injection and reduce failure points. I integrated hybrid and independent model selection into working-session generation, improving analysis-point accuracy on interview sessions by 2.3x. I also replaced background threading with async AWS Lambda calls through Boto3, so long-running jobs return a response immediately instead of blocking.",
+    images: [],
+    techStack: ["Python", "AWS Lambda", "Boto3", "LLM Integration", "REST API", "JSON Schema"],
     status: {
       text: "In Progress",
       color: "yellow"
     },
-    year: "2025",
+    year: "2026",
+    demoLink: null,
+    repositoryLink: null
+  },
+  {
+    title: "Point of Sales Software",
+    name: "Point of Sales Software",
+    label: "POS",
+    category: "Full-Stack",
+    des: "An offline-first point-of-sale system with local operation and a cloud-sync path.",
+    des1: "A point-of-sale application designed around an offline-first SQLite persistence layer for reliable local operation, with a PostgreSQL cloud-sync path. I implemented full order management with server-side price lookups and transactional multi-step writes, and established a sentinel-error pattern that maps domain errors to the correct HTTP status codes with consistent error normalization.",
+    images: [],
+    techStack: ["Go", "Shell", "Kotlin", "Jetpack Compose", "SQLite", "PostgreSQL"],
+    status: {
+      text: "In Progress",
+      color: "yellow"
+    },
+    year: "2026",
     demoLink: null,
     repositoryLink: null
   },

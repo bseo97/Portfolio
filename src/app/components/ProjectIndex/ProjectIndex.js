@@ -152,7 +152,9 @@ export default function ProjectIndex() {
         <div className={`pi-stack-inner ${activeIndex !== null ? 'is-visible' : ''}`}>
           {DataArray.map((item, index) => (
             <div key={item.label || index} className="pi-card" style={cardStyle(index)}>
-              <img src={item.images[0]} alt="" />
+              {item.images && item.images[0]
+                ? <img src={item.images[0]} alt="" />
+                : <div className="pi-card-ph" />}
             </div>
           ))}
         </div>
@@ -313,6 +315,18 @@ export default function ProjectIndex() {
           object-fit: cover;
           display: block;
         }
+        .pi-thumb-ph {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.7rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--accent);
+          background: linear-gradient(135deg, rgba(83, 201, 201, 0.16), rgba(120, 168, 255, 0.1));
+        }
 
         @media (max-width: 768px) {
           .pi-wrap {
@@ -364,7 +378,9 @@ export default function ProjectIndex() {
               </span>
 
               <span className="pi-thumb" aria-hidden="true">
-                <img src={item.images[0]} alt="" loading="lazy" />
+                {item.images && item.images[0]
+                  ? <img src={item.images[0]} alt="" loading="lazy" />
+                  : <span className="pi-thumb-ph">Image coming soon</span>}
               </span>
             </Link>
           </li>
@@ -416,6 +432,11 @@ export default function ProjectIndex() {
           height: 100%;
           object-fit: cover;
           display: block;
+        }
+        .pi-card-ph {
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(83, 201, 201, 0.2), rgba(120, 168, 255, 0.14));
         }
 
         @media (hover: none), (pointer: coarse) {

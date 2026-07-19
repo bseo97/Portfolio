@@ -244,7 +244,7 @@ export default function ProjectDetail() {
           {/* Right Side - Project Image and Action Buttons */}
           <div className="relative flex flex-col items-center">
             {/* Special layout for Fabflix project with two main images */}
-            {project.name === "Fabflix (renamed to Decurb – Academic Project)" && project.images.length >= 2 ? (
+            {project.name === "Fabflix" && project.images.length >= 2 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                   {/* Login Image - Left */}
@@ -276,13 +276,23 @@ export default function ProjectDetail() {
             ) : (
               /* Default layout for other projects */
               <>
-                {/* Main Image Container */}
+                {/* Main Image Container — placeholder slot when no image yet */}
                 <div className="relative overflow-hidden rounded-[1.75rem] p-1.5 w-full" style={imageFrame}>
-                  <img
-                    src={project.images[0]}
-                    alt={project.name}
-                    className="w-full h-auto object-cover rounded-[1.35rem]"
-                  />
+                  {project.images && project.images[0] ? (
+                    <img
+                      src={project.images[0]}
+                      alt={project.name}
+                      className="w-full h-auto object-cover rounded-[1.35rem]"
+                    />
+                  ) : (
+                    <div className="w-full aspect-[16/10] rounded-[1.35rem] flex flex-col items-center justify-center gap-2 text-center"
+                      style={{ background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(38,41,72,0.03)' }}>
+                      <svg className="w-9 h-9 text-[color:var(--accent)] opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.4} d="M4 16l4.5-4.5a2 2 0 012.8 0L16 16m-2-2l1.5-1.5a2 2 0 012.8 0L21 15M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                      </svg>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: isDarkMode ? 'rgba(242,242,242,0.5)' : 'rgba(26,26,26,0.5)' }}>Image coming soon</span>
+                    </div>
+                  )}
                 </div>
                 {/* Action Buttons below image */}
                 {renderActionButtons()}
