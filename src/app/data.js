@@ -5,11 +5,11 @@
  */
 export const DataArray = [
   {
-    title: "Intertru — Backend/AI Engineer",
+    title: "Intertru — Backend / AI Engineer",
     name: "Intertru",
     label: "Intertru",
-    category: "Backend/AI",
-    des: "Backend/AI engineer building AI-driven interview session tooling.",
+    category: "Backend / AI",
+    des: "Backend / AI engineer building AI-driven interview session tooling.",
     des1: "As a Backend/AI Engineer at Intertru (Newport Beach, CA), I optimized system performance and context accuracy across our AI-generated interview platform. I engineered an in-session retrieval architecture (RAG) that dynamically injects document contexts, improving analysis-point accuracy by 2.3x, and hardened the AI integration against prompt injection using input sanitization and structured JSON enforcement layers. To optimize infrastructure, I refactored legacy background-threaded workloads into asynchronous AWS Lambda calls via Boto3 to eliminate idle EC2 runtime charges and cut operational costs by 20%. Additionally, I increased team developer velocity by building an internal, in-platform asynchronous feedback and archive feature that eliminated 2+ hours of synchronous sprint review overhead per cycle.",
     images: ["/Intertru.png", "/Intertru1.png"],
     techStack: ["Python", "AWS Lambda", "Boto3", "LLM Integration", "REST API", "JSON Schema"],
@@ -23,10 +23,10 @@ export const DataArray = [
   },
   {
     title: "Curability",
-    name: "Real-Time AI Biofeedback for Neuro-Rehabilitation ",
+    name: "Curability",
     label: "Curability",
     category: "AI, Neuroplascity",
-    des: "A device ",
+    des: "Real-Time AI Biofeedback for Neuro-Rehabilitation",
     des1: "Developing an edge-computed, closed-loop wearable platform designed to detect and suppress post-stroke muscle spasticity in real time. Using an ESP32-S3 microcontroller, dual-channel sEMG, and a 6-axis IMU, the embedded system captures micro-velocity stretch signals and muscle activation patterns to trigger sub-100ms haptic cues. By integrating real-time TinyML inferencing with physiological feedback loops (reciprocal inhibition), the platform guides users to disrupt involuntary motor lockups and promote neuroplastic recovery.",
     images: [],
     techStack: ["C/C++", "FreeRTOS", "TinyML", "ESP32-S3 MCU", "Python (Data Pipeline)", "BLE", "sEMG/IMU Sensors"],

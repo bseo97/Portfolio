@@ -348,16 +348,8 @@ export default function HomeComponent() {
         }
       `}</style>
       <div id="home" className="hero-section">
-        {/* Light mode: soft ambient orbs the glass card refracts. In dark mode
-            the shared page-level aurora backdrop (see page.js) shows through. */}
-        {!isDarkMode && (
-          <div className="hero-ambient" aria-hidden="true">
-            <span className="orb orb-1"></span>
-            <span className="orb orb-2"></span>
-            <span className="orb orb-3"></span>
-          </div>
-        )}
-
+        {/* The shared page-level backdrop (see page.js) shows through the hero
+            in both themes — no per-section ambient layer needed here. */}
         <div className="hero-content">
           <div className={`hero-text${chatExpanded ? ' chat-expanded' : ''}`}>
             <h1

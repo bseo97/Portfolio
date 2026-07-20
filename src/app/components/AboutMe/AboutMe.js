@@ -2,7 +2,6 @@
 import React from 'react'
 import { useScrollAnimation } from '../../hooks/useScrollAnimation'
 import { useTheme } from '../../hooks/useTheme'
-import AmbientOrbs from '../AmbientOrbs/AmbientOrbs'
 
 export default function AboutMe() {
   // Consolidate scroll animations with similar thresholds
@@ -395,8 +394,6 @@ export default function AboutMe() {
           }
         }
       `}</style>
-
-      <AmbientOrbs variant="a" />
 
       <div className="about-container">
         <h2

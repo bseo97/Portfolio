@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../../hooks/useTheme'
+import MarkdownMessage from './MarkdownMessage'
 
 export default function ChatBot({ onExpand, typingReady }) {
   const [message, setMessage] = useState('')
@@ -9,9 +10,14 @@ export default function ChatBot({ onExpand, typingReady }) {
   const [isTyping, setIsTyping] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [botIsTyping, setBotIsTyping] = useState(false)
+  // The bot message currently being streamed in, or null: { id, text }
+  const [streaming, setStreaming] = useState(null)
   const [rotIndex, setRotIndex] = useState(0)
   const [rotAnimate, setRotAnimate] = useState(true)
   const rotPausedRef = useRef(false)
+  // Whether the view should follow new tokens. Flipped off when the user
+  // scrolls up to read earlier content, back on when they return to the bottom.
+  const stickToBottomRef = useRef(true)
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const inputRef = useRef(null)
@@ -25,15 +31,6 @@ export default function ChatBot({ onExpand, typingReady }) {
     'What is your experience?',
     'What tech do you use?',
   ]
-
-  // Simple markdown parser for basic formatting
-  const parseMessage = (text) => {
-    if (!text) return text
-    
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert **text** to bold
-      .replace(/^---$/gm, '<div class="message-separator"></div>') // Replace --- with separator
-  }
 
   useEffect(() => {
     if (!typingReady) {
@@ -60,15 +57,25 @@ export default function ChatBot({ onExpand, typingReady }) {
   }, [typingReady])
 
   useEffect(() => {
+    // A newly finished/added message means the user acted — snap to bottom.
+    stickToBottomRef.current = true
     scrollToBottom()
-    if (onExpand) onExpand(messages.length > 0)
-  }, [messages, onExpand])
-  
+    if (onExpand) onExpand(messages.length > 0 || !!streaming)
+  }, [messages, onExpand, streaming])
+
   useEffect(() => {
     if (botIsTyping) {
+      stickToBottomRef.current = true
       scrollToBottom()
     }
   }, [botIsTyping])
+
+  // Follow streaming tokens only while the user is anchored to the bottom.
+  useEffect(() => {
+    if (streaming && stickToBottomRef.current) {
+      scrollToBottom()
+    }
+  }, [streaming])
 
   // Auto-rotate the recommended-question reel while the empty state is shown.
   // Pauses on hover/focus (rotPausedRef) so the chip stays comfortably clickable.
@@ -202,28 +209,30 @@ export default function ChatBot({ onExpand, typingReady }) {
     }
   }, [])
 
+  // Anchor to the newest content. Uses rAF so it runs after the token paints.
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      const chatMessages = messagesEndRef.current.closest('.chat-messages')
-      if (chatMessages) {
-        setTimeout(() => {
-          chatMessages.scrollTop = chatMessages.scrollHeight
-        }, 50)
-      }
-    }
+    const el = chatMessagesRef.current
+    if (!el) return
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight
+    })
   }
 
   const scrollToTop = () => {
     if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = 0
+      stickToBottomRef.current = false
+      chatMessagesRef.current.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
   const handleScroll = () => {
-    if (chatMessagesRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = chatMessagesRef.current
-      setShowScrollTop(scrollTop < scrollHeight - clientHeight - 50 && messages.length > 2)
-    }
+    const el = chatMessagesRef.current
+    if (!el) return
+    const { scrollTop, scrollHeight, clientHeight } = el
+    const distanceFromBottom = scrollHeight - clientHeight - scrollTop
+    // Re-arm auto-follow once the user comes back within a small threshold.
+    stickToBottomRef.current = distanceFromBottom < 60
+    setShowScrollTop(distanceFromBottom > 50 && messages.length > 2)
   }
 
   // Helper function to create message objects
@@ -234,56 +243,93 @@ export default function ChatBot({ onExpand, typingReady }) {
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   })
 
-  const sendMessage = (text) => {
+  const sendMessage = async (text) => {
     const userInput = (text || '').trim()
-    if (!userInput) return
+    if (!userInput || streaming) return
 
     const userMessage = createMessage(userInput, true)
     setMessages(prev => [...prev, userMessage])
     setMessage('')
     setBotIsTyping(true)
+    stickToBottomRef.current = true
 
-    setTimeout(async () => {
-      try {
-        const botResponseText = await getBotResponse(userInput)
-        setBotIsTyping(false)
-        const botMessage = createMessage(botResponseText, false, Date.now() + 1)
-        setMessages(prev => [...prev, botMessage])
-      } catch (error) {
-        console.error('Error getting bot response:', error)
-        setBotIsTyping(false)
-        const errorMessage = createMessage("Sorry, I'm having trouble responding right now. Please try again!", false, Date.now() + 1)
-        setMessages(prev => [...prev, errorMessage])
+    const streamId = Date.now() + 1
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userInput }),
+      })
+
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to get response')
       }
-    }, 800)
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let acc = ''
+      let firstTokenSeen = false
+
+      // Read the SSE stream: events are separated by a blank line, each line
+      // prefixed with "data: ". We accumulate content deltas into `acc`.
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const events = buffer.split('\n\n')
+        buffer = events.pop() || ''
+
+        for (const evt of events) {
+          const line = evt.trim()
+          if (!line.startsWith('data:')) continue
+          const json = line.slice(5).trim()
+          if (!json) continue
+
+          let payload
+          try {
+            payload = JSON.parse(json)
+          } catch {
+            continue
+          }
+
+          if (payload.token) {
+            acc += payload.token
+            if (!firstTokenSeen) {
+              firstTokenSeen = true
+              setBotIsTyping(false)
+            }
+            setStreaming({ id: streamId, text: acc })
+          }
+        }
+      }
+
+      setBotIsTyping(false)
+      const finalText = acc.trim()
+        ? acc
+        : "Sorry, I couldn't generate a response right now."
+      setMessages(prev => [...prev, createMessage(finalText, false, streamId)])
+      setStreaming(null)
+    } catch (error) {
+      console.error('Chat API stream error:', error)
+      setBotIsTyping(false)
+      setStreaming(null)
+      setMessages(prev => [
+        ...prev,
+        createMessage(
+          "I'm having trouble connecting right now, but I'd love to tell you about my projects, skills, and experience as a Software Engineering student at UC Irvine!",
+          false,
+          streamId
+        ),
+      ])
+    }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     sendMessage(message)
-  }
-
-  const getBotResponse = async (userMessage) => {
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      const data = await response.json();
-      return data.reply || "Sorry, I couldn't process your request right now.";
-    } catch (error) {
-      console.error('Chat API error:', error);
-      // Fallback response when API fails
-      return "I'm having trouble connecting right now, but I'd love to tell you about my projects, skills, and experience as a Software Engineering student at UC Irvine!";
-    }
   }
 
   const clearChat = () => {
@@ -510,6 +556,7 @@ export default function ChatBot({ onExpand, typingReady }) {
         }
         .message.bot {
           align-self: flex-start;
+          max-width: 94%;
         }
         .message-avatar {
           width: 32px;
@@ -534,29 +581,25 @@ export default function ChatBot({ onExpand, typingReady }) {
           flex: 1;
         }
         .message-bubble {
-          padding: 0.75rem 1rem;
+          padding: 0.8rem 1.05rem;
           border-radius: 16px;
           font-size: 0.95rem;
-          line-height: 1.4;
+          line-height: 1.6;
           word-wrap: break-word;
-          white-space: pre-line;
-        }
-        .message-bubble strong {
-          font-weight: 700;
-          color: inherit;
-        }
-        .message.bot .message-bubble strong {
-          color: var(--accent);
+          overflow-wrap: anywhere;
         }
         .message.user .message-bubble {
           background: var(--accent);
           color: #ffffff;
           border-bottom-right-radius: 6px;
+          white-space: pre-line;
+          text-align: left;
         }
         .message.bot .message-bubble {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.05)'};
-          color: ${isDarkMode ? '#ffffff' : '#2c3e50'};
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.10)' : 'rgba(38, 41, 72, 0.045)'};
+          color: ${isDarkMode ? 'rgba(255, 255, 255, 0.92)' : '#2b3140'};
           border-bottom-left-radius: 6px;
+          text-align: left;
         }
         .message-time {
           font-size: 0.75rem;
@@ -936,7 +979,223 @@ export default function ChatBot({ onExpand, typingReady }) {
           }
         }
       `}</style>
-      
+
+      {/* Markdown typography for streamed bot replies. Global (not scoped)
+          because react-markdown renders elements dynamically; every rule is
+          namespaced under .md-body so nothing leaks to the rest of the page. */}
+      <style jsx global>{`
+        .md-body {
+          text-align: left;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: inherit;
+          -webkit-font-smoothing: antialiased;
+        }
+        .md-body > :first-child { margin-top: 0; }
+        .md-body > :last-child { margin-bottom: 0; }
+
+        .md-body p {
+          margin: 0 0 0.7em;
+        }
+        .md-body strong {
+          font-weight: 700;
+          color: var(--accent);
+        }
+        .md-body em { font-style: italic; }
+
+        .md-body h1,
+        .md-body h2,
+        .md-body h3,
+        .md-body h4 {
+          margin: 1em 0 0.5em;
+          line-height: 1.3;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          color: ${isDarkMode ? '#ffffff' : '#1f2430'};
+        }
+        .md-body h1 { font-size: 1.28em; }
+        .md-body h2 { font-size: 1.16em; }
+        .md-body h3 { font-size: 1.04em; }
+        .md-body h4 { font-size: 0.98em; }
+        .md-body h1:first-child,
+        .md-body h2:first-child,
+        .md-body h3:first-child { margin-top: 0; }
+
+        .md-body ul,
+        .md-body ol {
+          margin: 0.5em 0 0.8em;
+          padding-left: 1.4em;
+        }
+        .md-body li {
+          margin: 0.32em 0;
+          padding-left: 0.2em;
+        }
+        .md-body li::marker {
+          color: var(--accent);
+          font-weight: 600;
+        }
+        .md-body ul ul,
+        .md-body ol ol,
+        .md-body ul ol,
+        .md-body ol ul { margin: 0.3em 0; }
+
+        .md-body a {
+          color: var(--accent);
+          text-decoration: none;
+          border-bottom: 1px solid ${isDarkMode ? 'rgba(83,201,201,0.4)' : 'rgba(83,201,201,0.5)'};
+          transition: border-color 0.2s ease, opacity 0.2s ease;
+        }
+        .md-body a:hover { opacity: 0.85; border-bottom-color: var(--accent); }
+
+        .md-body blockquote {
+          margin: 0.7em 0;
+          padding: 0.35em 0.9em;
+          border-left: 3px solid var(--accent);
+          background: ${isDarkMode ? 'rgba(83,201,201,0.08)' : 'rgba(83,201,201,0.08)'};
+          border-radius: 0 8px 8px 0;
+          color: ${isDarkMode ? 'rgba(255,255,255,0.8)' : 'rgba(43,49,64,0.85)'};
+        }
+
+        .md-body hr {
+          border: none;
+          height: 1px;
+          margin: 1em 0;
+          background: linear-gradient(90deg, transparent, ${isDarkMode ? 'rgba(255,255,255,0.22)' : 'rgba(38,41,72,0.18)'}, transparent);
+        }
+
+        .md-body .md-inline-code {
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          font-size: 0.86em;
+          padding: 0.12em 0.4em;
+          border-radius: 6px;
+          background: ${isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(38,41,72,0.08)'};
+          color: ${isDarkMode ? '#7fe4e4' : '#2b8f8f'};
+          word-break: break-word;
+        }
+
+        /* ---- Fenced code block with copy button ---- */
+        .md-body .md-code {
+          position: relative;
+          margin: 0.7em 0;
+          border-radius: 12px;
+          overflow: hidden;
+          border: 1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(38,41,72,0.1)'};
+          background: #0f1424;
+        }
+        .md-body .md-code pre {
+          margin: 0;
+          padding: 0.85rem 0.95rem;
+          overflow-x: auto;
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          font-size: 0.82rem;
+          line-height: 1.55;
+        }
+        .md-body .md-code code {
+          font-family: inherit;
+          color: #e6e9f2;
+          background: none;
+          padding: 0;
+        }
+        .md-body .md-copy {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.28rem 0.55rem;
+          font-size: 0.72rem;
+          font-weight: 600;
+          font-family: var(--font-sans), sans-serif;
+          color: rgba(230,233,242,0.85);
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 999px;
+          cursor: pointer;
+          opacity: 0;
+          transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .md-body .md-code:hover .md-copy { opacity: 1; }
+        .md-body .md-copy:hover {
+          background: rgba(83,201,201,0.22);
+          color: #ffffff;
+        }
+        .md-body .md-copy.copied {
+          opacity: 1;
+          color: #35c759;
+          border-color: rgba(53,199,89,0.4);
+          background: rgba(53,199,89,0.14);
+        }
+        .md-body .md-copy svg { width: 13px; height: 13px; }
+
+        .md-body table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 0.7em 0;
+          font-size: 0.9em;
+        }
+        .md-body th,
+        .md-body td {
+          border: 1px solid ${isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(38,41,72,0.12)'};
+          padding: 0.4em 0.6em;
+          text-align: left;
+        }
+        .md-body th {
+          background: ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(38,41,72,0.05)'};
+          font-weight: 700;
+        }
+
+        /* ---- Streaming: block-level fade/slide-in + blinking caret ---- */
+        @media (prefers-reduced-motion: no-preference) {
+          .md-body.is-streaming > * {
+            animation: mdBlockIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
+        }
+        @keyframes mdBlockIn {
+          from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+          to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .md-body.is-streaming > :last-child::after {
+          content: "";
+          display: inline-block;
+          width: 0.52em;
+          height: 1.02em;
+          margin-left: 0.12em;
+          vertical-align: -0.18em;
+          border-radius: 2px;
+          background: var(--accent);
+          box-shadow: 0 0 8px rgba(83, 201, 201, 0.85);
+          animation: mdCaretBlink 1.05s steps(1, end) infinite;
+        }
+        .md-body.is-streaming li:last-child::marker { color: var(--accent); }
+        @keyframes mdCaretBlink {
+          0%, 45% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+
+        /* ---- Compact highlight.js theme (rehype-highlight) ---- */
+        .md-body .hljs-comment,
+        .md-body .hljs-quote { color: #6b7394; font-style: italic; }
+        .md-body .hljs-keyword,
+        .md-body .hljs-selector-tag,
+        .md-body .hljs-literal { color: #c792ea; }
+        .md-body .hljs-string,
+        .md-body .hljs-attr,
+        .md-body .hljs-template-string { color: #7fe4e4; }
+        .md-body .hljs-number,
+        .md-body .hljs-built_in,
+        .md-body .hljs-builtin-name { color: #f78c6c; }
+        .md-body .hljs-title,
+        .md-body .hljs-function .hljs-title,
+        .md-body .hljs-section { color: #82aaff; }
+        .md-body .hljs-type,
+        .md-body .hljs-class .hljs-title { color: #ffcb6b; }
+        .md-body .hljs-tag,
+        .md-body .hljs-name { color: #f07178; }
+        .md-body .hljs-emphasis { font-style: italic; }
+        .md-body .hljs-strong { font-weight: 700; }
+      `}</style>
+
       <div className={`chatbot-wrapper${messages.length === 0 ? ' empty' : ''}`}>
        <div className="chatbot-core">
         <div className="chat-header">
@@ -1010,15 +1269,23 @@ export default function ChatBot({ onExpand, typingReady }) {
               {messages.map((msg) => (
                 <div key={msg.id} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
                   <div className="message-content">
-                    <div
-                      className="message-bubble"
-                      dangerouslySetInnerHTML={{ __html: parseMessage(msg.text) }}
-                    />
+                    <div className="message-bubble">
+                      {msg.isUser ? msg.text : <MarkdownMessage text={msg.text} />}
+                    </div>
                     <div className="message-time">{msg.timestamp}</div>
                   </div>
                 </div>
               ))}
-              {botIsTyping && (
+              {streaming && (
+                <div className="message bot">
+                  <div className="message-content">
+                    <div className="message-bubble">
+                      <MarkdownMessage text={streaming.text} streaming />
+                    </div>
+                  </div>
+                </div>
+              )}
+              {botIsTyping && !streaming && (
                 <div className="message bot">
                   <div className="message-content">
                     <div className="message-bubble typing-indicator">
@@ -1051,8 +1318,9 @@ export default function ChatBot({ onExpand, typingReady }) {
             onChange={(e) => setMessage(e.target.value)}
             placeholder={placeholder + (isTyping ? '|' : '')}
             className="chatbot-input"
+            disabled={!!streaming || botIsTyping}
           />
-          <button type="submit" className="submit-button" disabled={!message.trim()} aria-label="Send message">
+          <button type="submit" className="submit-button" disabled={!message.trim() || !!streaming || botIsTyping} aria-label="Send message">
             <span className="submit-button-inner">
               <svg
                 fill="none"

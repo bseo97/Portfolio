@@ -3,13 +3,10 @@
 import HomeComponent from './components/HomeComponent/HomeComponent'
 import AboutMe from './components/AboutMe/AboutMe'
 import ProjectIndex from "./components/ProjectIndex/ProjectIndex";
-import AmbientOrbs from './components/AmbientOrbs/AmbientOrbs';
 import AuroraBackground from './components/AuroraBackground/AuroraBackground';
 import { useScrollAnimation } from './hooks/useScrollAnimation';
-import { useTheme } from './hooks/useTheme';
 
 export default function Home() {
-  const { isDarkMode } = useTheme()
   // Scroll animation hooks for different elements
   const [subtitleRef, subtitleVisible] = useScrollAnimation({ threshold: 0.2 })
   const [descriptionRef, descriptionVisible] = useScrollAnimation({ threshold: 0.2 })
@@ -17,9 +14,10 @@ export default function Home() {
   return (
     // minimum height = 100vh
     <main className="min-h-screen relative">
-      {/* Shared dark-mode backdrop behind the whole page (fixed) so hero, About
-          and Works read as one continuous surface while scrolling. */}
-      {isDarkMode && <AuroraBackground />}
+      {/* Shared fixed backdrop behind the whole page (aurora in dark, soft
+          pastel field in light) so every section reads as one continuous
+          surface while scrolling. */}
+      <AuroraBackground />
       {/* CSS Styles for Recent Works Section */}
       <style jsx>{`
         .recent-works-subtitle {
@@ -90,7 +88,6 @@ export default function Home() {
         id="projects"
         className="projects-container"
       >
-        <AmbientOrbs variant="b" />
         <div className="projects-inner">
           <div className="container m-auto">
             <div>

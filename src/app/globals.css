@@ -1028,4 +1028,33 @@
       animation: none;
     }
   }
-  
+
+  /* ------------------------------------------------------------------ */
+  /* Light-mode variant — soft pastel ambient field on ivory. Same fixed */
+  /* full-page backdrop; ribbons / stars / grain hidden, orbs recoloured. */
+  /* ------------------------------------------------------------------ */
+  .aurora-light {
+    background: linear-gradient(180deg, #f8f6f0 0%, #f4f1e9 55%, #efebdf 100%);
+  }
+  .aurora-light .ab {
+    mix-blend-mode: normal;
+    opacity: 0.5;
+    filter: blur(64px);
+  }
+  .aurora-light .ab1 {
+    background: radial-gradient(circle, rgba(83, 201, 201, 0.38), transparent 66%);
+  }
+  .aurora-light .ab2 {
+    background: radial-gradient(circle, rgba(120, 168, 255, 0.30), transparent 66%);
+  }
+  .aurora-light .ab3 {
+    background: radial-gradient(circle, rgba(255, 206, 150, 0.30), transparent 66%);
+  }
+  .aurora-light .curtain,
+  .aurora-light .aurora-stars,
+  .aurora-light .aurora-grain {
+    display: none;
+  }
+  .aurora-light::after {
+    background: radial-gradient(ellipse 95% 85% at 50% 40%, transparent 62%, rgba(120, 110, 90, 0.06) 100%);
+  }

@@ -147,10 +147,10 @@ function getDynamicParameters(intent) {
 }
 
 /**
- * Generate response using OpenAI chat completion with intelligent relevance detection
+ * Build the system prompt shared by streaming and non-streaming paths.
  */
-async function generateResponse(message, intent, relevantPassages, maxTokens) {
-  const systemPrompt = `You are Brian Seo having a friendly conversation about yourself. 
+function buildSystemPrompt(relevantPassages) {
+  return `You are Brian Seo having a friendly conversation about yourself.
 
 IMPORTANT: You should answer questions about Brian in ANY language and respond to ALL types of greetings warmly.
 
@@ -160,96 +160,151 @@ Guidelines:
 3. Handle casual greetings like "hey man!", "heyy", "sup", "what's up"
 4. If a question is clearly unrelated to Brian (e.g., general trivia, other people, unrelated topics), politely redirect with: "That seems like it's not related to me or my portfolio! I'm here to chat about my projects, skills, experiences, education, or anything else you'd like to know about me personally. What would you like to know about my work?"
 
-Answer naturally in first person using the context below. 
-Be concise, warm, enthusiastic, and conversational. 
+Answer naturally in first person using the context below.
+Be concise, warm, enthusiastic, and conversational.
 
-Always format your responses for readability:
-- Use short paragraphs separated by blank lines when necessary. if it is not necessary, don't add blank lines.
-- Add line breaks instead of long walls of text only when it's necessary. if it is not necessary, don't add line breaks.
-- Use bullet points or numbered lists when listing multiple items
-- Keep a friendly tone but prioritize clarity
-- If skills or projects are mentioned, differentiate the tech stack by field, such as frontend, backend, database, devops, ai, etc. 
-- For example: Tech stack (bold font, arrange to middle of the text since tech stack is the heading, do not arrange to the middle for detail of tech stack), (nextline) Frontend: React.js, Next.js, JavaScript, TypeScript, Tailwind CSS, (nextline) Backend: Python, Java, Servlet, FastAPI, Node.js, Express.js (nextline) Database: MongoDB, MySQL, PostgreSQL, JDBC (nextline) Devops: Docker, Kubernetes, AWS, Microservices, vercel, etc.
-- The example above is for the projects. Analyze corresponding tech stack of each projects/skills, and differentiate the tech stack by field, such as frontend, backend, database, devops, etc. 
+Format every response as clean GitHub-Flavored Markdown (it is rendered as rich text):
+- Keep paragraphs short; separate distinct ideas with a blank line. Do not pad with blank lines when a single sentence answers the question.
+- Use **bold** for key labels and headings (e.g. **Tech Stack**, project names).
+- Use ordered lists (1. 2. 3.) for sequences and unordered lists (- ) for grouped items.
+- When listing a project's or skill set's technologies, group them by field on their own bullet lines with a bold label, e.g.:
+  - **Frontend:** React.js, Next.js, TypeScript, Tailwind CSS
+  - **Backend:** Python, Java, FastAPI, Node.js
+  - **Database:** MongoDB, MySQL, PostgreSQL
+  - **DevOps:** Docker, Kubernetes, AWS, Vercel
+  Analyze each project's/skill's actual stack and only include the fields that apply.
+- Prefer readability over density. Never emit a wall of text.
 
 Context: ${relevantPassages.join(' | ')}`;
+}
 
-  try {
-    const response = await openai.chat.completions.create({
-      model: CHAT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message }
-      ],
-      temperature: 0.3,
-      max_tokens: maxTokens
-    });
-    
-    return response.choices[0]?.message?.content || "Sorry, I couldn't generate a response right now.";
-  } catch (error) {
-    console.error('OpenAI API error:', error);
-    return getFallbackResponse(intent);
+/**
+ * Stream an OpenAI chat completion, invoking onToken for each content delta.
+ * Stops early if `isClosed()` reports the consumer has gone away.
+ * Returns true if at least one token was emitted.
+ */
+async function streamResponse(message, relevantPassages, maxTokens, onToken, isClosed) {
+  const systemPrompt = buildSystemPrompt(relevantPassages);
+
+  const completion = await openai.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: message }
+    ],
+    temperature: 0.3,
+    max_tokens: maxTokens,
+    stream: true
+  });
+
+  let emitted = false;
+  for await (const chunk of completion) {
+    if (isClosed && isClosed()) break;
+    const token = chunk.choices?.[0]?.delta?.content || '';
+    if (token) {
+      emitted = true;
+      onToken(token);
+    }
   }
+  return emitted;
 }
 
 /**
- * Create consistent JSON response
+ * Stream the chatbot response as Server-Sent Events.
+ * Emits `{ token }` events for each content delta and a final `{ done: true }`.
+ * Falls back to a single-chunk canned reply when OpenAI is unavailable.
  */
-function createResponse(reply, intent, status = 200) {
-  const response = {
-    reply,
-    intent,
-    timestamp: new Date().toISOString()
-  };
-  
-  return NextResponse.json(response, { status });
-}
-
-/**
- * Generate chatbot response with intelligent LLM-based relevance detection
- */
-async function getChatbotResponse(message, intent) {
-  // No longer block OFF_TOPIC - let LLM make intelligent decisions about relevance
-  
+async function streamChatbotResponse(message, intent, onToken, isClosed) {
+  // If OpenAI isn't configured, stream the canned fallback as one chunk.
   if (!initOpenAI()) {
-    return getFallbackResponse(intent);
+    onToken(getFallbackResponse(intent));
+    return;
   }
-  
+
   try {
     await ensureIndex();
-    
+
     if (indexInitialized) {
       const { topK, maxTokens } = getDynamicParameters(intent);
       const relevantPassages = await retrievePassages(message, topK);
-      return await generateResponse(message, intent, relevantPassages, maxTokens);
+      const emitted = await streamResponse(message, relevantPassages, maxTokens, onToken, isClosed);
+      if (emitted) return;
     }
   } catch (error) {
     console.error('Error in OpenAI processing:', error);
   }
-  
-  return getFallbackResponse(intent);
+
+  // Nothing streamed (index not ready or API error). Only send the fallback if
+  // the consumer is still connected — otherwise enqueuing would throw.
+  if (!isClosed || !isClosed()) {
+    onToken(getFallbackResponse(intent));
+  }
 }
 
 /**
- * Main API route handler
+ * Main API route handler — returns a streaming Server-Sent Events response.
  */
 export async function POST(request) {
+  let message;
   try {
-    const { message } = await request.json();
-    
-    if (!message || typeof message !== 'string') {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
-    }
-    
-    const intent = routeIntent(message);
-    const reply = await getChatbotResponse(message, intent);
-    
-    return createResponse(reply, intent);
-    
-  } catch (error) {
-    console.error('Chat API error:', error);
-    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
+    ({ message } = await request.json());
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
+
+  if (!message || typeof message !== 'string') {
+    return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+  }
+
+  const intent = routeIntent(message);
+  const encoder = new TextEncoder();
+
+  // `closed` guards every enqueue: once the consumer disconnects (or we close
+  // the stream ourselves) further writes are silently dropped instead of
+  // throwing ERR_INVALID_STATE from the underlying controller.
+  let closed = false;
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (payload) => {
+        if (closed) return;
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+        } catch {
+          // Controller was closed out from under us — stop writing.
+          closed = true;
+        }
+      };
+
+      try {
+        // Announce intent up front so the client can label the message if needed.
+        send({ intent });
+        await streamChatbotResponse(message, intent, (token) => send({ token }), () => closed);
+      } catch (error) {
+        console.error('Chat API stream error:', error);
+        send({ token: getFallbackResponse(intent) });
+      } finally {
+        send({ done: true });
+        if (!closed) {
+          closed = true;
+          try { controller.close(); } catch { /* already closed */ }
+        }
+      }
+    },
+    cancel() {
+      // Consumer went away (navigation, refresh, abort) — halt the OpenAI pull.
+      closed = true;
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    }
+  });
 }
 
 /**

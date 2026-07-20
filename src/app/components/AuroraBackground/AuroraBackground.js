@@ -1,17 +1,22 @@
 'use client'
 import React from 'react'
+import { useTheme } from '../../hooks/useTheme'
 
 /**
- * Cinematic aurora hero backdrop — pure CSS (no canvas, no WebGL, no rAF, no
- * ResizeObserver). Styles live in globals.css (`.aurora` block) so they load
- * reliably with no styled-jsx parsing quirks. Every layer animates via
- * transform/opacity only and is clipped by `.aurora { overflow: hidden }`, so it
- * can never scroll the page or repaint-thrash. Degrades to a static deep-space
- * gradient under reduced motion.
+ * Single fixed full-page backdrop so the whole site shares ONE continuous
+ * background while scrolling — pure CSS (no canvas/WebGL/rAF), transform/opacity
+ * only, clipped by `.aurora { overflow: hidden }`.
+ *
+ *  - Dark mode  → cinematic aurora (deep gradient + teal/indigo/violet ribbons,
+ *    stars, grain).
+ *  - Light mode → soft pastel ambient field on ivory (ribbons/stars/grain hidden
+ *    via the `.aurora-light` overrides in globals.css).
  */
 export default function AuroraBackground() {
+  const { isDarkMode } = useTheme()
+
   return (
-    <div className="aurora" aria-hidden="true">
+    <div className={`aurora${isDarkMode ? '' : ' aurora-light'}`} aria-hidden="true">
       <span className="ab ab1" />
       <span className="ab ab2" />
       <span className="ab ab3" />
