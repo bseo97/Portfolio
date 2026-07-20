@@ -15,7 +15,7 @@ export default function ChatBot({ onExpand, typingReady }) {
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const inputRef = useRef(null)
-  const fullText = "Our Legendary Conversation starts here"
+  const fullText = "Ready to chat?"
   const { isDarkMode } = useTheme()
 
   // Starter prompts shown in the empty state so the user always has a way in.
