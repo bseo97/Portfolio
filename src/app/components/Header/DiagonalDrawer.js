@@ -65,7 +65,7 @@ export default function DiagonalDrawer({
                 }`}
                 onClick={() => setIsOpen(false)}
               >
-                🏠 Home
+                Home
               </a>
             </li>
             <li>
@@ -80,7 +80,7 @@ export default function DiagonalDrawer({
                 }`}
                 onClick={() => setIsOpen(false)}
               >
-                👨‍💻 About
+                About
               </a>
             </li>
             <li>
@@ -95,7 +95,7 @@ export default function DiagonalDrawer({
                 }`}
                 onClick={() => setIsOpen(false)}
               >
-                🚀 Projects
+                Projects
               </a>
             </li>
           </ul>
