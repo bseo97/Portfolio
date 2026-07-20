@@ -5,21 +5,38 @@
  */
 export const DataArray = [
   {
-    title: "Personal Portfolio Website Using Reactjs",
-    name: "Portfolio Website",
-    label: "Portfolio",
-    category: "Web / Frontend",
-    des: "A portfolio website to showcase my projects and skills.",
-    des1: "Built a modern, responsive portfolio website built with Next.js 15 and React 19, featuring animated neural network backgrounds, interactive project carousel, AI chatbot integration, and glassmorphism design. Includes dynamic routing for project details, smooth scroll animations, custom scrollbars, and comprehensive responsive design. Showcases advanced CSS techniques, React hooks, and modern web development practices with full mobile optimization.",
-    images: ["/website.png"],
-    techStack: ["Next.js", "React.js", "JavaScript", "Tailwind CSS", "CSS"],
+    title: "Intertru — Backend / AI Engineer",
+    name: "Intertru",
+    label: "Intertru",
+    category: "Backend / AI",
+    des: "Backend / AI engineer building AI-driven interview session tooling.",
+    des1: "As a Backend/AI Engineer at Intertru (Newport Beach, CA), I optimized system performance and context accuracy across our AI-generated interview platform. I engineered an in-session retrieval architecture (RAG) that dynamically injects document contexts, improving analysis-point accuracy by 2.3x, and hardened the AI integration against prompt injection using input sanitization and structured JSON enforcement layers. To optimize infrastructure, I refactored legacy background-threaded workloads into asynchronous AWS Lambda calls via Boto3 to eliminate idle EC2 runtime charges and cut operational costs by 20%. Additionally, I increased team developer velocity by building an internal, in-platform asynchronous feedback and archive feature that eliminated 2+ hours of synchronous sprint review overhead per cycle.",
+    images: ["/Intertru.png", "/Intertru1.png"],
+    techStack: ["Python", "AWS Lambda", "Boto3", "LLM Integration", "REST API", "JSON Schema"],
     status: {
-      text: "Completed",
-      color: "green"
+      text: "In Progress",
+      color: "yellow"
     },
-    year: "2024",
+    year: "2026",
     demoLink: null,
-    repositoryLink: "https://github.com/bseo97/Portfolio"
+    repositoryLink: null
+  },
+  {
+    title: "Curability",
+    name: "Curability",
+    label: "Curability",
+    category: "AI, Neuroplascity",
+    des: "Real-Time AI Biofeedback for Neuro-Rehabilitation",
+    des1: "Developing an edge-computed, closed-loop wearable platform designed to detect and suppress post-stroke muscle spasticity in real time. Using an ESP32-S3 microcontroller, dual-channel sEMG, and a 6-axis IMU, the embedded system captures micro-velocity stretch signals and muscle activation patterns to trigger sub-100ms haptic cues. By integrating real-time TinyML inferencing with physiological feedback loops (reciprocal inhibition), the platform guides users to disrupt involuntary motor lockups and promote neuroplastic recovery.",
+    images: [],
+    techStack: ["C/C++", "FreeRTOS", "TinyML", "ESP32-S3 MCU", "Python (Data Pipeline)", "BLE", "sEMG/IMU Sensors"],
+    status: {
+      text: "In Progress",
+      color: "yellow"
+    },
+    year: "2026",
+    demoLink: null,
+    repositoryLink: null
   },
   {
     title: "Hackathon Project: Rent-spiracy",
@@ -31,8 +48,8 @@ export const DataArray = [
     images: ["/Rentspiracy.png"],
     techStack: ["Next.js", "TypeScript", "Tailwind CSS", "MongoDB", "Python", "Gemini API"],
     status: {
-      text: "Live",
-      color: "blue"
+      text: "Completed",
+      color: "green"
     },
     year: "2025",
     demoLink: "https://www.youtube.com/watch?v=CsMjk4ld_aA&t=10s",
@@ -56,37 +73,20 @@ export const DataArray = [
     repositoryLink: "https://github.com/bseo97/fabflix"
   },
   {
-    title: "Intertru — Full-Stack Software Engineer",
-    name: "Intertru",
-    label: "Intertru",
-    category: "Experience",
-    des: "Full-stack software engineer building AI-driven interview session tooling.",
-    des1: "As a Full-Stack Software Engineer at Intertru (Newport Beach, CA), I improved system efficiency by consolidating multiple API calls into a single endpoint for every session. I hardened the AI integration by adding security layers—input sanitization and structured JSON output enforcement—to prevent prompt injection and reduce failure points. I integrated hybrid and independent model selection into working-session generation, improving analysis-point accuracy on interview sessions by 2.3x. I also replaced background threading with async AWS Lambda calls through Boto3, so long-running jobs return a response immediately instead of blocking.",
-    images: ["/Intertru.png", "/Intertru1.png"],
-    techStack: ["Python", "AWS Lambda", "Boto3", "LLM Integration", "REST API", "JSON Schema"],
+    title: "Personal Portfolio Website Using Reactjs",
+    name: "Portfolio Website",
+    label: "Portfolio",
+    category: "Web / Frontend",
+    des: "A portfolio website to showcase my projects and skills.",
+    des1: "Built a modern, responsive portfolio website built with Next.js 15 and React 19, featuring animated neural network backgrounds, interactive project carousel, AI chatbot integration, and glassmorphism design. Includes dynamic routing for project details, smooth scroll animations, custom scrollbars, and comprehensive responsive design. Showcases advanced CSS techniques, React hooks, and modern web development practices with full mobile optimization.",
+    images: ["/website.png"],
+    techStack: ["Next.js", "React.js", "JavaScript", "Tailwind CSS", "CSS"],
     status: {
-      text: "In Progress",
-      color: "yellow"
+      text: "Completed",
+      color: "green"
     },
-    year: "2026",
+    year: "2024",
     demoLink: null,
-    repositoryLink: null
-  },
-  {
-    title: "Point of Sales Software",
-    name: "Point of Sales Software",
-    label: "POS",
-    category: "Full-Stack",
-    des: "An offline-first point-of-sale system with local operation and a cloud-sync path.",
-    des1: "A point-of-sale application designed around an offline-first SQLite persistence layer for reliable local operation, with a PostgreSQL cloud-sync path. I implemented full order management with server-side price lookups and transactional multi-step writes, and established a sentinel-error pattern that maps domain errors to the correct HTTP status codes with consistent error normalization.",
-    images: [],
-    techStack: ["Go", "Shell", "Kotlin", "Jetpack Compose", "SQLite", "PostgreSQL"],
-    status: {
-      text: "In Progress",
-      color: "yellow"
-    },
-    year: "2026",
-    demoLink: null,
-    repositoryLink: null
+    repositoryLink: "https://github.com/bseo97/Portfolio"
   },
 ];

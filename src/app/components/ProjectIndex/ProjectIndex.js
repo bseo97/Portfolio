@@ -240,8 +240,12 @@ export default function ProjectIndex() {
           line-height: 1.05;
           letter-spacing: -0.015em;
           white-space: nowrap;
+          color: #1a1a1a;
           transform: translateX(0);
           transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        :global(.dark-theme) .pi-title {
+          color: #f2f2f2;
         }
         .pi-row:hover .pi-title,
         .pi-row:focus-visible .pi-title {
@@ -374,7 +378,7 @@ export default function ProjectIndex() {
               <span className="pi-meta">
                 <span className="pi-tag">{item.category}</span>
                 <span className="pi-year">{item.year}</span>
-                <span className="pi-arrow" aria-hidden="true">↗</span>
+                <span className="pi-arrow" aria-hidden="true">{"↗︎"}</span>
               </span>
 
               <span className="pi-thumb" aria-hidden="true">

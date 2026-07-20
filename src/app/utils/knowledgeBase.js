@@ -9,12 +9,13 @@ import { DataArray } from '../data.js';
  * Brian's core information extracted from portfolio data (written in first person)
  */
 const brianInfo = {
-  bio: "I'm Brian Seo, a Software Engineering student at UC Irvine passionate about backend infrastructure, scalable systems, and full-stack development. I'm involved with Association for Computing Machinery at UCI and Hacks at UCI, with a focus on building innovative solutions that support real-world businesses.",
-  
+  bio: "I'm Brian Seo, a Software Engineering student at UC Irvine passionate about backend infrastructure, AI systems, and full-stack development. I'm involved with Association for Computing Machinery at UCI and Hacks at UCI, with a focus on building innovative solutions that support real-world businesses.",
+
   highlights: [
     "I'm a Software Engineering student at UC Irvine",
     "I love building real-world software that empowers small businesses to cut costs and improve efficiency",
-    "I'm a full-stack developer experienced with React.js, Next.js, Golang, Python, and PostgreSQL",
+    "I'm a full-stack and backend developer experienced with React.js, Next.js, Python, Java, and AWS",
+    "I work on AI systems (RAG, LLM integration) and real-time embedded/firmware platforms",
     "I'm active in hackathons and Association for Computing Machinery at UCI"
   ],
   
@@ -46,11 +47,15 @@ const SKILL_CATEGORIES = {
   },
   "DevOps & Infrastructure": {
     description: "Infrastructure management, containerization, and deployment platforms",
-    keywords: ['docker', 'kubernetes', 'aws', 'microservices']
+    keywords: ['docker', 'kubernetes', 'aws', 'lambda', 'boto', 'microservices']
   },
   "AI & APIs": {
     description: "Artificial intelligence integration and API development",
-    keywords: ['api', 'openai', 'gemini', 'ai', 'token']
+    keywords: ['api', 'openai', 'gemini', 'llm', 'tinyml', 'ai', 'token', 'json schema']
+  },
+  "Embedded & Firmware": {
+    description: "Embedded systems, real-time firmware, and sensor/signal processing for hardware platforms",
+    keywords: ['c/c++', 'c++', 'freertos', 'esp32', 'mcu', 'ble', 'semg', 'imu', 'sensor', 'firmware', 'embedded']
   },
   "Databases": {
     description: "Database management and data storage solutions",

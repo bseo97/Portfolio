@@ -14,7 +14,10 @@
     "openai": "^5.20.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "react-slick": "^0.30.3",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
     "slick": "^1.12.2",
     "slick-carousel": "^1.8.1"
   },
